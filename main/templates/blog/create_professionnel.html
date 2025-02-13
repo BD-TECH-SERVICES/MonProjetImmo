@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 50px auto; text-align: center;">
+    <div class="form-container">
+        <h2>Créer un profil Professionnel</h2>
+        <form method="post">
+            {% csrf_token %}
+            <h3>Informations de connexion</h3>
+            <div>
+                <label for="{{ user_form.username.id_for_label }}">Nom d'utilisateur:</label>
+                {{ user_form.username }}
+                {% if user_form.username.errors %}
+                    <div style="color: red;">{{ user_form.username.errors|striptags }}</div>
+                {% endif %}
+            </div>
+            <div>
+                <label for="{{ user_form.password1.id_for_label }}">Mot de passe:</label>
+                {{ user_form.password1 }}
+                {% if user_form.password1.errors %}
+                    <div style="color: red;">{{ user_form.password1.errors|striptags }}</div>
+                {% endif %}
+            </div>
+            <div>
+                <label for="{{ user_form.password2.id_for_label }}">Confirmation du mot de passe:</label>
+                {{ user_form.password2 }}
+                {% if user_form.password2.errors %}
+                    <div style="color: red;">{{ user_form.password2.errors|striptags }}</div>
+                {% endif %}
+            </div>
+            
+            <h3>Informations de l'entreprise</h3>
+            <div>
+                <label for="{{ professionnel_form.nom_societe.id_for_label }}">Nom de l'entreprise:</label>
+                {{ professionnel_form.nom_societe }}
+                {% if professionnel_form.nom_societe.errors %}
+                    <div style="color: red;">{{ professionnel_form.nom_societe.errors|striptags }}</div>
+                {% endif %}
+            </div>
+            <div>
+                <label for="{{ professionnel_form.siret.id_for_label }}">SIRET:</label>
+                {{ professionnel_form.siret }}
+                {% if professionnel_form.siret.errors %}
+                    <div style="color: red;">{{ professionnel_form.siret.errors|striptags }}</div>
+                {% endif %}
+            </div>
+            <div>
+                <label for="{{ professionnel_form.email_pro.id_for_label }}">Email professionnel:</label>
+                {{ professionnel_form.email_pro }}
+                {% if professionnel_form.email_pro.errors %}
+                    <div style="color: red;">{{ professionnel_form.email_pro.errors|striptags }}</div>
+                {% endif %}
+            </div>
+            <div>
+                <label for="{{ professionnel_form.secteur_activite.id_for_label }}">Secteur d'activité:</label>
+                {{ professionnel_form.secteur_activite }}
+                {% if professionnel_form.secteur_activite.errors %}
+                    <div style="color: red;">{{ professionnel_form.secteur_activite.errors|striptags }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Créer le profil</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

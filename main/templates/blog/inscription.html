@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="selection-container" style="display: flex; justify-content: center; gap: 2rem; margin-top: 50px;">
+    <!-- Bloc Particulier -->
+    <div class="selection-block" style="flex: 1; text-align: center; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background: #f9f9f9; cursor: pointer;">
+        <a href="{% url 'create_particulier' %}" style="text-decoration: none; color: inherit;">
+            <h2>Je suis un Particulier</h2>
+            <p>Inscrivez-vous en tant que particulier pour accéder à nos services dédiés.</p>
+            <button style="margin-top: 20px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Continuer
+            </button>
+        </a>
+    </div>
+
+    <!-- Bloc Pro -->
+    <div class="selection-block" style="flex: 1; text-align: center; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background: #f9f9f9; cursor: pointer;">
+        <a href="{% url 'create_professionnel' %}" style="text-decoration: none; color: inherit;">
+            <h2>Je suis un Professionnel</h2>
+            <p>Inscrivez-vous en tant que professionnel pour bénéficier de nos solutions professionnelles.</p>
+            <button style="margin-top: 20px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Continuer
+            </button>
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+
