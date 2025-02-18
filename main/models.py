@@ -38,5 +38,29 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return f"{self.username} ({self.get_user_type_display()})"
+class Projet(models.Model):
+    utilisateur = models.ForeignKey(Particulier, on_delete=models.CASCADE, related_name='projets')
+    titre = models.CharField(max_length=255)
+    description = models.TextField()
+    date_creation = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.titre
 
 
+class Carte(models.Model):
+    utilisateur = models.ForeignKey(Particulier, on_delete=models.CASCADE, related_name='cartes')
+    titre = models.CharField(max_length=255)
+    projets = models.ManyToManyField(Projet, related_name='cartes')
+    date_creation = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.titre} - {self.utilisateur.nom}"
+
+
+class Dashboard(models.Model):
+    professionnel = models.OneToOneField(Professionnel, on_delete=models.CASCADE, related_name='dashboard')
+    cartes = models.ManyToManyField(Carte, related_name='dashboards')
+
+    def __str__(self):
+        return f"Dashboard de {self.professionnel.nom_societe}"

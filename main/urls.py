@@ -6,21 +6,28 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from main.models import Particulier, Professionnel
-from search import views as search_views
+
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path("django-admin/", admin.site.urls),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
-    path("search/", search_views.search, name="search"),
+
     path('inscription/', views.inscription_page, name='inscription'),  
     path('about', views.about, name='about'),
     path('create-particulier/', views.create_particulier_profile, name='create_particulier'),
     path('create-professionnel/', views.create_professionnel_profile, name='create_professionnel'),
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('dashboard/', views.dashboard, name='dashboard'),
     path('', include(wagtail_urls)),
+    path('projets/', views.mes_projets, name='mes_projets'),
+    path('projets/creer/', views.creer_projet, name='creer_projet'),
+    path('cartes/', views.mes_cartes, name='mes_cartes'),
+    path('cartes/creer/', views.creer_carte, name='creer_carte'),
+    path('cartes/utilisateurs/', views.voir_cartes_utilisateurs, name='voir_cartes_utilisateurs'),
+
 ]
  
 

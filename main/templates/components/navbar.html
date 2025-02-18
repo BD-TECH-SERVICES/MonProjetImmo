@@ -52,29 +52,7 @@
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link  dropdown-toggle" href="post-default.html" data-toggle="dropdown"> Posts Features </a>
-                    <ul class="dropdown-menu fade-up">
-                        <li>
-                            <a class="dropdown-item" href="post-default.html"> post default</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="post-video.html"> post video</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="post-audio.html"> post audio</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="post-gallery.html"> post gallery</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="post-no-sidebar.html"> post no sidebar </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="post-left-sidebar.html"> post left sidebar </a>
-                        </li>
-                    </ul>
-                </li>
+               
 
                 <li class="nav-item dropdown">
                     <a class="nav-link  dropdown-toggle" href="#" data-toggle="dropdown">Pages </a>
@@ -100,23 +78,42 @@
                     <a class="nav-link" href="contact.html"> Contact </a>
                 </li>
                 {% if request.user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#">{{ request.user.username }}</a>
+                </li>
+            
+                {% if request.user.user_type == "particulier" %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'inscription' %}">{{ request.user.username }}</a>
+                        <a class="nav-link" href="{% url 'mes_projets' %}">Mes Projets</a>
                     </li>
-                    <li>
-                        <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" style="background: none; border: none; color: blue; cursor: pointer;">
-                                Se déconnecter
-                            </button>
-                        </form>
-                    </li>
-                {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'inscription' %}">Inscription</a>
+                        <a class="nav-link" href="{% url 'mes_cartes' %}">Mes Cartes</a>
                     </li>
-                    <li><a href="{% url 'login' %}">Se connecter</a></li>
-                {% endif %}     
+            
+                {% elif request.user.user_type == "professionnel" %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'voir_cartes_utilisateurs' %}">Cartes des Utilisateurs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                    </li>
+                {% endif %}
+            
+                <li>
+                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" style="background: none; border: none; color: blue; cursor: pointer;">
+                            Se déconnecter
+                        </button>
+                    </form>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'inscription' %}">Inscription</a>
+                </li>
+                <li><a href="{% url 'login' %}">Se connecter</a></li>
+            {% endif %}
+              
 
             </ul>
         </div>

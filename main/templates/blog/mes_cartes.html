@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Mes Cartes</h2>
+<a href="{% url 'creer_carte' %}" class="btn btn-primary mb-3">Créer une carte</a>
+
+<ul class="list-group">
+    {% for carte in cartes %}
+    <li class="list-group-item">
+        <h5>{{ carte.titre }}</h5>
+        <p>Projets associés :</p>
+        <ul>
+            {% for projet in carte.projets.all %}
+            <li>{{ projet.titre }}</li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% empty %}
+    <p>Aucune carte disponible.</p>
+    {% endfor %}
+</ul>
+{% endblock %}

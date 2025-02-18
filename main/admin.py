@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser, Particulier, Professionnel
+from .models import *
 
 
 # Inline pour afficher/éditer un profil Particulier
@@ -49,3 +49,22 @@ class ParticulierAdmin(admin.ModelAdmin):
 @admin.register(Professionnel)
 class ProfessionnelAdmin(admin.ModelAdmin):
     list_display = ('nom_societe', 'email_pro', 'secteur_activite', 'user')
+
+
+@admin.register(Projet)   
+class ProjetAdmin(admin.ModelAdmin):
+    list_display = ('titre', 'utilisateur', 'date_creation')
+    search_fields = ('titre', 'utilisateur__nom')
+    list_filter = ('date_creation',)
+
+@admin.register(Carte)
+class CarteAdmin(admin.ModelAdmin):
+    list_display = ('titre', 'utilisateur', 'date_creation')
+    filter_horizontal = ('projets',)  # Permet d'afficher un widget pour sélectionner les projets liés
+    search_fields = ('titre', 'utilisateur__nom')
+    list_filter = ('date_creation',)
+
+@admin.register(Dashboard)
+class DashboardAdmin(admin.ModelAdmin):
+    list_display = ('professionnel',)
+    filter_horizontal = ('cartes',)

@@ -1,10 +1,14 @@
 
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import login
-from .forms import ParticulierForm, ProfessionnelForm, UserForm
-from main.models import Particulier, Professionnel
+from .forms import *
+from main.models import *
+from django.contrib.auth.decorators import login_required
+
+
+
 
 def inscription_page(request):
     return render(request, 'blog/inscription.html')  #
@@ -67,3 +71,113 @@ def create_professionnel_profile(request):
         'user_form': user_form,
         'professionnel_form': professionnel_form,  # Formulaire bien passé au contexte
     })
+
+@login_required
+def mes_projets(request):
+    if not hasattr(request.user, 'particulier'):
+        return redirect('blog/dashboard')
+
+    projets = Projet.objects.filter(utilisateur=request.user.particulier)
+    return render(request, 'blog/mes_projets.html', {'projets': projets})
+
+
+@login_required
+def creer_projet(request):
+    if not hasattr(request.user, 'particulier'):
+        return redirect('blog/dashboard')
+
+    if request.method == "POST":
+        form = ProjetForm(request.POST)
+        if form.is_valid():
+            projet = form.save(commit=False)
+            projet.utilisateur = request.user.particulier
+            projet.save()
+            return redirect('mes_projets')
+    else:
+        form = ProjetForm()
+
+    return render(request, 'blog/creer_projet.html', {'form': form})
+
+
+@login_required
+def mes_cartes(request):
+    if not hasattr(request.user, 'particulier'):
+        return redirect('blog/dashboard')
+
+    cartes = Carte.objects.filter(utilisateur=request.user.particulier)
+    return render(request, 'blog/mes_cartes.html', {'cartes': cartes})
+
+
+@login_required
+def creer_carte(request):
+    if not hasattr(request.user, 'particulier'):
+        return redirect('blog/dashboard')
+
+    if request.method == "POST":
+        form = CarteForm(request.POST, utilisateur=request.user.particulier)
+        if form.is_valid():
+            carte = form.save(commit=False)
+            carte.utilisateur = request.user.particulier
+            carte.save()
+            form.save_m2m()
+            return redirect('blog/mes_cartes')
+    else:
+        form = CarteForm(utilisateur=request.user.particulier)
+
+    return render(request, 'cartes/creer_carte.html', {'form': form})
+
+
+@login_required
+def voir_cartes_utilisateurs(request):
+    if not hasattr(request.user, 'professionnel'):
+        return redirect('mes_projets')
+
+    cartes = Carte.objects.all()
+    return render(request, 'blog/cartes_utilisateurs.html', {'cartes': cartes})
+
+
+import logging
+
+# Configuration du logger
+logger = logging.getLogger(__name__)
+
+
+@login_required
+def dashboard(request):
+
+    user_data = {
+        "username": request.user.username,
+        "id": request.user.id,
+        "user_type": getattr(request.user, "user_type", "Non défini"),
+        "professionnel": hasattr(request.user, "professionnel")
+    }
+
+    # Vérifie si l'utilisateur a un profil professionnel
+    professionnel = getattr(request.user, 'professionnel', None)
+
+    if professionnel is None:
+        logger.warning(f"⚠️ L'utilisateur {request.user} n'a PAS de profil `Professionnel` en base.")
+        return JsonResponse({
+            "error": "Vous devez être un professionnel pour voir ces données.",
+            "user": user_data
+        }, status=403)
+
+    try:
+        # Vérifier si un Dashboard existe
+        dashboard, created = Dashboard.objects.get_or_create(professionnel=professionnel)
+        cartes = Carte.objects.prefetch_related("projets").all()
+
+
+        logger.info(f"✅ Dashboard chargé pour {request.user} (ID {request.user.id})")
+        logger.info(f"📌 Nombre de cartes associées : {cartes.count()}")
+
+    except Exception as e:
+        logger.error(f"❌ Erreur lors de la récupération du Dashboard : {str(e)}")
+        return HttpResponse(f"Erreur interne : {e}", status=500)
+
+    return render(request, 'blog/dashboard.html', {
+        'cartes': cartes,
+        'debug_info': f"Utilisateur : {request.user}, Professionnel : {professionnel}, Cartes : {cartes.count()}"
+    })
+
+
