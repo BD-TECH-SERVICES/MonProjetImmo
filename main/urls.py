@@ -22,11 +22,11 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('', include(wagtail_urls)),
-    path('projets/', views.mes_projets, name='mes_projets'),
-    path('projets/creer/', views.creer_projet, name='creer_projet'),
-    path('cartes/', views.mes_cartes, name='mes_cartes'),
-    path('cartes/creer/', views.creer_carte, name='creer_carte'),
-    path('cartes/utilisateurs/', views.voir_cartes_utilisateurs, name='voir_cartes_utilisateurs'),
+    path('creer_projet', views.creer_projet, name='creer_projet'),
+
+
+
+
 
 ]
  

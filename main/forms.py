@@ -32,17 +32,31 @@ class ProjetForm(forms.ModelForm):
         }
 
 
-class CarteForm(forms.ModelForm):
+class ProjetForm(forms.ModelForm):
     class Meta:
-        model = Carte
-        fields = ['titre', 'projets']
+        model = Projet
+        fields = ['titre', 'description']
         widgets = {
-            'titre': forms.TextInput(attrs={'class': 'form-control'}),
-            'projets': forms.CheckboxSelectMultiple(),
+            'titre': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Entrez le titre du projet',
+                'maxlength': '100'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Ajoutez une description détaillée...',
+                'style': 'resize: none;'
+            }),
+        }
+        labels = {
+            'titre': '📌 Titre du Projet',
+            'description': '📝 Description',
         }
 
-    def __init__(self, *args, **kwargs):
-        utilisateur = kwargs.pop('utilisateur', None)
-        super().__init__(*args, **kwargs)
-        if utilisateur:
-            self.fields['projets'].queryset = Projet.objects.filter(utilisateur=utilisateur)
+    def clean_titre(self):
+        """Validation du titre (ex: éviter les doublons)"""
+        titre = self.cleaned_data.get('titre')
+        if Projet.objects.filter(titre=titre).exists():
+            raise forms.ValidationError("⚠️ Un projet avec ce titre existe déjà.")
+        return titre

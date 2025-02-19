@@ -92,48 +92,16 @@ def creer_projet(request):
             projet = form.save(commit=False)
             projet.utilisateur = request.user.particulier
             projet.save()
-            return redirect('mes_projets')
+            return redirect('blog/creer_projet')
     else:
         form = ProjetForm()
 
     return render(request, 'blog/creer_projet.html', {'form': form})
 
 
-@login_required
-def mes_cartes(request):
-    if not hasattr(request.user, 'particulier'):
-        return redirect('blog/dashboard')
-
-    cartes = Carte.objects.filter(utilisateur=request.user.particulier)
-    return render(request, 'blog/mes_cartes.html', {'cartes': cartes})
 
 
-@login_required
-def creer_carte(request):
-    if not hasattr(request.user, 'particulier'):
-        return redirect('blog/dashboard')
 
-    if request.method == "POST":
-        form = CarteForm(request.POST, utilisateur=request.user.particulier)
-        if form.is_valid():
-            carte = form.save(commit=False)
-            carte.utilisateur = request.user.particulier
-            carte.save()
-            form.save_m2m()
-            return redirect('blog/mes_cartes')
-    else:
-        form = CarteForm(utilisateur=request.user.particulier)
-
-    return render(request, 'cartes/creer_carte.html', {'form': form})
-
-
-@login_required
-def voir_cartes_utilisateurs(request):
-    if not hasattr(request.user, 'professionnel'):
-        return redirect('mes_projets')
-
-    cartes = Carte.objects.all()
-    return render(request, 'blog/cartes_utilisateurs.html', {'cartes': cartes})
 
 
 import logging
@@ -144,6 +112,7 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def dashboard(request):
+    logger.info(f"👤 Utilisateur connecté : {request.user} (ID: {request.user.id})")
 
     user_data = {
         "username": request.user.username,
@@ -165,19 +134,18 @@ def dashboard(request):
     try:
         # Vérifier si un Dashboard existe
         dashboard, created = Dashboard.objects.get_or_create(professionnel=professionnel)
-        cartes = Carte.objects.prefetch_related("projets").all()
-
+        projets = Projet.objects.all()  # 🔹 On récupère uniquement les projets maintenant
 
         logger.info(f"✅ Dashboard chargé pour {request.user} (ID {request.user.id})")
-        logger.info(f"📌 Nombre de cartes associées : {cartes.count()}")
+        logger.info(f"📌 Nombre de projets affichés : {projets.count()}")
 
     except Exception as e:
         logger.error(f"❌ Erreur lors de la récupération du Dashboard : {str(e)}")
         return HttpResponse(f"Erreur interne : {e}", status=500)
 
     return render(request, 'blog/dashboard.html', {
-        'cartes': cartes,
-        'debug_info': f"Utilisateur : {request.user}, Professionnel : {professionnel}, Cartes : {cartes.count()}"
+        'projets': projets,
+        'debug_info': f"Utilisateur : {request.user}, Professionnel : {professionnel}, Projets : {projets.count()}"
     })
 
 
