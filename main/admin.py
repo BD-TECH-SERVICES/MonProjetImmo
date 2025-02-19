@@ -51,20 +51,28 @@ class ProfessionnelAdmin(admin.ModelAdmin):
     list_display = ('nom_societe', 'email_pro', 'secteur_activite', 'user')
 
 
-@admin.register(Projet)   
+# 🔹 Gestion améliorée des Projets
+@admin.register(Projet)
 class ProjetAdmin(admin.ModelAdmin):
-    list_display = ('titre', 'utilisateur', 'date_creation')
-    search_fields = ('titre', 'utilisateur__nom')
-    list_filter = ('date_creation',)
+    list_display = ('titre', 'get_utilisateur', 'date_creation', 'metier')
+    search_fields = ('titre', 'utilisateur__nom', 'metier')
+    list_filter = ('date_creation', 'metier')
 
-@admin.register(Carte)
-class CarteAdmin(admin.ModelAdmin):
-    list_display = ('titre', 'utilisateur', 'date_creation')
-    filter_horizontal = ('projets',)  # Permet d'afficher un widget pour sélectionner les projets liés
-    search_fields = ('titre', 'utilisateur__nom')
-    list_filter = ('date_creation',)
+    def get_utilisateur(self, obj):
+        """ Vérifie si l'utilisateur est bien lié à un particulier """
+        return obj.utilisateur.nom if obj.utilisateur else "Aucun"
+    
+    def get_date_creation(self, obj):
+        """ Vérifie que la date est bien récupérée """
+        return obj.date_creation.strftime("%d %b %Y") if obj.date_creation else "Non défini"
+    get_date_creation.short_description = "Date de création"
+
 
 @admin.register(Dashboard)
 class DashboardAdmin(admin.ModelAdmin):
-    list_display = ('professionnel',)
-    filter_horizontal = ('cartes',)
+    list_display = ['get_professionnel']
+
+    def get_professionnel(self, obj):
+        """ Récupère le professionnel associé """
+        return obj.professionnel if obj.professionnel else "Non défini"
+    get_professionnel.short_description = "Professionnel"

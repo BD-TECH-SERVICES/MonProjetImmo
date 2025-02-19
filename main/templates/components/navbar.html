@@ -81,12 +81,15 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#">{{ request.user.username }}</a>
                 </li>
-            
+
+ 
                 {% if request.user.user_type == "particulier" %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'creer_projet' %}">Creer Projets</a>
                     </li>
-            
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'mes_projets' %}">Mes Projets</a>
+                    </li>
                 {% elif request.user.user_type == "professionnel" %}
 
                     <li class="nav-item">
@@ -168,10 +171,6 @@
                             <span class="arrow_carrot-right"></span> Food
                         </small>
                         <h3>Category : <span> Food</span></h3>
-                        <p> Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                            Incidunt quae explicabo, ducimus necessitatibus eum aut enim modi
-                            saepe perspiciatis fugit
-                        </p>
                     </div>
                 </div>
             </div>

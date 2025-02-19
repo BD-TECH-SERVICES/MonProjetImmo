@@ -22,20 +22,11 @@ class UserForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = ['username', 'password1', 'password2']
-class ProjetForm(forms.ModelForm):
-    class Meta:
-        model = Projet
-        fields = ['titre', 'description']
-        widgets = {
-            'titre': forms.TextInput(attrs={'class': 'form-control'}),
-            'description': forms.Textarea(attrs={'class': 'form-control'}),
-        }
-
 
 class ProjetForm(forms.ModelForm):
     class Meta:
         model = Projet
-        fields = ['titre', 'description']
+        fields = ['titre', 'description', 'metier']
         widgets = {
             'titre': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -48,14 +39,18 @@ class ProjetForm(forms.ModelForm):
                 'placeholder': 'Ajoutez une description détaillée...',
                 'style': 'resize: none;'
             }),
+            'metier': forms.Select(attrs={
+                'class': 'form-control'
+            })
         }
         labels = {
             'titre': '📌 Titre du Projet',
             'description': '📝 Description',
+            'metier': '👨‍💼 Métier Concerné',
         }
 
     def clean_titre(self):
-        """Validation du titre (ex: éviter les doublons)"""
+        """Validation du titre pour éviter les doublons"""
         titre = self.cleaned_data.get('titre')
         if Projet.objects.filter(titre=titre).exists():
             raise forms.ValidationError("⚠️ Un projet avec ce titre existe déjà.")

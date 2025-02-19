@@ -38,29 +38,37 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return f"{self.username} ({self.get_user_type_display()})"
+
+
+
+from django.db import models
+
 class Projet(models.Model):
-    utilisateur = models.ForeignKey(Particulier, on_delete=models.CASCADE, related_name='projets')
-    titre = models.CharField(max_length=255)
+    METIERS_CHOICES = [
+        ('infirmier', 'Infirmier'),
+        ('policier', 'Policier'),
+        ('enseignant', 'Enseignant'),
+        ('ingenieur', 'Ingénieur'),
+        ('medecin', 'Médecin'),
+        ('artiste', 'Artiste'),
+        ('autre', 'Autre')
+    ]
+
+    utilisateur = models.ForeignKey("Particulier", on_delete=models.CASCADE, null=True, blank=True)
+    titre = models.CharField(max_length=100)
     description = models.TextField()
-    date_creation = models.DateTimeField(auto_now_add=True)
+    metier = models.CharField(max_length=50, choices=METIERS_CHOICES, default='autre')  # ✅ Ajout du champ
+    date_creation = models.DateTimeField(auto_now_add=True)  # ✅ Ajout de la date de création
 
     def __str__(self):
-        return self.titre
+        return f"{self.titre} - {self.get_metier_display()}"
 
 
-class Carte(models.Model):
-    utilisateur = models.ForeignKey(Particulier, on_delete=models.CASCADE, related_name='cartes')
-    titre = models.CharField(max_length=255)
-    projets = models.ManyToManyField(Projet, related_name='cartes')
-    date_creation = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.titre} - {self.utilisateur.nom}"
 
 
 class Dashboard(models.Model):
     professionnel = models.OneToOneField(Professionnel, on_delete=models.CASCADE, related_name='dashboard')
-    cartes = models.ManyToManyField(Carte, related_name='dashboards')
 
     def __str__(self):
         return f"Dashboard de {self.professionnel.nom_societe}"

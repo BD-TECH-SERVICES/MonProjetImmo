@@ -22,7 +22,18 @@
                                 </div>
                             {% endif %}
                         </div>
-
+                          
+                             <!-- Champ Métier (Dropdown) -->
+                        <div class="mb-3">
+                            <label class="form-label">👨‍💼 Métier Concerné</label>
+                            {{ form.metier }}
+                            {% if form.metier.errors %}
+                                <div class="text-danger small">
+                                    {{ form.metier.errors|first }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
                         <div class="mb-3">
                             <label class="form-label">📝 Description</label>
                             {{ form.description }}

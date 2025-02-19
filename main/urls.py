@@ -23,6 +23,7 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('', include(wagtail_urls)),
     path('creer_projet', views.creer_projet, name='creer_projet'),
+    path('mes_projets', views.mes_projets, name='mes_projets'),
 
 
 
