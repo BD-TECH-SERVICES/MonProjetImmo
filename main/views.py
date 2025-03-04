@@ -1,11 +1,14 @@
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.http import HttpResponse,JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from .forms import *
 from main.models import *
 from django.contrib.auth.decorators import login_required
+
+from django.http import HttpResponse
+
 
 
 
@@ -103,7 +106,6 @@ def creer_projet(request):
 
 
 
-
 import logging
 
 # Configuration du logger
@@ -148,4 +150,100 @@ def dashboard(request):
         'debug_info': f"Utilisateur : {request.user}, Professionnel : {professionnel}, Projets : {projets.count()}"
     })
 
+from django.contrib import messages
+@login_required
+def conversation(request):
+    """ Vue pour afficher et envoyer des messages """
+    receiver_id = 1  # ID de l'utilisateur cible (à modifier si nécessaire)
+    try:
+        receiver = User.objects.get(id=receiver_id)
+    except User.DoesNotExist:
+        messages.error(request, "L'utilisateur cible n'existe pas.")
+        return redirect("dashboard")
 
+    # Récupérer les messages envoyés par l'utilisateur actuel
+    messages_list = Message.objects.filter(sender=request.user).order_by('timestamp')
+
+    # Gestion de l'envoi de message
+    if request.method == "POST":
+        content = request.POST.get("content")
+        if content:
+            Message.objects.create(sender=request.user, content=content)
+            return redirect('conversation')  # Recharge la page après l'envoi
+
+    return render(request, 'blog/conversation.html', {'messages': messages_list, 'receiver': receiver})
+
+@login_required
+def start_or_continue_conversation(request, user_id):
+    """ Vérifie si une conversation existe déjà, sinon la crée et redirige vers la discussion """
+    receiver = get_object_or_404(User, id=user_id)  # Récupère l'utilisateur cible
+
+    # Vérifier si des messages existent déjà entre les deux utilisateurs
+    existing_messages = Message.objects.filter(
+        sender=request.user, receiver=receiver  # 🚨 ERREUR : Django ne trouve pas "receiver"
+    ) | Message.objects.filter(
+        sender=receiver, receiver=request.user
+    )
+
+
+    if not existing_messages.exists():
+        # Si aucun message n'existe encore, créer une conversation avec un premier message
+        Message.objects.create(
+            sender=request.user,
+            receiver=receiver,
+            content="Bonjour, je suis intéressé par votre projet !"
+        )
+
+    # Redirige vers la conversation (qu'elle existe ou qu'elle vienne d'être créée)
+    return redirect('conversation_with', user_id=user_id)
+
+@login_required
+def conversation_with(request, user_id):
+    """ Affiche la conversation entre l'utilisateur connecté et un autre utilisateur """
+    other_user = get_object_or_404(User, id=user_id)
+    conversation_id = get_conversation_id(request.user, other_user)
+    # Récupérer tous les messages entre les deux utilisateurs
+    messages_list = Message.objects.filter(conversation_id=conversation_id)
+
+    # Gestion de l'envoi d'un nouveau message
+    if request.method == "POST":
+        content = request.POST.get("content")
+        if content:
+            Message.objects.create(
+                conversation_id=conversation_id,
+                sender=request.user,
+                receiver=other_user,
+                content=content
+            )
+            return redirect('conversation_with', user_id=user_id)
+
+    return render(request, 'blog/conversation.html', {'messages': messages_list, 'other_user': other_user})
+
+
+from django.db.models import Q
+
+@login_required
+def dashboard_conversations(request):
+    """ Affiche toutes les conversations de l'utilisateur connecté """
+    
+    # Récupérer toutes les conversations où l'utilisateur est impliqué
+    conversations = Message.objects.filter(
+        Q(sender=request.user) | Q(receiver=request.user)  # Récupérer tous les messages où l'utilisateur est impliqué
+    ).values_list('sender', 'receiver')
+
+    # Extraire les ID uniques des interlocuteurs
+    user_ids = set()
+    for sender_id, receiver_id in conversations:
+        if sender_id != request.user.id:
+            user_ids.add(sender_id)
+        if receiver_id != request.user.id:
+            user_ids.add(receiver_id)
+
+    # Récupérer les utilisateurs correspondants
+    conversation_users = User.objects.filter(id__in=user_ids)
+
+    return render(request, 'blog/dashboard_conversations.html', {'conversations': conversation_users})
+
+def get_conversation_id(user1, user2):
+    """ Génère un identifiant unique pour une conversation entre deux utilisateurs """
+    return f"{min(user1.id, user2.id)}-{max(user1.id, user2.id)}"

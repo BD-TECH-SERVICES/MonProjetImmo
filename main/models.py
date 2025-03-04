@@ -72,3 +72,20 @@ class Dashboard(models.Model):
 
     def __str__(self):
         return f"Dashboard de {self.professionnel.nom_societe}"
+    
+
+
+class Message(models.Model):
+    conversation_id = models.CharField(max_length=255,default = 1)
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_messages')
+    receiver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='received_messages', null=True, blank=True)
+
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"De {self.sender} à {self.receiver} - {self.timestamp}"
+    
+    class Meta:
+        ordering = ['timestamp']

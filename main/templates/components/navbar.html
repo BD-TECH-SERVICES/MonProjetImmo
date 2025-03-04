@@ -52,7 +52,7 @@
                         </li>
                     </ul>
                 </li>
-               
+              
 
                 <li class="nav-item dropdown">
                     <a class="nav-link  dropdown-toggle" href="#" data-toggle="dropdown">Pages </a>
@@ -74,14 +74,12 @@
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="contact.html"> Contact </a>
-                </li>
-                {% if request.user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="#">{{ request.user.username }}</a>
-                </li>
 
+                {% if request.user.is_authenticated %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard_conversations' %}">  📬 Mes Conversations </a>
+                    </li>
  
                 {% if request.user.user_type == "particulier" %}
                     <li class="nav-item">
@@ -100,11 +98,15 @@
                 <li>
                     <form method="post" action="{% url 'logout' %}" style="display: inline;">
                         {% csrf_token %}
-                        <button type="submit" style="background: none; border: none; color: blue; cursor: pointer;">
-                            Se déconnecter
+                        <button type="submit" style="background: none; border: none; color: blue; cursor: pointer;">Se déconnecter
                         </button>
                     </form>
                 </li>
+                
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">  👨‍💼 {{ request.user.username }}</a>
+                    </li>
+
             {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'inscription' %}">Inscription</a>

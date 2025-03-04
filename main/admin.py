@@ -76,3 +76,18 @@ class DashboardAdmin(admin.ModelAdmin):
         """ Récupère le professionnel associé """
         return obj.professionnel if obj.professionnel else "Non défini"
     get_professionnel.short_description = "Professionnel"
+    
+
+from django.utils.html import format_html
+class MessageAdmin(admin.ModelAdmin):
+    list_display = ('sender', 'receiver', 'content', 'timestamp', 'is_read', 'conversation_link')
+    list_filter = ('sender', 'receiver', 'is_read')
+    search_fields = ('sender__username', 'receiver__username', 'content')
+
+    def conversation_link(self, obj):
+        """ Lien pour voir les messages d'une conversation """
+        return format_html('<a href="/admin/chat/message/?q={}">Voir</a>', obj.conversation_id)
+
+    conversation_link.short_description = "Conversation"
+
+admin.site.register(Message, MessageAdmin)

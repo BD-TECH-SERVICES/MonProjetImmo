@@ -15,7 +15,10 @@
                             <span class="badge bg-success ms-2">Nouveau</span>
                         {% endif %}
                     </h5>
-                    
+                    <p class="mb-2 text-muted">
+                        👤 Projet de <strong> {{ projet.utilisateur.user }}</strong>
+                    </p>
+                   
                     <!-- Métier affiché sous forme de badge coloré -->
                     <p class="mb-2">
                         👨‍💼 Métier concerné : 
@@ -43,6 +46,13 @@
                     <div class="d-flex justify-content-between">
                         <span class="text-muted small">📅 Créé le : {{ projet.date_creation|date:"d M Y" }}</span>
                     </div>
+
+
+                    <div class="mt-3">
+                        <a href="{% url 'start_conversation' projet.utilisateur.user.id %}" class="btn btn-primary">
+                            ✉️ Démarrer / Continuer la conversation
+                        </a>
+                    </div>
                     
                 </div>
             </div>
@@ -56,3 +66,6 @@
 </div>
 {% endblock %}
 
+
+
+ 

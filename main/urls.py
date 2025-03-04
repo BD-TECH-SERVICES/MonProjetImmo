@@ -13,7 +13,10 @@ urlpatterns = [
     path("django-admin/", admin.site.urls),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
-
+    path('conversations/', views.dashboard_conversations, name='dashboard_conversations'),
+    path('conversation/', views.conversation, name='conversation'),
+    path('conversation/avec/<int:user_id>/', views.conversation_with, name='conversation_with'),
+    path('conversation/demarrer/<int:user_id>/', views.start_or_continue_conversation, name='start_conversation'),
     path('inscription/', views.inscription_page, name='inscription'),  
     path('about', views.about, name='about'),
     path('create-particulier/', views.create_particulier_profile, name='create_particulier'),
@@ -24,10 +27,6 @@ urlpatterns = [
     path('', include(wagtail_urls)),
     path('creer_projet', views.creer_projet, name='creer_projet'),
     path('mes_projets', views.mes_projets, name='mes_projets'),
-
-
-
-
 
 ]
  
