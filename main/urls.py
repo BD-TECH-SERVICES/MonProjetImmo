@@ -24,9 +24,13 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('dashboard/', views.dashboard, name='dashboard'),
-    path('', include(wagtail_urls)),
+    path('roadmap/', views.roadmap, name='roadmap'),
+    path('creer_projet/<str:metier>/', views.creer_projet, name='creer_projet'),
     path('creer_projet', views.creer_projet, name='creer_projet'),
     path('mes_projets', views.mes_projets, name='mes_projets'),
+    path('', include(wagtail_urls)),
+
+
 
 ]
  

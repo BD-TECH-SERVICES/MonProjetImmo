@@ -84,23 +84,6 @@ def mes_projets(request):
     return render(request, 'blog/mes_projets.html', {'projets': projets})
 
 
-@login_required
-def creer_projet(request):
-    if not hasattr(request.user, 'particulier'):
-        return redirect('blog/dashboard')
-
-    if request.method == "POST":
-        form = ProjetForm(request.POST)
-        if form.is_valid():
-            projet = form.save(commit=False)
-            projet.utilisateur = request.user.particulier
-            projet.save()
-            return redirect('blog/creer_projet')
-    else:
-        form = ProjetForm()
-
-    return render(request, 'blog/creer_projet.html', {'form': form})
-
 
 
 
@@ -247,3 +230,34 @@ def dashboard_conversations(request):
 def get_conversation_id(user1, user2):
     """ Génère un identifiant unique pour une conversation entre deux utilisateurs """
     return f"{min(user1.id, user2.id)}-{max(user1.id, user2.id)}"
+
+@login_required
+def roadmap(request):
+    return render(request, 'blog/roadmap.html')
+
+
+
+@login_required
+def creer_projet(request, metier=None):
+    # Vérifie si l'utilisateur a un attribut 'particulier'
+    if not hasattr(request.user, 'particulier'):
+        return redirect('blog/dashboard')
+
+    if metier:
+        # Filtrer les choix de métiers en fonction de l'étape de la roadmap
+        metiers_choices = [choice for choice in Projet.METIERS_CHOICES if choice[0] == metier]
+    else:
+        metiers_choices = Projet.METIERS_CHOICES
+
+    if request.method == "POST":
+        form = ProjetForm(request.POST)
+        if form.is_valid():
+            projet = form.save(commit=False)
+            projet.utilisateur = request.user.particulier
+            projet.save()
+            return redirect('creer_projet')  # Remplacez par l'URL de succès appropriée
+    else:
+        form = ProjetForm()
+        form.fields['metier'].choices = metiers_choices
+
+    return render(request, 'blog/creer_projet.html', {'form': form})

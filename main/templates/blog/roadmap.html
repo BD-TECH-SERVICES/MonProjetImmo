@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2 class="mb-0">Roadmap des Projets</h2>
+                </div>
+                <div class="card-body">
+                    <div class="roadmap">
+                        <!-- Courbe -->
+                        <svg class="roadmap-curve" viewBox="0 0 800 300" preserveAspectRatio="none">
+                            <path d="M0,150 Q200,0 400,150 T800,150" stroke="#007bff" stroke-width="4" fill="transparent"/>
+                        </svg>
+
+                        <!-- Étape 1 -->
+                        <div class="roadmap-step" style="left: 0%; top: 50%;">
+                            <div class="roadmap-step-icon">1</div>
+                            <div class="roadmap-step-title">
+                                <a href="{% url 'creer_projet' metier='infirmier' %}">Infirmier</a>
+                            </div>
+                            <div class="roadmap-step-description">
+                                Créez un projet pour le métier d'infirmier.
+                            </div>
+                        </div>
+
+                        <!-- Étape 2 -->
+                        <div class="roadmap-step" style="left: 20%; top: 10%;">
+                            <div class="roadmap-step-icon">2</div>
+                            <div class="roadmap-step-title">
+                                <a href="{% url 'creer_projet' metier='policier' %}">Policier</a>
+                            </div>
+                            <div class="roadmap-step-description">
+                                Créez un projet pour le métier de policier.
+                            </div>
+                        </div>
+
+                        <!-- Étape 3 -->
+                        <div class="roadmap-step" style="left: 40%; top: 50%;">
+                            <div class="roadmap-step-icon">3</div>
+                            <div class="roadmap-step-title">
+                                <a href="{% url 'creer_projet' metier='enseignant' %}">Enseignant</a>
+                            </div>
+                            <div class="roadmap-step-description">
+                                Créez un projet pour le métier d'enseignant.
+                            </div>
+                        </div>
+
+                        <!-- Étape 4 -->
+                        <div class="roadmap-step" style="left: 60%; top: 10%;">
+                            <div class="roadmap-step-icon">4</div>
+                            <div class="roadmap-step-title">
+                                <a href="{% url 'creer_projet' metier='ingenieur' %}">Ingénieur</a>
+                            </div>
+                            <div class="roadmap-step-description">
+                                Créez un projet pour le métier d'ingénieur.
+                            </div>
+                        </div>
+
+                        <!-- Étape 5 -->
+                        <div class="roadmap-step" style="left: 80%; top: 50%;">
+                            <div class="roadmap-step-icon">5</div>
+                            <div class="roadmap-step-title">
+                                <a href="{% url 'creer_projet' metier='medecin' %}">Médecin</a>
+                            </div>
+                            <div class="roadmap-step-description">
+                                Créez un projet pour le métier de médecin.
+                            </div>
+                        </div>
+
+                        <!-- Étape 6 -->
+                        <div class="roadmap-step" style="left: 100%; top: 50%;">
+                            <div class="roadmap-step-icon">6</div>
+                            <div class="roadmap-step-title">
+                                <a href="{% url 'creer_projet' metier='artiste' %}">Artiste</a>
+                            </div>
+                            <div class="roadmap-step-description">
+                                Créez un projet pour le métier d'artiste.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .roadmap {
+        position: relative;
+        height: 400px;
+        overflow: visible;
+    }
+    .roadmap-curve {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+    }
+    .roadmap-step {
+        position: absolute;
+        text-align: center;
+        transform: translate(-50%, -50%);
+        transition: transform 0.3s ease;
+    }
+    .roadmap-step:hover {
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    .roadmap-step-icon {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        background-color: #007bff;
+        color: white;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        line-height: 60px;
+        display: inline-block;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .roadmap-step-title a {
+        text-decoration: none;
+        color: #007bff;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    .roadmap-step-title a:hover {
+        text-decoration: underline;
+    }
+    .roadmap-step-description {
+        color: #6c757d;
+        font-size: 1rem;
+    }
+</style>
+{% endblock %}

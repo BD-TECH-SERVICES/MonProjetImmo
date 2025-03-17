@@ -22,14 +22,15 @@
         {% if request.in_preview_panel %}
         <base target="_blank">
         {% endif %}
-
+      
         {# Global stylesheets #}
         <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
-
+        
         {% block extra_css %}
         {# Override this in templates to add extra stylesheets #}
         {% endblock %}
         {% include "components/head.html" %}
+
     </head>
 
     <body class="{% block body_class %}{% endblock %}">
