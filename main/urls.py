@@ -28,6 +28,10 @@ urlpatterns = [
     path('creer_projet/<str:metier>/', views.creer_projet, name='creer_projet'),
     path('creer_projet', views.creer_projet, name='creer_projet'),
     path('mes_projets', views.mes_projets, name='mes_projets'),
+    path('index', views.index, name='index'),
+    path('parcours', views.parcours, name='parcours'),
+    path('profession', views.profession, name='profession'),
+
     path('', include(wagtail_urls)),
 
 

@@ -23,6 +23,16 @@ def about(request):
 from django.contrib.auth import get_user_model
 
 
+def index(request):
+    return render(request, 'index.html')
+
+def parcours(request):
+    return render(request, 'parcours.html')
+
+def profession(request):
+    return render(request, 'profession.html')
+
+
 User = get_user_model()
 def create_particulier_profile(request):
     if request.method == 'POST':
