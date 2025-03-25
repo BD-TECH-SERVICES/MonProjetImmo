@@ -1,0 +1,95 @@
+{% load static wagtailcore_tags wagtailuserbar %}
+
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>
+      {% block title %}
+        {% if page.seo_title %}
+          {{ page.seo_title }}
+        {% else %}
+          {{ page.title }}
+        {% endif %}
+      {% endblock %}
+      {% block title_suffix %}
+        {% wagtail_site as current_site %}
+        {% if current_site and current_site.site_name %}
+          - {{ current_site.site_name }}
+        {% endif %}
+      {% endblock %}
+    </title>
+    
+    {% if page.search_description %}
+      <meta name="description" content="{{ page.search_description }}" />
+    {% endif %}
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    {% if request.in_preview_panel %}
+      <base target="_blank">
+    {% endif %}
+
+    {# 🎨 Styles CSS - via Tailwind CDN ou fichier local #}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+    {% block extra_css %}{% endblock %}
+
+    {# 🧩 Include custom head blocks (meta, favicons, etc) #}
+    {% include "components/headT.html" %}
+
+  </head>
+
+  <body class="bg-white text-gray-900">
+    
+    {# ✅ Dev tools (admin userbar) #}
+    {% wagtailuserbar %}
+
+
+    {# 🚧 Contenu principal injecté ici #}
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+
+    {# 🦶 Footer (surchargeable) #}
+    {% block footer %}
+    <footer class="text-center py-8 bg-gray-100 text-gray-600 mt-12">
+      <div class="grid grid-cols-4 gap-6 px-16 text-left">
+        <div>
+          <h3 class="font-bold">Mon Parcours Immo</h3>
+          <p>La plateforme qui simplifie vos projets immobiliers.</p>
+        </div>
+        <div>
+          <h3 class="font-bold">Parcours</h3>
+          <ul>
+            <li>Achat</li>
+            <li>Vente</li>
+            <li>Investissement</li>
+            <li>Primo-accédant</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-bold">À propos</h3>
+          <ul>
+            <li>Notre mission</li>
+            <li>Nos partenaires</li>
+            <li>Témoignages</li>
+            <li>Contact</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-bold">Légal</h3>
+          <ul>
+            <li>Mentions légales</li>
+            <li>Politique de confidentialité</li>
+            <li>CGU</li>
+          </ul>
+        </div>
+      </div>
+      <p class="mt-6">&copy; 2025 Mon Parcours Immo - Tous droits réservés.</p>
+    </footer>
+    {% endblock %}
+
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

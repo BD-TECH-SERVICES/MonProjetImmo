@@ -1,5 +1,5 @@
 from django.db import models
-from wagtail.models import Page
+from wagtail.models import Page, Orderable
 from wagtail.admin.panels import FieldPanel, InlinePanel
 from wagtail.images.models import Image  
 from wagtail.snippets.models import register_snippet
@@ -94,3 +94,49 @@ class PostPage(Page):
         InlinePanel("categories", label="Category"),  # ✅ Correction du nom
     ]
 
+
+
+@register_snippet
+class ImmobilierParcoursCategory(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Nom du parcours")
+    description = models.TextField(blank=True)
+    etapes = models.PositiveIntegerField(default=0, verbose_name="Nombre d'étapes")
+
+    panels = [
+        FieldPanel("name"),
+        FieldPanel("description"),
+        FieldPanel("etapes"),
+    ]
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Parcours immobilier"
+        verbose_name_plural = "Parcours immobiliers"
+
+
+# ✅ Modèle intermédiaire entre IndexPage et parcours
+class IndexPageParcours(Orderable):
+    page = ParentalKey("home.IndexPage", on_delete=models.CASCADE, related_name="parcours_relations")
+    parcours = models.ForeignKey("home.ImmobilierParcoursCategory", on_delete=models.CASCADE)
+
+    panels = [
+        FieldPanel("parcours", widget=AdminSnippetChooser(ImmobilierParcoursCategory)),
+    ]
+
+
+# ✅ Page d’accueil dynamique
+class IndexPage(Page):
+    template = "home/index.html"
+
+    introduction = models.TextField(blank=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel("introduction"),
+        InlinePanel("parcours_relations", label="Parcours Immobiliers"),
+    ]
+
+    @property
+    def parcours(self):
+        return [relation.parcours for relation in self.parcours_relations.all()]

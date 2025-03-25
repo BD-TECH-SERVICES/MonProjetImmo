@@ -24,13 +24,13 @@ from django.contrib.auth import get_user_model
 
 
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'test/index.html')
 
 def parcours(request):
-    return render(request, 'parcours.html')
+    return render(request, 'test/parcours.html')
 
 def profession(request):
-    return render(request, 'profession.html')
+    return render(request, 'test/profession.html')
 
 
 User = get_user_model()

@@ -1,0 +1,23 @@
+{# components/head.html #}
+{# Balises meta SEO, favicons, et autres pour Mon Parcours Immo #}
+{% load static %}
+{# Favicon classique #}
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+
+{# Manifest et thème pour mobile #}
+<link rel="manifest" href="{% static 'site.webmanifest' %}">
+<meta name="theme-color" content="#6b21a8" />
+
+{# SEO et réseaux sociaux #}
+<meta property="og:title" content="{% block og_title %}{{ page.seo_title|default:page.title }}{% endblock %}" />
+<meta property="og:description" content="{% block og_description %}{{ page.search_description|default:"Découvrez Mon Parcours Immo, la plateforme qui simplifie vos démarches immobilières." }}{% endblock %}" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="{{ request.build_absolute_uri }}" />
+<meta property="og:image" content="{% block og_image %}{{ page.social_image.url|default_if_none:'' }}{% endblock %}" />
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ page.seo_title|default:page.title }}">
+<meta name="twitter:description" content="{{ page.search_description|default:"Découvrez Mon Parcours Immo, la plateforme qui simplifie vos démarches immobilières." }}">
+<meta name="twitter:image" content="{{ page.social_image.url|default_if_none:'' }}">

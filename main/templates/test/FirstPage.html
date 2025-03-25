@@ -1,0 +1,60 @@
+{# test/FirstPage.html #}
+<header class="text-center py-16 bg-gradient-to-b from-purple-200 via-purple-100 to-white">
+  <h1 class="text-5xl font-bold text-purple-700">Mon Parcours Immo</h1>
+  <p class="text-lg text-gray-600 mt-4">
+    {{ page.introduction|default:"L'immobilier clé en main : simplifiez vos démarches d'achat et de vente grâce à notre réseau de professionnels qualifiés." }}
+  </p>
+  <div class="mt-6 flex justify-center space-x-4">
+    <a href="{% url 'profession' %}" class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold">Je suis un particulier</a>
+    <a href="{% url 'parcours' %}" class="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg font-semibold">Je suis un professionnel</a>
+  </div>
+</header>
+
+<section class="text-center py-12">
+  <h2 class="text-3xl font-bold text-purple-700">Parcours Immobiliers</h2>
+  <p class="text-gray-600 mt-2">Découvrez nos parcours personnalisés pour vous accompagner à chaque étape de votre projet immobilier.</p>
+  
+  <div class="flex justify-center mt-8 space-x-6 flex-wrap">
+    {% for parcours in page.parcours %}
+      <div class="bg-white p-6 shadow-lg rounded-lg w-72 m-2">
+        <h3 class="text-xl font-semibold">{{ parcours.name }}</h3>
+        <p class="text-gray-600">{{ parcours.description }}</p>
+        <p class="text-blue-500 font-bold mt-2">{{ parcours.etapes }} étapes</p>
+      </div>
+    {% empty %}
+      <p class="text-gray-500 mt-4">Aucun parcours disponible pour le moment.</p>
+    {% endfor %}
+  </div>
+
+  <div class="mt-8">
+    <button class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold">Découvrir tous les parcours</button>
+  </div>
+</section>
+
+<section class="text-center py-16 bg-gray-100 rounded-lg mx-20 mt-12 shadow-lg">
+  <h2 class="text-3xl font-bold text-purple-700">Pourquoi choisir Mon Parcours Immo</h2>
+  <p class="text-gray-600 mt-2">Notre plateforme vous connecte avec les meilleurs professionnels de l'immobilier.</p>
+  <div class="flex justify-center mt-6 space-x-8 flex-wrap">
+    <div class="bg-white p-6 shadow-lg rounded-lg w-80 m-2">
+      <h3 class="text-xl font-semibold">Professionnels Qualifiés</h3>
+      <p class="text-gray-600">Tous nos partenaires sont rigoureusement sélectionnés et évalués.</p>
+    </div>
+    <div class="bg-white p-6 shadow-lg rounded-lg w-80 m-2">
+      <h3 class="text-xl font-semibold">Parcours Personnalisé</h3>
+      <p class="text-gray-600">Une solution adaptée à votre situation personnelle.</p>
+    </div>
+    <div class="bg-white p-6 shadow-lg rounded-lg w-80 m-2">
+      <h3 class="text-xl font-semibold">Simplicité</h3>
+      <p class="text-gray-600">Toutes vos démarches centralisées en un seul endroit.</p>
+    </div>
+  </div>
+</section>
+
+<section class="text-center py-12 bg-purple-100 rounded-lg mx-20 mt-12 shadow-lg">
+  <h2 class="text-3xl font-bold text-purple-700">Prêt à commencer votre parcours immobilier ?</h2>
+  <p class="text-gray-600 mt-2">Inscrivez-vous gratuitement et accédez à notre réseau de professionnels.</p>
+  <div class="mt-6 flex justify-center space-x-4">
+    <a href="#" class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold">Particulier</a>
+    <a href="#" class="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg font-semibold">Professionnel</a>
+  </div>
+</section>
