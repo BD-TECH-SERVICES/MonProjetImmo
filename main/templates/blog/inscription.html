@@ -1,8 +1,161 @@
-{% extends "base.html" %}
-{% load static %}
-{% block content %}
-<div class="selection-container" style="display: flex; justify-content: center; gap: 2rem; margin-top: 50px;">
-    <!-- Bloc Particulier -->
+<!DOCTYPE html> 
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inscription - Mon Parcours Immo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    function switchForm(type) {
+      const part = document.getElementById("form-particulier");
+      const pro = document.getElementById("form-professionnel");
+      const btnPart = document.getElementById("btn-particulier");
+      const btnPro = document.getElementById("btn-professionnel");
+
+      if (type === "particulier") {
+        part.classList.remove("hidden");
+        pro.classList.add("hidden");
+        btnPart.classList.add("bg-white", "text-purple-600");
+        btnPart.classList.remove("text-purple-300");
+        btnPro.classList.remove("bg-white", "text-purple-600");
+        btnPro.classList.add("text-purple-300");
+      } else {
+        part.classList.add("hidden");
+        pro.classList.remove("hidden");
+        btnPro.classList.add("bg-white", "text-purple-600");
+        btnPro.classList.remove("text-purple-300");
+        btnPart.classList.remove("bg-white", "text-purple-600");
+        btnPart.classList.add("text-purple-300");
+      }
+    }
+
+    function togglePassword(id) {
+        const input = document.getElementById(id);
+        input.type = input.type === "password" ? "text" : "password";
+    }
+  </script>
+</head>
+<body class="bg-gradient-to-b from-purple-50 to-white min-h-screen flex items-center justify-center">
+  <div class="bg-white p-10 rounded-2xl shadow-lg w-full max-w-lg text-center">
+    <h1 class="text-3xl font-bold text-purple-600 mb-2">Mon Parcours Immo</h1>
+    <h2 class="text-xl font-semibold text-gray-800 mb-1">Créer votre compte</h2>
+    <p class="text-gray-500 mb-6">Rejoignez Mon Parcours Immo dès aujourd’hui</p>
+
+    <!-- Toggle -->
+    <div class="flex justify-center mb-6">
+      <div class="flex bg-purple-100 border border-purple-200 rounded-full overflow-hidden">
+        <button type="button" id="btn-particulier" onclick="switchForm('particulier')"
+          class="px-6 py-2 bg-white text-purple-600 font-semibold rounded-full">Particulier</button>
+        <button type="button" id="btn-professionnel" onclick="switchForm('professionnel')"
+          class="px-6 py-2 text-purple-300 font-semibold">Professionnel</button>
+      </div>
+    </div>
+
+    <!-- FORMULAIRE PARTICULIER -->
+    <form id="form-particulier" method="post" class="text-left space-y-5">
+      {% csrf_token %}
+      
+      <h3 class="text-purple-700 font-semibold text-lg">Informations personnelles</h3>
+      <div class="flex gap-4">
+        <div class="w-1/2">
+          <input type="text" name="prenom" placeholder="Entrez votre prénom"
+                 class="w-full px-4 py-2 rounded-lg bg-yellow-300 text-white placeholder-white" />
+        </div>
+        <div class="w-1/2">
+          <input type="text" name="nom" placeholder="Entrez votre nom"
+                 class="w-full px-4 py-2 rounded-lg bg-yellow-300 text-white placeholder-white" />
+        </div>
+      </div>
+
+      <input type="email" name="email" placeholder="Entrez votre email"
+             class="w-full px-4 py-2 rounded-lg bg-yellow-300 text-white placeholder-white" />
+             
+      <h3 class="text-purple-700 font-semibold text-lg">Informations de connexion</h3>
+
+      <div class="relative">
+        <input type="password" id="password1" name="password1" placeholder="Entrez votre mot de passe"
+               class="w-full px-4 py-2 rounded-lg bg-yellow-300 text-white placeholder-white pr-10" />
+        <button type="button" onclick="togglePassword('password1')" class="absolute right-2 top-2 text-white text-sm">
+          👁️
+        </button>
+      </div>
+      
+      <div class="relative">
+        <input type="password" id="password2" name="password2" placeholder="Confirmez votre mot de passe"
+               class="w-full px-4 py-2 rounded-lg bg-yellow-300 text-white placeholder-white pr-10" />
+        <button type="button" onclick="togglePassword('password2')" class="absolute right-2 top-2 text-white text-sm">
+          👁️
+        </button>
+      </div>
+      
+
+      <div class="flex items-center text-sm text-gray-700">
+        <input type="checkbox" id="cgu-part" class="accent-purple-600 mr-2" required>
+        <label for="cgu-part">J'accepte les conditions générales d'utilisation</label>
+      </div>
+
+      <button type="submit"
+              class="w-full bg-purple-600 text-white font-semibold py-2 rounded-lg hover:bg-purple-700 transition">
+        S’inscrire
+      </button>
+    </form>
+
+    <!-- FORMULAIRE PROFESSIONNEL -->
+    <form id="form-professionnel" method="post" class="text-left space-y-5 hidden">
+      {% csrf_token %}
+
+      <h3 class="text-purple-700 font-semibold text-lg">Informations de l’entreprise</h3>
+      <input type="text" name="nom_societe" placeholder="Nom de l'entreprise"
+             class="w-full px-4 py-2 rounded-lg bg-yellow-300 text-white placeholder-white" />
+      <input type="text" name="siret" placeholder="N° SIRET"
+             class="w-full px-4 py-2 rounded-lg bg-yellow-300 text-white placeholder-white" />
+      <input type="email" name="email_pro" placeholder="Email professionnel"
+             class="w-full px-4 py-2 rounded-lg bg-yellow-300 text-white placeholder-white" />
+      <input type="text" name="secteur_activite" placeholder="Secteur d'activité"
+             class="w-full px-4 py-2 rounded-lg bg-yellow-300 text-white placeholder-white" />
+
+      <h3 class="text-purple-700 font-semibold text-lg">Informations de connexion</h3>
+
+      <div class="relative">
+        <input type="password" id="password1" name="password1" placeholder="Entrez votre mot de passe"
+                class="w-full px-4 py-2 rounded-lg bg-yellow-300 text-white placeholder-white pr-10" />
+        <button type="button" onclick="togglePassword('password1')" class="absolute right-2 top-2 text-white text-sm">
+            👁️
+        </button>
+      </div>
+
+
+      <div class="relative">
+        <input type="password" id="password2" name="password2" placeholder="Confirmez votre mot de passe"
+               class="w-full px-4 py-2 rounded-lg bg-yellow-300 text-white placeholder-white pr-10" />
+        <button type="button" onclick="togglePassword('password2')" class="absolute right-2 top-2 text-white text-sm">
+          👁️
+        </button>
+      </div>
+      
+      <div class="flex items-center text-sm text-gray-700">
+        <input type="checkbox" id="cgu-pro" class="accent-purple-600 mr-2" required>
+        <label for="cgu-pro">J'accepte les conditions générales d'utilisation</label>
+      </div>
+
+      <button type="submit"
+              class="w-full bg-purple-600 text-white font-semibold py-2 rounded-lg hover:bg-purple-700 transition">
+        S’inscrire
+      </button>
+    </form>
+
+    <p class="text-sm text-gray-600 mt-6">
+      Vous avez déjà un compte ?
+      <a href="{% url 'login' %}" class="text-purple-600 font-medium hover:underline">Se connecter</a>
+    </p>
+  </div>
+</body>
+</html>
+
+
+
+<!--div class="selection-container" style="display: flex; justify-content: center; gap: 2rem; margin-top: 50px;">
+
     <div class="selection-block" style="flex: 1; text-align: center; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background: #f9f9f9; cursor: pointer;">
         <a href="{% url 'create_particulier' %}" style="text-decoration: none; color: inherit;">
             <h2>Je suis un Particulier</h2>
@@ -13,7 +166,6 @@
         </a>
     </div>
 
-    <!-- Bloc Pro -->
     <div class="selection-block" style="flex: 1; text-align: center; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background: #f9f9f9; cursor: pointer;">
         <a href="{% url 'create_professionnel' %}" style="text-decoration: none; color: inherit;">
             <h2>Je suis un Professionnel</h2>
@@ -23,7 +175,7 @@
             </button>
         </a>
     </div>
-</div>
-{% endblock %}
+</div-->
+
 
 

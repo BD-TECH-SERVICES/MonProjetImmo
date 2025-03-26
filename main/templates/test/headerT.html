@@ -1,0 +1,20 @@
+{% load static %}
+
+<header class="bg-white shadow-sm px-6 py-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <!-- Logo -->
+      <div class="text-xl font-bold text-purple-600">
+        Mon Parcours Immo
+      </div>
+  
+      <!-- Navigation -->
+      <div class="flex items-center space-x-4">
+        <a href="{% url 'login' %}" class="text-gray-700 hover:text-purple-600 font-medium">
+          Se connecter
+        </a>
+        <a href="{% url 'inscription' %}" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-purple-700 transition">
+          S'inscrire
+        </a>
+      </div>
+    </div>
+  </header>

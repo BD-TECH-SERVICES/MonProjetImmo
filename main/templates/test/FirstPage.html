@@ -1,31 +1,56 @@
 {# test/FirstPage.html #}
-<header class="text-center py-16 bg-gradient-to-b from-purple-200 via-purple-100 to-white">
+
+
+{% block header %}
+  {% include "test/headerT.html" %}
+{% endblock %}
+
+<section class="text-center py-16 bg-gradient-to-b from-purple-200 via-purple-100 to-white">
   <h1 class="text-5xl font-bold text-purple-700">Mon Parcours Immo</h1>
   <p class="text-lg text-gray-600 mt-4">
     {{ page.introduction|default:"L'immobilier clé en main : simplifiez vos démarches d'achat et de vente grâce à notre réseau de professionnels qualifiés." }}
   </p>
   <div class="mt-6 flex justify-center space-x-4">
-    <a href="{% url 'profession' %}" class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold">Je suis un particulier</a>
-    <a href="{% url 'parcours' %}" class="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg font-semibold">Je suis un professionnel</a>
+    <a href="{% url 'parcours' %}" class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold">Je suis un particulier</a>
+    <a href="{% url 'profession' %}" class="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg font-semibold">Je suis un professionnel</a>
   </div>
-</header>
+</section>
+
 
 <section class="text-center py-12">
   <h2 class="text-3xl font-bold text-purple-700">Parcours Immobiliers</h2>
   <p class="text-gray-600 mt-2">Découvrez nos parcours personnalisés pour vous accompagner à chaque étape de votre projet immobilier.</p>
-  
+
   <div class="flex justify-center mt-8 space-x-6 flex-wrap">
     {% for parcours in page.parcours %}
-      <div class="bg-white p-6 shadow-lg rounded-lg w-72 m-2">
-        <h3 class="text-xl font-semibold">{{ parcours.name }}</h3>
-        <p class="text-gray-600">{{ parcours.description }}</p>
-        <p class="text-blue-500 font-bold mt-2">{{ parcours.etapes }} étapes</p>
+      <div class="bg-white p-6 shadow-lg rounded-lg w-72 m-2 flex flex-col items-center">
+        <div class="flex items-center mb-4">
+          <!-- Utilisation de l'icône spécifiée dans le modèle -->
+          {% if parcours.icon_name %}
+            <div class="card-icon">
+              <svg class="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M{{ parcours.icon_name }}"></path>
+              </svg>
+            </div>
+          {% endif %}
+          <h3 class="text-xl font-semibold ml-2">{{ parcours.name }}</h3>
+        </div>
+        <p class="text-gray-600 text-center">{{ parcours.description }}</p>
+        <div class="progress-container mt-4">
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+          <div class="curve"></div>
+        </div>
+        <div class="steps-container mt-4">
+          <p class="steps-text text-blue-500 font-bold">{{ parcours.etapes }} étapes</p>
+        </div>
+        <a href="{% url 'parcours' %}" class="text-blue-500 underline mt-2">Voir le parcours</a>
       </div>
     {% empty %}
       <p class="text-gray-500 mt-4">Aucun parcours disponible pour le moment.</p>
     {% endfor %}
   </div>
-
   <div class="mt-8">
     <button class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold">Découvrir tous les parcours</button>
   </div>
@@ -54,7 +79,7 @@
   <h2 class="text-3xl font-bold text-purple-700">Prêt à commencer votre parcours immobilier ?</h2>
   <p class="text-gray-600 mt-2">Inscrivez-vous gratuitement et accédez à notre réseau de professionnels.</p>
   <div class="mt-6 flex justify-center space-x-4">
-    <a href="#" class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold">Particulier</a>
-    <a href="#" class="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg font-semibold">Professionnel</a>
+    <a href="{% url 'parcours' %}" class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold">Particulier</a>
+    <a  class="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg font-semibold">Professionnel</a>
   </div>
 </section>

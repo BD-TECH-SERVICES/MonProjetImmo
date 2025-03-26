@@ -96,16 +96,20 @@ class PostPage(Page):
 
 
 
+
+
 @register_snippet
 class ImmobilierParcoursCategory(models.Model):
     name = models.CharField(max_length=100, verbose_name="Nom du parcours")
     description = models.TextField(blank=True)
     etapes = models.PositiveIntegerField(default=0, verbose_name="Nombre d'étapes")
+    icon_name = models.CharField(max_length=50, blank=True, verbose_name="Nom de l'icône")
 
     panels = [
         FieldPanel("name"),
         FieldPanel("description"),
         FieldPanel("etapes"),
+        FieldPanel("icon_name"),
     ]
 
     def __str__(self):
@@ -114,7 +118,6 @@ class ImmobilierParcoursCategory(models.Model):
     class Meta:
         verbose_name = "Parcours immobilier"
         verbose_name_plural = "Parcours immobiliers"
-
 
 # ✅ Modèle intermédiaire entre IndexPage et parcours
 class IndexPageParcours(Orderable):

@@ -36,58 +36,36 @@
     {% block extra_css %}{% endblock %}
 
     {# 🧩 Include custom head blocks (meta, favicons, etc) #}
-    {% include "components/headT.html" %}
-
+    {% include "test/headT.html" %}
+    
   </head>
-
+  
   <body class="bg-white text-gray-900">
     
     {# ✅ Dev tools (admin userbar) #}
     {% wagtailuserbar %}
-
-
     {# 🚧 Contenu principal injecté ici #}
     <main>
-      {% block content %}{% endblock %}
+    {% block content %}
+      {% if request.user.is_authenticated %}
+        {% include "components/navbar.html" %}
+        {% wagtailuserbar %}
+
+
+        {% include "components/footer.html" %}
+        {% include "components/search.html" %}
+        {% include "components/scripts.html" %}
+
+      
+      {% else %}
+        {% include "test/FirstPage.html" %}
+      {% endif %}
+    {% endblock %}
     </main>
 
     {# 🦶 Footer (surchargeable) #}
     {% block footer %}
-    <footer class="text-center py-8 bg-gray-100 text-gray-600 mt-12">
-      <div class="grid grid-cols-4 gap-6 px-16 text-left">
-        <div>
-          <h3 class="font-bold">Mon Parcours Immo</h3>
-          <p>La plateforme qui simplifie vos projets immobiliers.</p>
-        </div>
-        <div>
-          <h3 class="font-bold">Parcours</h3>
-          <ul>
-            <li>Achat</li>
-            <li>Vente</li>
-            <li>Investissement</li>
-            <li>Primo-accédant</li>
-          </ul>
-        </div>
-        <div>
-          <h3 class="font-bold">À propos</h3>
-          <ul>
-            <li>Notre mission</li>
-            <li>Nos partenaires</li>
-            <li>Témoignages</li>
-            <li>Contact</li>
-          </ul>
-        </div>
-        <div>
-          <h3 class="font-bold">Légal</h3>
-          <ul>
-            <li>Mentions légales</li>
-            <li>Politique de confidentialité</li>
-            <li>CGU</li>
-          </ul>
-        </div>
-      </div>
-      <p class="mt-6">&copy; 2025 Mon Parcours Immo - Tous droits réservés.</p>
-    </footer>
+      {% include "test/footerT.html" %}
     {% endblock %}
 
     {% block extra_js %}{% endblock %}

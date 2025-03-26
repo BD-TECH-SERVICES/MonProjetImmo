@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connexion - Mon Parcours Immo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gradient-to-b from-purple-50 to-white min-h-screen flex items-center justify-center">
+
+    <div class="bg-white p-10 rounded-2xl shadow-lg w-full max-w-md text-center">
+      <h1 class="text-3xl font-bold text-purple-600 mb-2">Mon Parcours Immo</h1>
+      <h2 class="text-xl font-semibold text-gray-800 mb-1">Bienvenue</h2>
+      <p class="text-gray-500 mb-6">Connectez-vous à votre compte</p>
+      
+      <form action="#" method="POST" class="text-left space-y-5">
+        <div>
+            <label for="{{ user_form.username.id_for_label }}" class="block mb-1 text-sm text-gray-700">Identifiant</label>
+            {{ user_form.username|add_class:"w-full px-4 py-2 rounded-lg bg-yellow-300 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-purple-400" }}
+            {% if user_form.username.errors %}
+              <div class="text-red-500 text-sm">{{ user_form.username.errors.0 }}</div>
+            {% endif %}
+        </div>
+        
+        
+          <div>
+            <label for="{{ user_form.password1.id_for_label }}" class="block mb-1 text-sm text-gray-700 flex justify-between">
+              <span>Mot de passe</span>
+              <a href="#" class="text-sm text-purple-600 hover:underline">Mot de passe oublié ?</a>
+            </label>
+            {{ user_form.password1|add_class:"w-full px-4 py-2 rounded-lg bg-yellow-300 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-purple-400" }}
+            {% if user_form.password1.errors %}
+              <div class="text-red-500 text-sm">{{ user_form.password1.errors.0 }}</div>
+            {% endif %}
+          </div>
+          
+
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="remember" class="accent-purple-600">
+          <label for="remember" class="text-sm text-gray-700">Se souvenir de moi</label>
+        </div>
+
+        <button type="submit"
+                class="w-full bg-purple-600 text-white font-semibold py-2 rounded-lg hover:bg-purple-700 transition">
+          Se connecter
+        </button>
+      </form>
+
+      <p class="text-sm text-gray-600 mt-6">
+        Vous n'avez pas de compte ?
+        <a href="/signup" class="text-purple-600 font-medium hover:underline">S’inscrire</a>
+      </p>
+    </div>
+  </body>
+</html>
