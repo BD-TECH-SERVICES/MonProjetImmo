@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Créer votre compte - Étape 2</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-b from-purple-50 to-white min-h-screen flex justify-center items-center">
+
+  <div class="bg-white p-10 rounded-2xl shadow-lg w-full max-w-2xl text-center">
+    <h1 class="text-3xl font-bold text-purple-600 mb-1">Mon Parcours Immo</h1>
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">Créer votre compte</h2>
+    <p class="text-gray-500 mb-8">Rejoignez Mon Parcours Immo dès aujourd’hui</p>
+
+    <!-- Étapes -->
+    <div class="flex justify-between mb-8">
+      <div class="flex flex-col items-center">
+        <div class="w-6 h-6 rounded-full bg-purple-600 text-white text-sm flex items-center justify-center">✓</div>
+        <p class="text-sm text-gray-600 mt-1">Informations</p>
+      </div>
+      <div class="w-1/4 h-px bg-purple-400 mt-3"></div>
+      <div class="flex flex-col items-center">
+        <div class="w-6 h-6 rounded-full border-2 border-purple-600 text-purple-600 text-sm flex items-center justify-center font-bold">2</div>
+        <p class="text-sm text-purple-600 mt-1 font-medium">Type de projet</p>
+      </div>
+      <div class="w-1/4 h-px bg-gray-200 mt-3"></div>
+      <div class="flex flex-col items-center">
+        <div class="w-6 h-6 rounded-full bg-gray-200 text-sm flex items-center justify-center">3</div>
+        <p class="text-sm text-gray-400 mt-1">Détails du projet</p>
+      </div>
+    </div>
+
+    <!-- Formulaire de choix -->
+    <form action="{% url 'inscription_etape2' %}" method="POST" id="formTypeProjet">
+      {% csrf_token %}
+      <input type="hidden" name="projet_type" id="projet_type_input" value="achat">
+
+      <h3 class="text-lg font-semibold text-gray-700 mb-4">Quel est votre projet immobilier ?</h3>
+
+      <div class="flex gap-4 justify-center mb-6">
+        <button type="button" id="btn-achat"
+                class="w-48 py-3 bg-purple-600 text-white font-medium rounded-lg"
+                onclick="selectProjet('achat')">Acheter un bien</button>
+        <button type="button" id="btn-vente"
+                class="w-48 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg"
+                onclick="selectProjet('vente')">Vendre un bien</button>
+      </div>
+
+      <!-- Icône + texte -->
+      <div class="flex flex-col items-center mb-8" id="texte-explicatif">
+        <div class="bg-purple-100 rounded-full p-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 12l2-2m0 0l7-7 7 7M13 5v6h6m4 0a2 2 0 00-2-2h-1.5a1.5 1.5 0 00-1.5 1.5v1.5h-1.5v-1.5A1.5 1.5 0 0013 11H4a2 2 0 00-2 2v7h20v-7z" />
+          </svg>
+        </div>
+        <h4 class="font-semibold text-lg mt-4" id="projet-label">Projet d'achat</h4>
+        <p class="text-gray-500 mt-1 text-sm" id="projet-desc">
+          Trouvez le bien idéal qui correspond à vos critères et à votre budget.
+        </p>
+      </div>
+
+      <div class="flex justify-between mt-6">
+        <a href="{% url 'inscription_etape1' %}" class="w-1/2 text-purple-600 border border-purple-600 rounded-lg py-2 font-medium hover:bg-purple-50">Retour</a>
+        <button type="submit" class="w-1/2 bg-purple-600 text-white rounded-lg py-2 font-medium hover:bg-purple-700 ml-4">Continuer</button>
+      </div>
+    </form>
+
+    <p class="text-sm text-gray-600 mt-8">
+      Vous avez déjà un compte ?
+      <a href="{% url 'login' %}" class="text-purple-600 hover:underline">Se connecter</a>
+    </p>
+  </div>
+
+  <script>
+    function selectProjet(type) {
+      const input = document.getElementById("projet_type_input");
+      const btnAchat = document.getElementById("btn-achat");
+      const btnVente = document.getElementById("btn-vente");
+      const label = document.getElementById("projet-label");
+      const desc = document.getElementById("projet-desc");
+
+      input.value = type;
+
+      if (type === 'achat') {
+        btnAchat.classList.add("bg-purple-600", "text-white");
+        btnAchat.classList.remove("bg-gray-100", "text-gray-700");
+        btnVente.classList.remove("bg-purple-600", "text-white");
+        btnVente.classList.add("bg-gray-100", "text-gray-700");
+        label.innerText = "Projet d'achat";
+        desc.innerText = "Trouvez le bien idéal qui correspond à vos critères et à votre budget.";
+      } else {
+        btnVente.classList.add("bg-purple-600", "text-white");
+        btnVente.classList.remove("bg-gray-100", "text-gray-700");
+        btnAchat.classList.remove("bg-purple-600", "text-white");
+        btnAchat.classList.add("bg-gray-100", "text-gray-700");
+        label.innerText = "Projet de vente";
+        desc.innerText = "Déterminez vos objectifs et optimisez la mise en vente de votre bien.";
+      }
+    }
+  </script>
+
+</body>
+</html>

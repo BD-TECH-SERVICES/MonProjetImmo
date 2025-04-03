@@ -89,3 +89,47 @@ class Message(models.Model):
     
     class Meta:
         ordering = ['timestamp']
+
+
+class Projets(models.Model):
+    TYPE_PROJET_CHOICES = [
+        ('achat', 'Acheter un bien'),
+        ('vente', 'Vendre un bien'),
+    ]
+
+    TYPE_BIEN_CHOICES = [
+        ('appartement', 'Appartement'),
+        ('maison', 'Maison'),
+        ('studio', 'Studio'),
+    ]
+
+    TRANSPORT_CHOICES = [
+        ('tram', 'Tram'),
+        ('metro', 'Métro'),
+        ('bus', 'Bus'),
+        ('gare', 'Gare'),
+    ]
+
+    TRAVAUX_CHOICES = [
+        ('aucun', 'Aucun travaux'),
+        ('petits', 'Petits travaux'),
+        ('renovation', 'Rénovation complète'),
+    ]
+
+    utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    type_projet = models.CharField(max_length=10, choices=TYPE_PROJET_CHOICES)
+    type_bien = models.CharField(max_length=20, choices=TYPE_BIEN_CHOICES)
+    nombre_pieces = models.IntegerField(default=1)
+    superficie = models.PositiveIntegerField(default=50)
+    budget = models.PositiveIntegerField(default=150000)
+    localisation = models.CharField(max_length=255, blank=True)
+
+    exterieur = models.BooleanField(default=False)
+    garage = models.BooleanField(default=False)
+    transport = models.CharField(max_length=10, choices=TRANSPORT_CHOICES, blank=True)
+    travaux = models.CharField(max_length=20, choices=TRAVAUX_CHOICES, blank=True)
+
+    date_creation = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.utilisateur} - {self.get_type_projet_display()} - {self.get_type_bien_display()}"

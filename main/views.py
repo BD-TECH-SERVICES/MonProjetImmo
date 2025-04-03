@@ -34,39 +34,91 @@ def profession(request):
 
 
 User = get_user_model()
+
+
+#def create_particulier_profile(request):
+   # if request.method == 'POST':
+       # user_form = UserForm(request.POST)
+       # particulier_form = ParticulierForm(request.POST)  # Assurez-vous d'utiliser ParticulierForm ici
+        #if user_form.is_valid() and particulier_form.is_valid():
+        #    user = user_form.save(commit=False)
+         #   user.set_password(user_form.cleaned_data['password1'])  # Définir le mot de passe
+        #    user.user_type = 'particulier'
+        #    user.save()
+
+         #   particulier = particulier_form.save(commit=False)
+           # particulier.user = user  # Associe le profil à l'utilisateur
+           # particulier.save()
+
+           # login(request, user)
+            #return redirect('login')
+  #  else:
+      #  user_form = UserForm()
+       # particulier_form = ParticulierForm()
+
+   # return render(request, 'blog/create_particulier.html', {
+       # 'user_form': user_form,
+       # 'particulier_form': particulier_form,  # Bien passer ce formulaire au contexte
+   # })
+
+
+#def create_professionnel_profile(request):
+   # if request.method == 'POST':
+     #   user_form = UserForm(request.POST)
+       # professionnel_form = ProfessionnelForm(request.POST)
+       # if user_form.is_valid() and professionnel_form.is_valid():
+           # user = user_form.save(commit=False)
+          #  user.set_password(user_form.cleaned_data['password0'])
+            #user.user_type = 'professionnel'
+          #  user.save()
+
+          #  professionnel = professionnel_form.save(commit=False)
+          #  professionnel.user = user
+           # professionnel.save()
+
+            #login(request, user)
+           # return redirect('login')
+   # else:
+      #  user_form = UserForm()
+     #   professionnel_form = ProfessionnelForm()  # Assurez-vous de l'initialisation ici
+
+  #  return render(request, 'blog/create_professionnel.html', {
+     #   'user_form': user_form,
+      #  'professionnel_form': professionnel_form,  # Formulaire bien passé au contexte
+   # })
+
 def create_particulier_profile(request):
     if request.method == 'POST':
         user_form = UserForm(request.POST)
-        particulier_form = ParticulierForm(request.POST)  # Assurez-vous d'utiliser ParticulierForm ici
+        particulier_form = ParticulierForm(request.POST)
         if user_form.is_valid() and particulier_form.is_valid():
             user = user_form.save(commit=False)
-            user.set_password(user_form.cleaned_data['password1'])  # Définir le mot de passe
+            user.set_password(user_form.cleaned_data['password1'])
             user.user_type = 'particulier'
             user.save()
 
             particulier = particulier_form.save(commit=False)
-            particulier.user = user  # Associe le profil à l'utilisateur
+            particulier.user = user
             particulier.save()
 
             login(request, user)
-            return redirect('login')
+            return redirect('inscription_etape1')  # 🔁 ici on va vers le questionnaire
     else:
         user_form = UserForm()
         particulier_form = ParticulierForm()
 
-    return render(request, 'blog/create_particulier.html', {
+    return render(request, 'blog/inscription.html', {
         'user_form': user_form,
-        'particulier_form': particulier_form,  # Bien passer ce formulaire au contexte
+        'particulier_form': particulier_form,
+        'active_form': 'particulier'
     })
-
-
 def create_professionnel_profile(request):
     if request.method == 'POST':
         user_form = UserForm(request.POST)
         professionnel_form = ProfessionnelForm(request.POST)
         if user_form.is_valid() and professionnel_form.is_valid():
             user = user_form.save(commit=False)
-            user.set_password(user_form.cleaned_data['password1'])
+            user.set_password(user_form.cleaned_data['password0'])
             user.user_type = 'professionnel'
             user.save()
 
@@ -75,15 +127,18 @@ def create_professionnel_profile(request):
             professionnel.save()
 
             login(request, user)
-            return redirect('login')
+            return redirect('inscription_etape1')  # 🔁 ici aussi
     else:
         user_form = UserForm()
-        professionnel_form = ProfessionnelForm()  # Assurez-vous de l'initialisation ici
+        professionnel_form = ProfessionnelForm()
 
-    return render(request, 'blog/create_professionnel.html', {
+    return render(request, 'blog/inscription.html', {
         'user_form': user_form,
-        'professionnel_form': professionnel_form,  # Formulaire bien passé au contexte
+        'professionnel_form': professionnel_form,
+        'active_form': 'professionnel'
     })
+
+
 
 @login_required
 def mes_projets(request):
@@ -271,3 +326,61 @@ def creer_projet(request, metier=None):
         form.fields['metier'].choices = metiers_choices
 
     return render(request, 'blog/creer_projet.html', {'form': form})
+
+
+def inscription_etape1(request):
+    if request.method == "POST":
+        request.session['user_type'] = request.POST.get('user_type')
+        request.session['prenom'] = request.POST.get('prenom')
+        request.session['nom'] = request.POST.get('nom')
+        request.session['email'] = request.POST.get('email')
+        request.session['telephone'] = request.POST.get('telephone')
+        return redirect('inscription_etape2')
+    return render(request, 'test/inscription.html')
+
+def inscription_etape2(request):
+    if request.method == "POST":
+        request.session['projet_type'] = request.POST.get('projet_type')
+        return redirect('inscription_etape3')
+    return render(request, 'test/AcheterOuVendre.html')
+
+def inscription_etape3(request):
+    if request.method == "POST":
+        projet = Projets(
+            utilisateur=request.user,
+            type_projet=request.session.get('projet_type'),
+            type_bien=request.POST.get('bien_type'),
+            nombre_pieces=request.POST.get('pieces'),
+            superficie=request.POST.get('superficie'),
+            budget=request.POST.get('budget'),
+            localisation=request.POST.get('localisation'),
+            exterieur=request.POST.get('exterieur') == 'on',
+            garage=request.POST.get('garage') == 'on',
+            transport=request.POST.get('transport'),
+            travaux=request.POST.get('travaux'),
+        )
+        projet.save()
+
+        return redirect('inscription_confirmation')
+
+    return render(request, 'test/ProjetUser.html')
+
+def inscription_confirmation(request):
+    return render(request, 'test/Connection.html')
+
+from django.contrib.auth import authenticate, login
+from .forms import ConnexionForm  
+
+def custom_login_view(request):
+    if request.method == 'POST':
+        form = ConnexionForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password1']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('parcours')  # ⬅️ redirige ici
+    else:
+        form = ConnexionForm()
+    return render(request, 'blog/connexion.html', {'user_form': form})

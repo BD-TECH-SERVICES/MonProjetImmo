@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Étape 3 - Détails du projet</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-b from-purple-50 to-white min-h-screen flex items-center justify-center">
+  <form action="{% url 'inscription_etape3' %}" method="POST" class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl space-y-6">
+    {% csrf_token %}
+
+    <!-- Étapes -->
+    <div class="flex justify-between items-center mb-4">
+      <div class="flex flex-col items-center">
+        <div class="w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm">✓</div>
+        <p class="text-sm text-gray-600 mt-1">Informations</p>
+      </div>
+      <div class="w-1/4 h-px bg-purple-400 mt-3"></div>
+      <div class="flex flex-col items-center">
+        <div class="w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm">✓</div>
+        <p class="text-sm text-gray-600 mt-1">Type de projet</p>
+      </div>
+      <div class="w-1/4 h-px bg-purple-400 mt-3"></div>
+      <div class="flex flex-col items-center">
+        <div class="w-6 h-6 border-2 border-purple-600 text-purple-600 rounded-full flex items-center justify-center text-sm font-bold">3</div>
+        <p class="text-sm text-purple-600 mt-1 font-medium">Détails du projet</p>
+      </div>
+    </div>
+
+    <h2 class="text-xl font-bold text-gray-800 text-center mb-2">Détails de votre projet d'achat</h2>
+
+    <!-- Type de bien et nombre de pièces -->
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="text-sm font-medium text-gray-700 mb-1 block">Type de bien</label>
+        <select name="bien_type" class="w-full p-2 border rounded-lg bg-gray-100" required>
+          <option value="appartement">Appartement</option>
+          <option value="maison">Maison</option>
+          <option value="studio">Studio</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-sm font-medium text-gray-700 mb-1 block">Nombre de pièces</label>
+        <select name="pieces" class="w-full p-2 border rounded-lg bg-gray-100" required>
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          <option value="3">3+</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Superficie -->
+    <div>
+      <label class="text-sm font-medium text-gray-700 block mb-1">Superficie souhaitée (m²)</label>
+      <div class="flex items-center justify-between text-sm text-gray-500">
+        <span>50</span><span>100</span>
+      </div>
+      <input type="range" name="superficie" min="50" max="100" value="70" class="w-full accent-purple-600 mt-2" />
+    </div>
+
+    <!-- Caractéristiques -->
+    <div class="space-y-2">
+      <label class="text-sm font-medium text-gray-700 block mb-1">Caractéristiques</label>
+      <div class="flex justify-between items-center">
+        <span>Avec extérieur (jardin, balcon, terrasse)</span>
+        <input type="checkbox" name="exterieur" class="accent-purple-600" />
+      </div>
+      <div class="flex justify-between items-center">
+        <span>Avec garage ou parking</span>
+        <input type="checkbox" name="garage" class="accent-purple-600" />
+      </div>
+    </div>
+
+    <!-- Localisation -->
+    <div>
+      <label class="text-sm font-medium text-gray-700 block mb-1">Secteur géographique</label>
+      <input type="text" name="localisation" placeholder="Ville, quartier, code postal..." class="w-full p-2 border rounded-lg bg-gray-100" />
+    </div>
+
+    <!-- Transports -->
+    <div>
+      <label class="text-sm font-medium text-gray-700 block mb-1">Proximité des transports</label>
+      <div class="grid grid-cols-2 gap-2 mt-2 text-sm text-gray-700">
+        <label class="flex items-center gap-2">
+          <input type="radio" name="transport" value="tram" class="accent-purple-600" /> Tram
+        </label>
+        <label class="flex items-center gap-2">
+          <input type="radio" name="transport" value="metro" class="accent-purple-600" /> Métro
+        </label>
+        <label class="flex items-center gap-2">
+          <input type="radio" name="transport" value="bus" class="accent-purple-600" /> Bus
+        </label>
+        <label class="flex items-center gap-2">
+          <input type="radio" name="transport" value="gare" class="accent-purple-600" /> Gare
+        </label>
+      </div>
+    </div>
+
+    <!-- Budget -->
+    <div>
+      <label class="text-sm font-medium text-gray-700 block mb-1">Budget (€)</label>
+      <div class="flex items-center justify-between text-sm text-gray-500">
+        <span>150 000</span><span>300 000</span>
+      </div>
+      <input type="range" name="budget" min="150000" max="300000" value="200000" class="w-full accent-purple-600 mt-2" />
+    </div>
+
+    <!-- Travaux -->
+    <div>
+      <label class="text-sm font-medium text-gray-700 block mb-1">Travaux envisagés</label>
+      <select name="travaux" class="w-full p-2 border rounded-lg bg-gray-100">
+        <option value="aucun" selected>Aucun travaux</option>
+        <option value="petits">Petits travaux</option>
+        <option value="renovation">Rénovation complète</option>
+      </select>
+    </div>
+
+    <!-- Boutons -->
+    <div class="flex flex-col sm:flex-row justify-between gap-4 pt-4"
+      <a href="{% url 'inscription_etape2' %}" class="w-full sm:w-1/2 border border-purple-600 text-purple-600 text-center py-2 rounded-lg font-medium">Retour</a>
+      <button type="submit" class="w-full sm:w-1/2 bg-purple-600 text-white py-2 rounded-lg font-medium hover:bg-purple-700">
+        Enregistrer mon projet
+      </button>
+    </div>
+  </form>
+</body>
+</html>

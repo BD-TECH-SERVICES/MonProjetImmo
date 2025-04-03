@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Parcours Achat - Mon Parcours Immo</title>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -15,38 +15,31 @@
       <div class="col-span-2">
         <h2 class="text-xl font-semibold">Les grandes étapes</h2>
         <div class="mt-4 space-y-6 border-l-4 border-gray-300 pl-8">
-          <div class="relative">
-            <span class="absolute -left-8 top-2 flex items-center justify-center w-8 h-8 bg-blue-600 text-white font-bold rounded-full">1</span>
-            <h3 class="text-lg font-bold">Définir le projet</h3>
-            <p class="text-gray-600">Évaluer votre capacité d’emprunt et établir vos critères de recherche prioritaires.</p>
-            <button class="bg-blue-600 text-white px-4 py-2 rounded mt-2">Commencer cette étape</button>
+          {% for step in steps %}
+          <div class="relative {% if active_step == step.numero %}bg-blue-50 border-l-4 border-blue-600 pl-6 rounded-md py-4{% endif %}">
+            <span class="absolute -left-8 top-2 flex items-center justify-center w-8 h-8 
+              {% if active_step == step.numero %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700{% endif %} 
+              font-bold rounded-full">{{ step.numero }}</span>
+            
+            <h3 class="text-lg font-bold">{{ step.titre }}</h3>
+            <p class="text-gray-600">{{ step.description }}</p>
+            
+            <a href="{% url 'parcours_etape' step.numero %}">
+              <button class="{% if active_step == step.numero %}
+                              bg-blue-600 text-white 
+                             {% else %}
+                              border border-gray-300 text-blue-600 
+                             {% endif %} 
+                             px-4 py-2 rounded mt-2">
+                {% if active_step == step.numero %}Reprendre cette étape{% else %}En savoir plus{% endif %}
+              </button>
+            </a>
           </div>
-          <div class="relative">
-            <span class="absolute -left-8 top-2 flex items-center justify-center w-8 h-8 bg-gray-200 text-gray-700 font-bold rounded-full">2</span>
-            <h3 class="text-lg font-bold">Recherche du bien</h3>
-            <p class="text-gray-600">Identifier et visiter les biens correspondant à vos critères dans votre budget.</p>
-            <button class="border border-gray-300 px-4 py-2 rounded text-blue-600">En savoir plus</button>
-          </div>
-          <div class="relative">
-            <span class="absolute -left-8 top-2 flex items-center justify-center w-8 h-8 bg-gray-200 text-gray-700 font-bold rounded-full">3</span>
-            <h3 class="text-lg font-bold">Devis et projections</h3>
-            <p class="text-gray-600">Établir des devis pour d’éventuels travaux et affiner votre projet.</p>
-            <button class="border border-gray-300 px-4 py-2 rounded text-blue-600">En savoir plus</button>
-          </div>
-          <div class="relative">
-            <span class="absolute -left-8 top-2 flex items-center justify-center w-8 h-8 bg-gray-200 text-gray-700 font-bold rounded-full">4</span>
-            <h3 class="text-lg font-bold">Négociation et achat</h3>
-            <p class="text-gray-600">Faire une offre, négocier et finaliser l’acquisition avec les professionnels.</p>
-            <button class="border border-gray-300 px-4 py-2 rounded text-blue-600">En savoir plus</button>
-          </div>
-          <div class="relative">
-            <span class="absolute -left-8 top-2 flex items-center justify-center w-8 h-8 bg-gray-200 text-gray-700 font-bold rounded-full">5</span>
-            <h3 class="text-lg font-bold">Remise des clés</h3>
-            <p class="text-gray-600">Organiser votre installation et préparer votre emménagement.</p>
-            <button class="border border-gray-300 px-4 py-2 rounded text-blue-600">En savoir plus</button>
-          </div>
+          {% endfor %}
         </div>
       </div>
+
+      <!-- Sidebar -->
       <div>
         <div class="bg-white p-6 rounded-lg shadow">
           <h3 class="text-lg font-bold">Professionnels recommandés</h3>
@@ -63,7 +56,9 @@
             <li>Agences immobilières</li>
             <li>Notaires</li>
           </ul>
-          <button class="bg-blue-600 text-white px-4 py-2 rounded mt-4 w-full">Voir tous les professionnels</button>
+          <a href="#">
+            <button class="bg-blue-600 text-white px-4 py-2 rounded mt-4 w-full">Voir tous les professionnels</button>
+          </a>
         </div>
         <div class="bg-white p-6 rounded-lg shadow mt-4">
           <h3 class="text-lg font-bold">Besoin d'aide ?</h3>
@@ -73,6 +68,7 @@
       </div>
     </div>
   </div>
+
   <footer class="text-center py-8 bg-gray-100 text-gray-600 mt-12">
     <div class="grid grid-cols-4 gap-6 px-16 text-left">
       <div>

@@ -31,7 +31,13 @@ urlpatterns = [
     path('index', views.index, name='index'),
     path('parcours', views.parcours, name='parcours'),
     path('profession', views.profession, name='profession'),
+    path('inscription/etape1/', views.inscription_etape1, name='inscription_etape1'),
+    path('inscription/etape2/', views.inscription_etape2, name='inscription_etape2'),
+    path('inscription/etape3/', views.inscription_etape3, name='inscription_etape3'),
+    path('inscription/confirmation/', views.inscription_confirmation, name='inscription_confirmation'),
 
+
+    
     path('', include(wagtail_urls)),
 
 

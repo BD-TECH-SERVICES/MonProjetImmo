@@ -55,3 +55,13 @@ class ProjetForm(forms.ModelForm):
         if Projet.objects.filter(titre=titre).exists():
             raise forms.ValidationError("⚠️ Un projet avec ce titre existe déjà.")
         return titre
+    
+
+
+from django.contrib.auth.views import LoginView
+
+class CustomLoginView(LoginView):
+    template_name = 'blog/connexion.html'
+
+    def get_success_url(self):
+        return reverse('parcours')
