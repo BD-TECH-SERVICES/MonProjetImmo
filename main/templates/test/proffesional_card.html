@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Projet</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white p-8 font-sans">
+  
+  <!-- Bouton retour -->
+  <button class="mb-6 px-4 py-2 bg-gray-100 text-sm rounded hover:bg-gray-200">
+    Retour aux projets
+  </button>
+
+  <!-- Profil -->
+  <div class="flex items-center space-x-4 mb-6">
+    <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-xl text-white">
+      <span>J</span>
+    </div>
+    <div>
+      <h2 class="text-xl font-semibold">Jean Dupont</h2>
+      <p class="text-gray-600">Architecte d’intérieur</p>
+    </div>
+  </div>
+
+  <!-- Tags -->
+  <div class="flex space-x-2 mb-8">
+    <span class="px-3 py-1 text-sm bg-gray-100 rounded-full">Design</span>
+    <span class="px-3 py-1 text-sm bg-gray-100 rounded-full">Rénovation</span>
+    <span class="px-3 py-1 text-sm bg-gray-100 rounded-full">Conseil</span>
+  </div>
+
+  <!-- Section projets -->
+  <h3 class="text-lg font-semibold mb-4">Projets de Jean Dupont</h3>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Carte projet -->
+    <div class="border rounded-lg shadow-sm p-4 max-w-sm">
+      <img src="https://via.placeholder.com/400x200?text=Parcours+Achat" alt="Parcours Achat" class="rounded mb-4">
+      <h4 class="text-md font-bold">Parcours Achat</h4>
+      <p class="text-sm text-gray-600 mb-2">L’acquisition de votre bien</p>
+      <p class="text-xs text-gray-400 mb-4">Par Jean Dupont</p>
+      <button class="px-4 py-2 text-sm bg-gray-900 text-white rounded hover:bg-gray-800">
+        Voir le projet
+      </button>
+    </div>
+  </div>
+
+</body>
+</html>

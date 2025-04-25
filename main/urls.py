@@ -18,9 +18,11 @@ urlpatterns = [
     path('conversation/avec/<int:user_id>/', views.conversation_with, name='conversation_with'),
     path('conversation/demarrer/<int:user_id>/', views.start_or_continue_conversation, name='start_conversation'),
     path('inscription/', views.inscription_page, name='inscription'),  
+    path('create-particulier/', views.inscription_page, name='create_particulier'),
+    path('create-professionnel/', views.inscription_page, name='create_professionnel'),
+
+
     path('about', views.about, name='about'),
-    path('create-particulier/', views.create_particulier_profile, name='create_particulier'),
-    path('create-professionnel/', views.create_professionnel_profile, name='create_professionnel'),
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('dashboard/', views.dashboard, name='dashboard'),
@@ -31,12 +33,11 @@ urlpatterns = [
     path('index', views.index, name='index'),
     path('parcours', views.parcours, name='parcours'),
     path('profession', views.profession, name='profession'),
+    
     path('inscription/etape1/', views.inscription_etape1, name='inscription_etape1'),
     path('inscription/etape2/', views.inscription_etape2, name='inscription_etape2'),
     path('inscription/etape3/', views.inscription_etape3, name='inscription_etape3'),
     path('inscription/confirmation/', views.inscription_confirmation, name='inscription_confirmation'),
-
-
     
     path('', include(wagtail_urls)),
 

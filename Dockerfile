@@ -15,11 +15,7 @@ COPY . /app
 # Installer les dépendances Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Installer Tailwind CSS et ses dépendances
-RUN npm install -D tailwindcss postcss autoprefixer
 
-# Générer les fichiers de configuration
-RUN npx tailwindcss init -p
 
 # Exposer le port pour Django
 EXPOSE 9000

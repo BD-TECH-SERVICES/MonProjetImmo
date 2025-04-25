@@ -1,117 +1,138 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Mon Parcours Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Mon Parcours Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.2"></script>
 </head>
 <body class="bg-gray-100 text-gray-900">
-    <header class="bg-white shadow p-4 flex justify-between items-center">
-        <h1 class="text-xl font-bold text-green-600">MonParcoursPro</h1>
-        <input type="text" placeholder="Rechercher un lead, un rendez-vous..." class="border p-2 rounded w-1/3">
-        <div class="flex items-center space-x-4">
-            <span class="relative">
-                <span class="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded-full">2</span>
-                🔔
-            </span>
-            <span class="font-semibold">Marc Dupont</span>
-        </div>
-    </header>
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold text-green-600">MonParcoursPro</h1>
+    <input type="text" placeholder="Rechercher un lead, un rendez-vous..." class="border p-2 rounded w-1/3" />
+    <div class="flex items-center space-x-4">
+      <span class="relative">
+        <span class="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded-full">2</span>
+        🔔
+      </span>
+      <span class="font-semibold">{{ request.user.first_name }} {{ request.user.last_name }}</span>
+    </div>
+  </header>
 
-    <main class="container mx-auto px-6 py-6">
-        <div class="grid grid-cols-4 gap-4 mb-6">
-            <div class="bg-white p-4 rounded-lg shadow flex items-center space-x-4">
-                <span class="bg-green-500 text-white p-3 rounded-full">📊</span>
-                <div>
-                    <p class="text-2xl font-bold">24</p>
-                    <p class="text-gray-600">Leads</p>
-                </div>
-            </div>
-            <div class="bg-white p-4 rounded-lg shadow flex items-center space-x-4">
-                <span class="bg-blue-500 text-white p-3 rounded-full">📅</span>
-                <div>
-                    <p class="text-2xl font-bold">8</p>
-                    <p class="text-gray-600">Rendez-vous</p>
-                </div>
-            </div>
-            <div class="bg-white p-4 rounded-lg shadow flex items-center space-x-4">
-                <span class="bg-yellow-500 text-white p-3 rounded-full">📜</span>
-                <div>
-                    <p class="text-2xl font-bold">3</p>
-                    <p class="text-gray-600">Contrats</p>
-                </div>
-            </div>
-            <div class="bg-white p-4 rounded-lg shadow flex items-center space-x-4">
-                <span class="bg-purple-500 text-white p-3 rounded-full">📈</span>
-                <div>
-                    <p class="text-2xl font-bold">12%</p>
-                    <p class="text-gray-600">Taux conversion</p>
-                </div>
-            </div>
+  <main class="container mx-auto px-6 py-6">
+    <div class="grid grid-cols-4 gap-4 mb-6">
+      <div class="bg-white p-4 rounded-lg shadow flex items-center space-x-4">
+        <span class="bg-green-500 text-white p-3 rounded-full">📊</span>
+        <div>
+          <p class="text-2xl font-bold">{{ nb_leads }}</p>
+          <p class="text-gray-600">Leads</p>
         </div>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow flex items-center space-x-4">
+        <span class="bg-blue-500 text-white p-3 rounded-full">🗕</span>
+        <div>
+          <p class="text-2xl font-bold">{{ nb_rdv }}</p>
+          <p class="text-gray-600">Rendez-vous</p>
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow flex items-center space-x-4">
+        <span class="bg-yellow-500 text-white p-3 rounded-full">📜</span>
+        <div>
+          <p class="text-2xl font-bold">{{ nb_contrats }}</p>
+          <p class="text-gray-600">Contrats</p>
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow flex items-center space-x-4">
+        <span class="bg-purple-500 text-white p-3 rounded-full">📈</span>
+        <div>
+          <p class="text-2xl font-bold">{{ taux_conversion }}%</p>
+          <p class="text-gray-600">Taux conversion</p>
+        </div>
+      </div>
+    </div>
 
-        <div class="grid grid-cols-3 gap-4 mb-6">
-            <div class="col-span-2 bg-white p-6 rounded-lg shadow">
-                <h2 class="text-lg font-bold">Activité récente</h2>
-                <ul class="mt-4 space-y-2 text-gray-600">
-                    <li>✅ Jean Dupont a confirmé un rendez-vous <span class="text-gray-400">il y a 2h</span></li>
-                    <li>➕ Nouveau lead : Marie Martin (Achat) <span class="text-gray-400">il y a 3h</span></li>
-                    <li>📝 Contrat signé avec Pierre Durand <span class="text-gray-400">Hier</span></li>
-                </ul>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h2 class="text-lg font-bold">Assistant IA</h2>
-                <p class="text-gray-600 mt-2">Utilisez notre assistant IA pour vous aider à gérer vos leads et répondre à vos questions.</p>
-                <button class="bg-blue-600 text-white px-4 py-2 rounded mt-4 w-full">Démarrer une conversation</button>
-            </div>
-        </div>
+    <div class="grid grid-cols-3 gap-4 mb-6">
+      <div class="col-span-2 bg-white p-6 rounded-lg shadow">
+        <h2 class="text-lg font-bold">Activité récente</h2>
+        <ul class="mt-4 space-y-2 text-gray-600">
+          <li>✅ Jean Dupont a confirmé un rendez-vous <span class="text-gray-400">il y a 2h</span></li>
+          <li>➕ Nouveau lead : Marie Martin (Achat) <span class="text-gray-400">il y a 3h</span></li>
+          <li>🗑 Contrat signé avec Pierre Durand <span class="text-gray-400">Hier</span></li>
+        </ul>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-lg font-bold">Assistant IA</h2>
+        <p class="text-gray-600 mt-2">Utilisez notre assistant IA pour vous aider à gérer vos leads et répondre à vos questions.</p>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded mt-4 w-full">Démarrer une conversation</button>
+      </div>
+    </div>
 
-        <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-lg font-bold">Gestion des leads</h2>
-            <div class="flex space-x-4 mt-4">
-                <button class="bg-gray-200 px-4 py-2 rounded">Nouveaux</button>
-                <button class="bg-gray-200 px-4 py-2 rounded">Contacts</button>
-                <button class="bg-gray-200 px-4 py-2 rounded">Rendez-vous</button>
-                <button class="bg-gray-200 px-4 py-2 rounded">Contrats</button>
-            </div>
-            <table class="w-full mt-4 border border-gray-200 rounded-lg text-left">
-                <thead class="bg-gray-200">
-                    <tr>
-                        <th class="p-2">Nom</th>
-                        <th class="p-2">Email</th>
-                        <th class="p-2">Téléphone</th>
-                        <th class="p-2">Type</th>
-                        <th class="p-2">Ville</th>
-                        <th class="p-2">Date</th>
-                        <th class="p-2">Statut</th>
-                        <th class="p-2">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="border-t">
-                        <td class="p-2">Client 1</td>
-                        <td class="p-2">client1@example.com</td>
-                        <td class="p-2">0692751268</td>
-                        <td class="p-2">Vente</td>
-                        <td class="p-2">Lille</td>
-                        <td class="p-2">10/03/2025</td>
-                        <td class="p-2">Nouveau</td>
-                        <td class="p-2"><button class="bg-blue-600 text-white px-3 py-1 rounded">Marquer comme contacté</button></td>
-                    </tr>
-                    <tr class="border-t">
-                        <td class="p-2">Client 2</td>
-                        <td class="p-2">client2@example.com</td>
-                        <td class="p-2">0630525105</td>
-                        <td class="p-2">Achat</td>
-                        <td class="p-2">Lyon</td>
-                        <td class="p-2">13/03/2025</td>
-                        <td class="p-2">Nouveau</td>
-                        <td class="p-2"><button class="bg-blue-600 text-white px-3 py-1 rounded">Marquer comme contacté</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </main>
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-lg font-bold">Gestion des leads</h2>
+      <div class="flex space-x-4 mt-4">
+        <button class="bg-gray-200 px-4 py-2 rounded">Nouveaux</button>
+        <button class="bg-gray-200 px-4 py-2 rounded">Contacts</button>
+        <button class="bg-gray-200 px-4 py-2 rounded">Rendez-vous</button>
+        <button class="bg-gray-200 px-4 py-2 rounded">Contrats</button>
+      </div>
+
+      <table class="w-full mt-4 border border-gray-200 rounded-lg text-left">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="p-2">Nom</th>
+            <th class="p-2">Email</th>
+            <th class="p-2">Téléphone</th>
+            <th class="p-2">Type</th>
+            <th class="p-2">Ville</th>
+            <th class="p-2">Date</th>
+            <th class="p-2">Statut</th>
+            <th class="p-2">Action</th>
+          </tr>
+        </thead>
+        <tbody id="liste-projets">
+          {% for projet in projets %}
+          <tr id="projet-{{ projet.id }}" class="border-t">
+            <td class="p-2">{{ projet.utilisateur.last_name }} {{ projet.utilisateur.first_name }}</td>
+            <td class="p-2">{{ projet.utilisateur.email }}</td>
+            <td class="p-2">—</td>
+            <td class="p-2">{{ projet.get_type_projet_display }}</td>
+            <td class="p-2">{{ projet.localisation }}</td>
+            <td class="p-2">{{ projet.date_creation|date:"d/m/Y" }}</td>
+            <td class="p-2">
+              <span class="inline-block rounded-full px-2 py-1 text-xs font-semibold
+                {% if projet.statut == 'contacté' %}
+                  bg-green-100 text-green-700
+                {% else %}
+                  bg-yellow-100 text-yellow-700
+                {% endif %}
+              ">
+                {{ projet.statut|default:"Nouveau" }}
+              </span>
+            </td>
+            <td class="p-2 flex gap-2">
+              {% if projet.statut != 'contacté' %}
+              <button
+                hx-post="{% url 'marquer_contacte' projet.id %}"
+                hx-target="#projet-{{ projet.id }}"
+                hx-swap="outerHTML"
+                class="bg-blue-600 text-white px-3 py-1 rounded"
+              >
+                Marquer comme contacté
+              </button>
+              {% endif %}
+              <a href="mailto:{{ projet.utilisateur.email }}" class="bg-green-600 text-white px-3 py-1 rounded">
+                Mail
+              </a>
+              <a href="{% url 'start_or_continue_conversation' projet.utilisateur.id %}" class="bg-gray-600 text-white px-3 py-1 rounded">
+                Discuter
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
 </body>
 </html>
