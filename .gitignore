@@ -1,51 +1,45 @@
-# Django
-*.pyc
-*.pyo
-*.pyd
+# === Python ===
+*.py[cod]
 __pycache__/
+
+# === Django ===
+# Base de données locale
 *.sqlite3
 db.sqlite3
 
-
-
-
-# IDEs and editors
-.vscode/
-.idea/
-*.swp
-*~
-
-# Django specific
-/static/
-/media/
-/staticfiles/
-**/migrations/*.py[cod]
+# Fichiers de migration sauf __init__.py
+**/migrations/
 !**/migrations/__init__.py
-# Logs
-*.log
-logs/
 
-# Media and static files
+# Fichiers statiques et médias générés
+/static/
 /media/
 staticfiles/
 
-# Byte-compiled / compiled files
-*.py[cod]
-
-# Virtual environment
+# === Environnements virtuels ===
 venv/
 env/
 .venv/
 .venv.bak/
 
-# MacOS
+# === Fichiers de logs ===
+*.log
+logs/
+
+# === Éditeurs ===
+.vscode/
+.idea/
+*.swp
+*~
+
+# === MacOS ===
 .DS_Store
 
-# Docker
+# === Docker ===
 docker-compose.override.yml
 *.env
-__pycache__/
-# Node.js (if using npm or yarn for frontend)
+
+# === Node.js ===
 node_modules/
 npm-debug.log*
 yarn-debug.log*
