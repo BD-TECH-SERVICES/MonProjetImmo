@@ -1,10 +1,16 @@
-from django.shortcuts import render, redirect, get_object_or_404,reverse
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model, authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
-from .forms import *
-from main.models import *
+from django.http import JsonResponse
+from .forms import (
+    UserForm,
+    ParticulierForm,
+    ProfessionnelForm,
+    ProjetForm,
+    ConnexionForm,
+)
+from .models import Projet, Dashboard, Message, Projets
 from django.db.models import Q
 import logging
 
@@ -39,19 +45,12 @@ def inscription_page(request):
             login(request, user)
 
             debug_message = "Redirection vers inscription_etape2"
-            print(debug_message)
-
-            # Tu peux aussi injecter un message JS ici :
-            return HttpResponse(f"""
-                <script>
-                  console.log("✅ Redirection réussie vers inscription_etape2");
-                  window.location.href = "{reverse('inscription_etape2')}";
-                </script>
-            """)
+            logger.debug(debug_message)
+            return redirect('inscription_etape2')
 
         else:
             debug_message = "Formulaire invalide"
-            print(debug_message)
+            logger.debug(debug_message)
 
     else:
         user_form = UserForm()
@@ -88,21 +87,6 @@ def mes_projets(request):
     projets = Projet.objects.filter(utilisateur=request.user.particulier)
     return render(request, 'blog/mes_projets.html', {'projets': projets})
 
-@login_required
-def dashboard(request):
-    logger.info(f"Utilisateur connecté : {request.user} (ID: {request.user.id})")
-    professionnel = getattr(request.user, 'professionnel', None)
-
-    if professionnel is None:
-        return JsonResponse({"error": "Accès réservé aux professionnels."}, status=403)
-
-    dashboard, created = Dashboard.objects.get_or_create(professionnel=professionnel)
-    projets = Projet.objects.all()
-
-    return render(request, 'blog/dashboard.html', {
-        'projets': projets,
-        'debug_info': f"Utilisateur : {request.user}, Projets : {projets.count()}"
-    })
 
 @login_required
 def conversation(request):
@@ -113,12 +97,18 @@ def conversation(request):
         messages.error(request, "L'utilisateur cible n'existe pas.")
         return redirect("dashboard")
 
-    messages_list = Message.objects.filter(sender=request.user).order_by('timestamp')
+    conversation_id = get_conversation_id(request.user, receiver)
+    messages_list = Message.objects.filter(conversation_id=conversation_id).order_by('timestamp')
 
     if request.method == "POST":
         content = request.POST.get("content")
         if content:
-            Message.objects.create(sender=request.user, content=content)
+            Message.objects.create(
+                conversation_id=conversation_id,
+                sender=request.user,
+                receiver=receiver,
+                content=content,
+            )
             return redirect('conversation')
 
     return render(request, 'blog/conversation.html', {'messages': messages_list, 'receiver': receiver})
@@ -127,9 +117,15 @@ def conversation(request):
 def start_or_continue_conversation(request, user_id):
     receiver = get_object_or_404(User, id=user_id)
     existing_messages = Message.objects.filter(sender=request.user, receiver=receiver) | Message.objects.filter(sender=receiver, receiver=request.user)
+    conversation_id = get_conversation_id(request.user, receiver)
 
     if not existing_messages.exists():
-        Message.objects.create(sender=request.user, receiver=receiver, content="Bonjour, je suis intéressé par votre projet !")
+        Message.objects.create(
+            conversation_id=conversation_id,
+            sender=request.user,
+            receiver=receiver,
+            content="Bonjour, je suis intéressé par votre projet !",
+        )
 
     return redirect('conversation_with', user_id=user_id)
 
@@ -232,7 +228,7 @@ def custom_login_view(request):
         form = ConnexionForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
-            password = form.cleaned_data['password1']
+            password = form.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
