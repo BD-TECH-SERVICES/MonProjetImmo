@@ -76,7 +76,7 @@ class Dashboard(models.Model):
 
 
 class Message(models.Model):
-    conversation_id = models.CharField(max_length=255,default = 1)
+    conversation_id = models.CharField(max_length=255)
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_messages')
     receiver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='received_messages', null=True, blank=True)
 

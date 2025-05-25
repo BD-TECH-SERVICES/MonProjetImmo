@@ -16,8 +16,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BASE_DIR = os.path.dirname(PROJECT_DIR)
 
 
 # Quick-start development settings - unsuitable for production
@@ -150,14 +148,12 @@ STATIC_ROOT = BASE_DIR / "staticfiles"  # Correction
 # ✅ Répertoire contenant les fichiers statiques (CSS, JS) pendant le développement
 import os
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # ✅ Assurez-vous que ce chemin existe
+    BASE_DIR / "static"
 ]
 
-
-STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"

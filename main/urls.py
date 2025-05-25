@@ -39,7 +39,6 @@ urlpatterns = [
     path('inscription/etape3/', views.inscription_etape3, name='inscription_etape3'),
     path('inscription/confirmation/', views.inscription_confirmation, name='inscription_confirmation'),
     
-    path('', include(wagtail_urls)),
 
 
 

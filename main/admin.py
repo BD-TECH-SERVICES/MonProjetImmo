@@ -1,5 +1,12 @@
 from django.contrib import admin
-from .models import *
+from .models import (
+    Particulier,
+    Professionnel,
+    CustomUser,
+    Projet,
+    Dashboard,
+    Message,
+)
 
 
 # Inline pour afficher/éditer un profil Particulier
