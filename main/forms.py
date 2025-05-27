@@ -12,11 +12,21 @@ class ConnexionForm(forms.Form):
 User = get_user_model()
 
 class UserForm(UserCreationForm):
+    """User creation form using the email as username."""
+
     email = forms.EmailField(required=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password2']
+        fields = ['email', 'first_name', 'last_name', 'password1', 'password2']
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.username = self.cleaned_data['email']
+        user.email = self.cleaned_data['email']
+        if commit:
+            user.save()
+        return user
 
 
 class ParticulierForm(forms.ModelForm):
