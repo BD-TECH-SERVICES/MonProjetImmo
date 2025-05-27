@@ -22,6 +22,7 @@ class Professionnel(models.Model):
     siret = models.CharField(max_length=14)
     email_pro = models.EmailField()
     secteur_activite = models.CharField(max_length=100, null=True, blank=True)
+    localisation = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -131,5 +132,54 @@ class Projets(models.Model):
 
     date_creation = models.DateTimeField(auto_now_add=True)
 
+    professionnel = models.ForeignKey(
+        Professionnel,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="projets"
+    )
+
     def __str__(self):
         return f"{self.utilisateur} - {self.get_type_projet_display()} - {self.get_type_bien_display()}"
+
+    def assign_professionnel(self):
+        if not self.professionnel:
+            pro = Professionnel.objects.filter(
+                secteur_activite__icontains=self.type_projet,
+            )
+            if self.localisation:
+                pro = pro.filter(localisation__icontains=self.localisation)
+            self.professionnel = pro.first()
+
+    def save(self, *args, **kwargs):
+        creating = self._state.adding
+        self.assign_professionnel()
+        super().save(*args, **kwargs)
+        if creating:
+            for etape in Etape.objects.all():
+                ProjetEtape.objects.create(projet=self, etape=etape)
+
+
+class Etape(models.Model):
+    nom = models.CharField(max_length=100)
+    ordre = models.PositiveIntegerField()
+
+    class Meta:
+        ordering = ["ordre"]
+
+    def __str__(self):
+        return self.nom
+
+
+class ProjetEtape(models.Model):
+    projet = models.ForeignKey(Projets, on_delete=models.CASCADE, related_name="etapes")
+    etape = models.ForeignKey(Etape, on_delete=models.CASCADE)
+    terminee = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ("projet", "etape")
+
+    def __str__(self):
+        return f"{self.projet} - {self.etape}"
+

@@ -27,8 +27,8 @@ def inscription_page(request):
             active_form = 'professionnel'
 
         if user_form.is_valid() and profile_form.is_valid():
-            user = user_form.save(commit=False)
-            user.set_password(user_form.cleaned_data['password1'])
+
+            user = user_form.save()
             user.user_type = user_type
             user.save()
 
@@ -37,22 +37,10 @@ def inscription_page(request):
             profile.save()
 
             login(request, user)
-
-            debug_message = "Redirection vers inscription_etape2"
-            print(debug_message)
-
-            # Tu peux aussi injecter un message JS ici :
-            return HttpResponse(f"""
-                <script>
-                  console.log("✅ Redirection réussie vers inscription_etape2");
-                  window.location.href = "{reverse('inscription_etape2')}";
-                </script>
-            """)
-
+            messages.success(request, "Inscription réussie !")
+            return redirect("inscription_etape2")
         else:
-            debug_message = "Formulaire invalide"
-            print(debug_message)
-
+            messages.error(request, "Veuillez corriger les erreurs ci-dessous.")
     else:
         user_form = UserForm()
         profile_form = ParticulierForm()
@@ -265,3 +253,22 @@ def dashboard(request):
         'nb_contrats': nb_contrats,
         'taux_conversion': taux_conversion,
     })
+
+
+@login_required
+def marketplace(request):
+    secteur = request.GET.get('secteur')
+    localisation = request.GET.get('localisation')
+    pros = Professionnel.objects.all()
+    if secteur:
+        pros = pros.filter(secteur_activite__icontains=secteur)
+    if localisation:
+        pros = pros.filter(localisation__icontains=localisation)
+    return render(request, 'blog/marketplace.html', {'professionnels': pros})
+
+
+@login_required
+def projet_detail(request, projet_id):
+    projet = get_object_or_404(Projets, id=projet_id, utilisateur=request.user)
+    etapes = projet.etapes.select_related('etape')
+    return render(request, 'blog/projet_detail.html', {'projet': projet, 'etapes': etapes})
