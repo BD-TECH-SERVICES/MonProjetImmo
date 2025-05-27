@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h1 class="mb-4">Marketplace des professionnels</h1>
+  <form method="get" class="mb-3 row g-2">
+    <div class="col">
+      <input type="text" name="secteur" placeholder="Secteur" value="{{request.GET.secteur}}" class="form-control">
+    </div>
+    <div class="col">
+      <input type="text" name="localisation" placeholder="Localisation" value="{{request.GET.localisation}}" class="form-control">
+    </div>
+    <div class="col-auto">
+      <button type="submit" class="btn btn-primary">Filtrer</button>
+    </div>
+  </form>
+  <table class="table table-striped">
+    <thead>
+      <tr><th>Société</th><th>Secteur</th><th>Localisation</th></tr>
+    </thead>
+    <tbody>
+      {% for pro in professionnels %}
+      <tr>
+        <td>{{ pro.nom_societe }}</td>
+        <td>{{ pro.secteur_activite }}</td>
+        <td>{{ pro.localisation }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="3">Aucun professionnel trouvé.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h1>{{ projet.get_type_projet_display }} - {{ projet.get_type_bien_display }}</h1>
+  <p><strong>Budget:</strong> {{ projet.budget }} €</p>
+  <p><strong>Localisation:</strong> {{ projet.localisation }}</p>
+  <h3 class="mt-3">Avancement</h3>
+  <ul class="list-group">
+    {% for pe in etapes %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      {{ pe.etape.nom }}
+      {% if pe.terminee %}
+      <span class="badge text-bg-success">✔</span>
+      {% else %}
+      <span class="badge text-bg-secondary">En cours</span>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

@@ -265,3 +265,22 @@ def dashboard(request):
         'nb_contrats': nb_contrats,
         'taux_conversion': taux_conversion,
     })
+
+
+@login_required
+def marketplace(request):
+    secteur = request.GET.get('secteur')
+    localisation = request.GET.get('localisation')
+    pros = Professionnel.objects.all()
+    if secteur:
+        pros = pros.filter(secteur_activite__icontains=secteur)
+    if localisation:
+        pros = pros.filter(localisation__icontains=localisation)
+    return render(request, 'blog/marketplace.html', {'professionnels': pros})
+
+
+@login_required
+def projet_detail(request, projet_id):
+    projet = get_object_or_404(Projets, id=projet_id, utilisateur=request.user)
+    etapes = projet.etapes.select_related('etape')
+    return render(request, 'blog/projet_detail.html', {'projet': projet, 'etapes': etapes})

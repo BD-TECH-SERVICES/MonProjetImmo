@@ -33,6 +33,8 @@ urlpatterns = [
     path('index', views.index, name='index'),
     path('parcours', views.parcours, name='parcours'),
     path('profession', views.profession, name='profession'),
+    path('marketplace/', views.marketplace, name='marketplace'),
+    path('projet/<int:projet_id>/', views.projet_detail, name='projet_detail'),
     
     path('inscription/etape1/', views.inscription_etape1, name='inscription_etape1'),
     path('inscription/etape2/', views.inscription_etape2, name='inscription_etape2'),
