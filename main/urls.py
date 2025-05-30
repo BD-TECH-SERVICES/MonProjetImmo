@@ -15,6 +15,7 @@ urlpatterns = [
     path("documents/", include(wagtaildocs_urls)),
     path('conversations/', views.dashboard_conversations, name='dashboard_conversations'),
     path('conversation/', views.conversation, name='conversation'),
+    path('conversation/<int:receiver_id>/', views.conversation, name='conversation'),
     path('conversation/avec/<int:user_id>/', views.conversation_with, name='conversation_with'),
     path('conversation/demarrer/<int:user_id>/', views.start_or_continue_conversation, name='start_conversation'),
     path('inscription/', views.inscription_page, name='inscription'),  
@@ -23,6 +24,8 @@ urlpatterns = [
 
 
     path('about', views.about, name='about'),
+    path('nos-missions', views.nos_missions, name='nos_missions'),
+    path('credit', views.credit, name='credit'),
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('dashboard/', views.dashboard, name='dashboard'),

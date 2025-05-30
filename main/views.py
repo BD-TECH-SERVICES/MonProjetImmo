@@ -70,13 +70,25 @@ def inscription_page(request):
 def about(request):
     return render(request, 'about.html')
 
+def nos_missions(request):
+    return render(request, 'blog/nos_missions.html')
+
+def credit(request):
+    return render(request, 'blog/credit.html')
+
 def index(request):
     return render(request, 'test/index.html')
 
+@login_required
 def parcours(request):
+    if request.user.user_type != 'particulier':
+        return redirect('dashboard')
     return render(request, 'test/parcours.html')
 
+@login_required
 def profession(request):
+    if request.user.user_type != 'professionnel':
+        return redirect('parcours')
     return render(request, 'test/profession.html')
 
 @login_required
@@ -89,13 +101,17 @@ def mes_projets(request):
 
 
 @login_required
-def conversation(request):
-    receiver_id = 1
+def conversation(request, receiver_id=None):
+    if receiver_id is None:
+        receiver_id = request.GET.get("receiver_id")
+    if receiver_id is None:
+        messages.error(request, "Aucun destinataire spécifié.")
+        return redirect("dashboard_conversations")
     try:
         receiver = User.objects.get(id=receiver_id)
     except User.DoesNotExist:
         messages.error(request, "L'utilisateur cible n'existe pas.")
-        return redirect("dashboard")
+        return redirect("dashboard_conversations")
 
     conversation_id = get_conversation_id(request.user, receiver)
     messages_list = Message.objects.filter(conversation_id=conversation_id).order_by('timestamp')
@@ -109,7 +125,7 @@ def conversation(request):
                 receiver=receiver,
                 content=content,
             )
-            return redirect('conversation')
+            return redirect('conversation', receiver_id=receiver_id)
 
     return render(request, 'blog/conversation.html', {'messages': messages_list, 'receiver': receiver})
 
