@@ -11,8 +11,14 @@ class ViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_static_pages_get(self):
-        self.assertEqual(self.client.get(reverse('nos_missions')).status_code, 200)
-        self.assertEqual(self.client.get(reverse('credit')).status_code, 200)
+        static_pages = [
+            'nos_missions', 'credit', 'achat', 'vente', 'investissement',
+            'primo_accedant', 'notre_mission', 'nos_partenaires',
+            'temoignages', 'contact'
+        ]
+        for name in static_pages:
+            with self.subTest(page=name):
+                self.assertEqual(self.client.get(reverse(name)).status_code, 200)
 
     def test_protected_views_redirect(self):
         response = self.client.get(reverse('parcours'))
