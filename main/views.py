@@ -76,6 +76,30 @@ def nos_missions(request):
 def credit(request):
     return render(request, 'blog/credit.html')
 
+def achat(request):
+    return render(request, 'blog/achat.html')
+
+def vente(request):
+    return render(request, 'blog/vente.html')
+
+def investissement(request):
+    return render(request, 'blog/investissement.html')
+
+def primo_accedant(request):
+    return render(request, 'blog/primo_accedant.html')
+
+def notre_mission(request):
+    return render(request, 'blog/notre_mission.html')
+
+def nos_partenaires(request):
+    return render(request, 'blog/nos_partenaires.html')
+
+def temoignages(request):
+    return render(request, 'blog/temoignages.html')
+
+def contact(request):
+    return render(request, 'blog/contact.html')
+
 def index(request):
     return render(request, 'test/index.html')
 

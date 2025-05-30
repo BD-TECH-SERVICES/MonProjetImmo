@@ -5,14 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mon Parcours Immo</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  {% load static %}
 </head>
 <body class="text-gray-900">
-  <header class="text-center py-16 bg-gradient-to-b from-purple-200 via-purple-100 to-white">
+  <header class="relative text-center py-16 bg-gradient-to-b from-purple-200 via-purple-100 to-white">
+    <div class="absolute top-4 right-4">
+      {% if request.user.is_authenticated %}
+        <img src="{% static 'assets/img/logo-dark.png' %}" alt="Connecté" class="h-10 w-auto">
+      {% else %}
+        <img src="{% static 'assets/img/logo-white.png' %}" alt="Déconnecté" class="h-10 w-auto">
+      {% endif %}
+    </div>
     <h1 class="text-5xl font-bold text-purple-700">Mon Parcours Immo</h1>
     <p class="text-lg text-gray-600 mt-4">L'immobilier clé en main : simplifiez vos démarches d'achat et de vente grâce à notre réseau de professionnels qualifiés.</p>
     <div class="mt-6 flex justify-center space-x-4">
-      <button class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold">Je suis un particulier</button>
-      <button class="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg font-semibold">Je suis un professionnel</button>
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'parcours' %}" class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold">Je suis un particulier</a>
+        <a href="{% url 'profession' %}" class="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg font-semibold">Je suis un professionnel</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold">Se connecter</a>
+      {% endif %}
     </div>
   </header>
 
@@ -37,7 +49,11 @@
       </div>
     </div>
     <div class="mt-8">
-      <button class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold">Découvrir tous les parcours</button>
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'parcours' %}" class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold">Découvrir tous les parcours</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold">Se connecter pour découvrir</a>
+      {% endif %}
     </div>
   </section>
 
@@ -64,45 +80,15 @@
     <h2 class="text-3xl font-bold text-purple-700">Prêt à commencer votre parcours immobilier ?</h2>
     <p class="text-gray-600 mt-2">Inscrivez-vous gratuitement et accédez à notre réseau de professionnels.</p>
     <div class="mt-6 flex justify-center space-x-4">
-      <button class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold">Particulier</button>
-      <button class="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg font-semibold">Professionnel</button>
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'parcours' %}" class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold">Particulier</a>
+        <a href="{% url 'profession' %}" class="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg font-semibold">Professionnel</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold">Connexion requise</a>
+      {% endif %}
     </div>
   </section>
 
-  <footer class="text-center py-8 bg-gray-100 text-gray-600 mt-12">
-    <div class="grid grid-cols-4 gap-6 px-16 text-left">
-      <div>
-        <h3 class="font-bold">Mon Parcours Immo</h3>
-        <p>La plateforme qui simplifie vos projets immobiliers.</p>
-      </div>
-      <div>
-        <h3 class="font-bold">Parcours</h3>
-        <ul>
-          <li>Achat</li>
-          <li>Vente</li>
-          <li>Investissement</li>
-          <li>Primo-accédant</li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="font-bold">À propos</h3>
-        <ul>
-          <li>Notre mission</li>
-          <li>Nos partenaires</li>
-          <li>Témoignages</li>
-          <li>Contact</li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="font-bold">Légal</h3>
-        <ul>
-          <li>Mentions légales</li>
-          <li>Politique de confidentialité</li>
-          <li>CGU</li>
-        </ul>
-      </div>
-    </div>
-    <p class="mt-6">&copy; 2025 Mon Parcours Immo - Tous droits réservés.</p>
-  </footer>
+  {% include 'test/footerT.html' %}
 </body>
 </html>
