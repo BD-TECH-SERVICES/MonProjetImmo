@@ -1,0 +1,255 @@
+[
+  {
+    "model": "immobilier.typeprofessionnel",
+    "pk": 1,
+    "fields": {
+      "nom": "Agent immobilier",
+      "description": "Professionnel de l'immobilier pour la transaction",
+      "icone": "fa-user-tie"
+    }
+  },
+  {
+    "model": "immobilier.typeprofessionnel",
+    "pk": 2,
+    "fields": {
+      "nom": "Notaire",
+      "description": "Officier ministériel pour les actes authentiques",
+      "icone": "fa-gavel"
+    }
+  },
+  {
+    "model": "immobilier.typeprofessionnel",
+    "pk": 3,
+    "fields": {
+      "nom": "Conseiller bancaire",
+      "description": "Spécialiste du financement immobilier",
+      "icone": "fa-university"
+    }
+  },
+  {
+    "model": "immobilier.typeprofessionnel",
+    "pk": 4,
+    "fields": {
+      "nom": "Expert immobilier",
+      "description": "Expert pour l'estimation et l'évaluation de biens",
+      "icone": "fa-search-dollar"
+    }
+  },
+  {
+    "model": "immobilier.typeprofessionnel",
+    "pk": 5,
+    "fields": {
+      "nom": "Diagnostiqueur immobilier",
+      "description": "Professionnel pour les diagnostics obligatoires",
+      "icone": "fa-clipboard-check"
+    }
+  },
+  {
+    "model": "immobilier.etapeprojet",
+    "pk": 1,
+    "fields": {
+      "type_etape": "definition",
+      "type_projet": "achat",
+      "ordre": 1,
+      "titre": "Définition du projet",
+      "description": "Définir précisément votre projet d'achat (budget, localisation, type de bien, etc.)",
+      "est_obligatoire": true,
+      "professionnels_associes": [1]
+    }
+  },
+  {
+    "model": "immobilier.etapeprojet",
+    "pk": 2,
+    "fields": {
+      "type_etape": "recherche",
+      "type_projet": "achat",
+      "ordre": 2,
+      "titre": "Recherche de biens",
+      "description": "Rechercher des biens correspondant à vos critères",
+      "est_obligatoire": true,
+      "professionnels_associes": [1]
+    }
+  },
+  {
+    "model": "immobilier.etapeprojet",
+    "pk": 3,
+    "fields": {
+      "type_etape": "visites",
+      "type_projet": "achat",
+      "ordre": 3,
+      "titre": "Visites des biens",
+      "description": "Visiter les biens sélectionnés",
+      "est_obligatoire": true,
+      "professionnels_associes": [1]
+    }
+  },
+  {
+    "model": "immobilier.etapeprojet",
+    "pk": 4,
+    "fields": {
+      "type_etape": "offres",
+      "type_projet": "achat",
+      "ordre": 4,
+      "titre": "Offres et négociations",
+      "description": "Faire une offre et négocier le prix",
+      "est_obligatoire": true,
+      "professionnels_associes": [1, 2]
+    }
+  },
+  {
+    "model": "immobilier.etapeprojet",
+    "pk": 5,
+    "fields": {
+      "type_etape": "compromis",
+      "type_projet": "achat",
+      "ordre": 5,
+      "titre": "Signature du compromis",
+      "description": "Signer l'avant-contrat de vente",
+      "est_obligatoire": true,
+      "professionnels_associes": [2]
+    }
+  },
+  {
+    "model": "immobilier.etapeprojet",
+    "pk": 6,
+    "fields": {
+      "type_etape": "pret",
+      "type_projet": "achat",
+      "ordre": 6,
+      "titre": "Obtention du prêt",
+      "description": "Finaliser le financement auprès de votre banque",
+      "est_obligatoire": true,
+      "professionnels_associes": [3]
+    }
+  },
+  {
+    "model": "immobilier.etapeprojet",
+    "pk": 7,
+    "fields": {
+      "type_etape": "acte",
+      "type_projet": "achat",
+      "ordre": 7,
+      "titre": "Signature de l'acte définitif",
+      "description": "Signer l'acte de vente chez le notaire",
+      "est_obligatoire": true,
+      "professionnels_associes": [2]
+    }
+  },
+  {
+    "model": "immobilier.etapeprojet",
+    "pk": 8,
+    "fields": {
+      "type_etape": "remise_cles",
+      "type_projet": "achat",
+      "ordre": 8,
+      "titre": "Remise des clés",
+      "description": "Prendre possession de votre nouveau bien",
+      "est_obligatoire": true,
+      "professionnels_associes": [1, 2]
+    }
+  },
+  {
+    "model": "immobilier.etapeprojet",
+    "pk": 9,
+    "fields": {
+      "type_etape": "estimation",
+      "type_projet": "vente",
+      "ordre": 1,
+      "titre": "Estimation du bien",
+      "description": "Faire estimer votre bien par un professionnel",
+      "est_obligatoire": true,
+      "professionnels_associes": [1, 4]
+    }
+  },
+  {
+    "model": "immobilier.etapeprojet",
+    "pk": 10,
+    "fields": {
+      "type_etape": "diagnostics",
+      "type_projet": "vente",
+      "ordre": 2,
+      "titre": "Diagnostics immobiliers",
+      "description": "Faire réaliser les diagnostics obligatoires",
+      "est_obligatoire": true,
+      "professionnels_associes": [5]
+    }
+  },
+  {
+    "model": "immobilier.etapeprojet",
+    "pk": 11,
+    "fields": {
+      "type_etape": "valorisation",
+      "type_projet": "vente",
+      "ordre": 3,
+      "titre": "Valorisation du bien",
+      "description": "Mettre en valeur votre bien pour la vente",
+      "est_obligatoire": false,
+      "professionnels_associes": [1, 4]
+    }
+  },
+  {
+    "model": "immobilier.etapeprojet",
+    "pk": 12,
+    "fields": {
+      "type_etape": "commercialisation",
+      "type_projet": "vente",
+      "ordre": 4,
+      "titre": "Commercialisation",
+      "description": "Mise en ligne et publicité pour la vente",
+      "est_obligatoire": true,
+      "professionnels_associes": [1]
+    }
+  },
+  {
+    "model": "immobilier.etapeprojet",
+    "pk": 13,
+    "fields": {
+      "type_etape": "visites_vente",
+      "type_projet": "vente",
+      "ordre": 5,
+      "titre": "Organisation des visites",
+      "description": "Organiser et réaliser les visites avec les acheteurs potentiels",
+      "est_obligatoire": true,
+      "professionnels_associes": [1]
+    }
+  },
+  {
+    "model": "immobilier.etapeprojet",
+    "pk": 14,
+    "fields": {
+      "type_etape": "compromis_vente",
+      "type_projet": "vente",
+      "ordre": 6,
+      "titre": "Signature du compromis",
+      "description": "Signer l'avant-contrat de vente avec l'acheteur",
+      "est_obligatoire": true,
+      "professionnels_associes": [1, 2]
+    }
+  },
+  {
+    "model": "immobilier.etapeprojet",
+    "pk": 15,
+    "fields": {
+      "type_etape": "acte_vente",
+      "type_projet": "vente",
+      "ordre": 7,
+      "titre": "Signature de l'acte de vente",
+      "description": "Finaliser la vente chez le notaire",
+      "est_obligatoire": true,
+      "professionnels_associes": [2]
+    }
+  },
+  {
+    "model": "immobilier.etapeprojet",
+    "pk": 16,
+    "fields": {
+      "type_etape": "suivi_apres_vente",
+      "type_projet": "vente",
+      "ordre": 8,
+      "titre": "Suivi après-vente",
+      "description": "Clôture du dossier et suivi post-vente",
+      "est_obligatoire": true,
+      "professionnels_associes": [1, 2]
+    }
+  }
+]

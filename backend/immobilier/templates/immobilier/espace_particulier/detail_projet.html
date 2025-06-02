@@ -1,0 +1,452 @@
+{% extends 'immobilier/base.html' %}
+
+{% block title %}Détails du projet - {{ projet.get_type_projet_display }} {{ projet.get_type_bien_display }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'immobilier:accueil' %}">Accueil</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'immobilier:espace_particulier' %}">Mon espace</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Détails du projet</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1 class="h4 mb-0">
+                            <i class="fas fa-home me-2 text-primary"></i>
+                            {{ projet.get_type_projet_display|capfirst }} d'un {{ projet.get_type_bien_display|lower }}
+                        </h1>
+                        <div class="btn-group">
+                            <a href="{% url 'immobilier:modifier_projet' projet.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-edit me-1"></i> Modifier
+                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                <i class="fas fa-trash me-1"></i> Supprimer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h3 class="h5 card-title text-muted mb-3">
+                                        <i class="fas fa-info-circle me-2 text-primary"></i>Informations générales
+                                    </h3>
+                                    <ul class="list-unstyled mb-0">
+                                        <li class="mb-2">
+                                            <strong>Type de projet :</strong>
+                                            <span class="badge bg-primary ms-2">{{ projet.get_type_projet_display }}</span>
+                                        </li>
+                                        <li class="mb-2">
+                                            <strong>Type de bien :</strong>
+                                            <span class="badge bg-secondary ms-2">{{ projet.get_type_bien_display }}</span>
+                                        </li>
+                                        <li class="mb-2">
+                                            <strong>Budget :</strong>
+                                            <span class="ms-2">De {{ projet.budget_min|default:"0" }} € à {{ projet.budget_max|default:"0" }} €</span>
+                                        </li>
+                                        <li class="mb-2">
+                                            <strong>Surface :</strong>
+                                            <span class="ms-2">De {{ projet.surface_min }} à {{ projet.surface_max }} m²</span>
+                                        </li>
+                                        <li>
+                                            <strong>Secteur géographique :</strong>
+                                            <span class="ms-2">{{ projet.secteur_geographique|default:"Non spécifié" }}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mt-3 mt-md-0">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h3 class="h5 card-title text-muted mb-3">
+                                        <i class="fas fa-calendar-alt me-2 text-primary"></i>Détails
+                                    </h3>
+                                    <ul class="list-unstyled mb-0">
+                                        <li class="mb-2">
+                                            <strong>Date de création :</strong>
+                                            <span class="ms-2">{{ projet.date_creation|date:"d/m/Y à H:i" }}</span>
+                                        </li>
+                                        <li class="mb-2">
+                                            <strong>Dernière modification :</strong>
+                                            <span class="ms-2">{{ projet.date_mise_a_jour|date:"d/m/Y à H:i" }}</span>
+                                        </li>
+                                        <li class="mb-2">
+                                            <strong>Statut :</strong>
+                                            <span class="badge bg-success ms-2">Actif</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h3 class="h5 card-title text-muted mb-3">
+                                <i class="fas fa-align-left me-2 text-primary"></i>Description détaillée
+                            </h3>
+                            {% if projet.description %}
+                                <div class="prose">
+                                    {{ projet.description|linebreaks }}
+                                </div>
+                            {% else %}
+                                <p class="text-muted fst-italic">Aucune description fournie.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Section Roadmap -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h2 class="h5 mb-0">
+                                <i class="fas fa-map-signs me-2 text-primary"></i>Avancement du projet
+                            </h2>
+                        </div>
+                        <div class="card-body">
+                            <!-- Barre de progression -->
+                            <div class="progress mb-4" style="height: 25px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+                                     role="progressbar" 
+                                     style="width: {{ progression }}%;" 
+                                     aria-valuenow="{{ progression }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                    {{ progression }}%
+                                </div>
+                            </div>
+                            
+                            <!-- Timeline des étapes -->
+                            <div class="timeline">
+                                {% for etape_data in etapes %}
+                                    <div class="timeline-item {% if etape_data.statut == 'terminee' %}completed{% elif etape_data.statut == 'en_cours' %}active{% endif %}">
+                                        <div class="timeline-marker">
+                                            {% if etape_data.statut == 'terminee' %}
+                                                <i class="fas fa-check-circle text-success"></i>
+                                            {% elif etape_data.statut == 'en_cours' %}
+                                                <div class="spinner-grow spinner-grow-sm text-primary" role="status">
+                                                    <span class="visually-hidden">Chargement...</span>
+                                                </div>
+                                            {% else %}
+                                                <i class="far fa-circle text-muted"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="timeline-content">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h5 class="mb-1">{{ etape_data.etape.titre }}</h5>
+                                                {% if etape_data.instance and etape_data.instance.date_fin %}
+                                                    <small class="text-muted">Terminé le {{ etape_data.instance.date_fin|date:"d/m/Y" }}</small>
+                                                {% endif %}
+                                            </div>
+                                            <p class="text-muted small mb-1">{{ etape_data.etape.description }}</p>
+                                            
+                                            <!-- Professionnels associés -->
+                                            {% if etape_data.professionnels %}
+                                                <div class="mt-2">
+                                                    <small class="text-muted d-block mb-1">Professionnels :</small>
+                                                    <div class="d-flex flex-wrap gap-2">
+                                                        {% for pro in etape_data.professionnels %}
+                                                            <span class="badge bg-light text-dark border">
+                                                                <i class="fas fa-{{ pro.icone }} me-1"></i>{{ pro.nom }}
+                                                            </span>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- Boutons de navigation -->
+                            <div class="d-flex justify-content-between mt-4">
+                                <div class="btn-group" role="group">
+                                    <form method="post" action="{% url 'immobilier:changer_etape' projet.id %}" class="me-2">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="reculer">
+                                        <button type="submit" class="btn btn-outline-secondary" {% if not peut_reculer %}disabled{% endif %}>
+                                            <i class="fas fa-arrow-left me-1"></i> Précédent
+                                        </button>
+                                    </form>
+                                    
+                                    <form method="post" action="{% url 'immobilier:changer_etape' projet.id %}" class="me-2">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="avancer">
+                                        <button type="submit" class="btn btn-primary" {% if not peut_avancer %}disabled{% endif %}>
+                                            Suivant <i class="fas fa-arrow-right ms-1"></i>
+                                        </button>
+                                    </form>
+                                    
+                                    <a href="{% url 'immobilier:changer_etape' projet.id %}" class="btn btn-outline-primary">
+                                        <i class="fas fa-pen me-1"></i> Modifier l'étape
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'immobilier:espace_particulier' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Retour à la liste
+                        </a>
+                        <a href="{% url 'immobilier:modifier_projet' projet.id %}" class="btn btn-primary">
+                            <i class="fas fa-edit me-1"></i> Modifier le projet
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Section du professionnel et de la conversation -->
+            <div class="card shadow-sm mb-4">
+                {% if conversation or professionnel_conversation %}
+                    {% with pro=professionnel_conversation|default:conversation.professionnel %}
+                    <div class="card-header bg-white">
+                        <h2 class="h5 mb-0 d-flex align-items-center">
+                            <i class="fas fa-user-tie me-2 text-primary"></i>Professionnel associé
+                            <span class="badge bg-info ms-2">En conversation</span>
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Informations du professionnel -->
+                            <div class="col-md-4 text-center">
+                                {% if pro.profilprofessionnel.photo_profil %}
+                                    <img src="{{ pro.profilprofessionnel.photo_profil.url }}" alt="{{ pro.get_full_name }}" class="rounded-circle mb-3" width="100" height="100">
+                                {% else %}
+                                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                                        <i class="fas fa-user-tie fa-4x text-muted"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-8">
+                                <!-- Nom et métier mis en évidence -->
+                                <h3 class="h4 mb-1 text-primary">
+                                    {{ pro.get_full_name }}
+                                    <small class="text-muted">@{{ pro.username }}</small>
+                                </h3>
+                                {% if pro.profilprofessionnel and pro.profilprofessionnel.specialite %}
+                                    <h4 class="h5 mb-3 text-secondary">{{ pro.profilprofessionnel.specialite }}</h4>
+                                {% endif %}
+                                
+                                <ul class="list-unstyled mb-3">
+                                    {% if pro.profilprofessionnel %}
+                                        {% if pro.profilprofessionnel.entreprise_nom %}
+                                            <li class="mb-1">
+                                                <i class="fas fa-building me-2 text-primary"></i>
+                                                <strong>Entreprise:</strong> {{ pro.profilprofessionnel.entreprise_nom }}
+                                            </li>
+                                        {% endif %}
+                                        {% if pro.profilprofessionnel.telephone %}
+                                            <li class="mb-1">
+                                                <i class="fas fa-phone me-2 text-primary"></i>
+                                                <strong>Téléphone:</strong> <a href="tel:{{ pro.profilprofessionnel.telephone }}">{{ pro.profilprofessionnel.telephone }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
+                                    <li class="mb-1">
+                                        <i class="fas fa-envelope me-2 text-primary"></i>
+                                        <strong>Email:</strong> <a href="mailto:{{ pro.email }}">{{ pro.email }}</a>
+                                    </li>
+                                </ul>
+                                
+                                <div class="d-flex gap-2">
+                                    {% if pro.profilprofessionnel.telephone %}
+                                        <a href="tel:{{ pro.profilprofessionnel.telephone }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-phone-alt me-1"></i> Appeler
+                                        </a>
+                                    {% endif %}
+                                    <a href="mailto:{{ pro.email }}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-envelope me-1"></i> Email
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Section conversation -->
+                    <div class="card-footer bg-light">
+                        <h3 class="h6 mb-3">
+                            <i class="fas fa-comments me-2 text-primary"></i>Conversation avec {{ pro.get_full_name }}
+                        </h3>
+                            <div class="conversation-preview mb-3" style="max-height: 200px; overflow-y: auto;">
+                                {% for message in conversation.messages.all|slice:":5" %}
+                                    <div class="mb-2">
+                                        <div class="d-flex justify-content-between small text-muted mb-1">
+                                            <span>{% if message.expediteur == request.user %}Vous{% else %}{{ message.expediteur.get_full_name|default:message.expediteur.username }}{% endif %}</span>
+                                            <span title="{{ message.date_creation|date:'d/m/Y H:i' }}">{{ message.date_creation|timesince }}</span>
+                                        </div>
+                                        <div class="p-2 {% if message.expediteur == request.user %}bg-light text-dark{% else %}bg-primary text-white{% endif %} rounded">
+                                            {{ message.contenu|truncatewords:20 }}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="d-grid">
+                                <a href="{% url 'immobilier:conversation_detail' conversation.id %}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-comment-dots me-1"></i> Voir la conversation complète
+                                    {% if messages_non_lus > 0 %}
+                                        <span class="badge bg-danger ms-1">{{ messages_non_lus }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary ms-1">{{ conversation.messages.count }}</span>
+                                    {% endif %}
+                                </a>
+                            </div>
+                    </div>
+                    {% endwith %}
+                {% else %}
+                    <div class="card-header bg-white">
+                        <h2 class="h5 mb-0">
+                            <i class="fas fa-user-tie me-2 text-primary"></i>Professionnel
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center py-4">
+                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                                <i class="fas fa-user-tie fa-4x text-muted"></i>
+                            </div>
+                            <h4 class="h6 mb-2">Aucun professionnel associé</h4>
+                            <p class="text-muted small mb-3">Les professionnels intéressés par votre projet vous contacteront directement.</p>
+                            <a href="#" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-search me-1"></i> Trouver un professionnel
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light">
+                        <div class="text-center py-3">
+                            <i class="fas fa-comment-slash fa-2x text-muted mb-2"></i>
+                            <p class="text-muted small">Aucun professionnel n'est associé à ce projet.</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Section avancement du projet -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h3 class="h5 mb-3">
+                        <i class="fas fa-map-marker-alt me-2 text-primary"></i>Étape actuelle
+                    </h3>
+                    {% if projet.etape_actuelle %}
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                    <i class="fas fa-{{ projet.etape_actuelle.icone|default:'check' }}"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="h6 mb-0">{{ projet.etape_actuelle.titre }}</h4>
+                                <p class="small text-muted mb-0">{{ projet.etape_actuelle.description|truncatewords:10 }}</p>
+                            </div>
+                        </div>
+                        <div class="progress mb-2" style="height: 8px;">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: {{ progression }}%" 
+                                 aria-valuenow="{{ progression }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted">
+                            <span>Début</span>
+                            <span>{{ progression }}% complété</span>
+                            <span>Terminé</span>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle me-1"></i> En attente du démarrage du projet
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- La section des actions rapides a été déplacée plus bas -->
+            
+            <!-- Section des actions rapides -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h2 class="h5 mb-0">
+                        <i class="fas fa-bolt me-2 text-primary"></i>Actions rapides
+                    </h2>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fas fa-bell me-2 text-warning"></i>Créer une alerte email
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fas fa-share-alt me-2 text-primary"></i>Partager ce projet
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fas fa-file-pdf me-2 text-danger"></i>Exporter en PDF
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action text-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="fas fa-trash me-2"></i>Supprimer ce projet
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Section d'aide -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h2 class="h5 mb-0">
+                        <i class="fas fa-question-circle me-2 text-primary"></i>Besoin d'aide ?
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <p>Notre équipe est à votre disposition pour vous accompagner dans votre projet immobilier.</p>
+                    <a href="#" class="btn btn-outline-primary w-100 mb-2">
+                        <i class="fas fa-phone-alt me-1"></i> Nous contacter
+                    </a>
+                    <a href="#" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-comments me-1"></i> Poser une question
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmer la suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer définitivement ce projet ? Cette action est irréversible.</p>
+                <div class="alert alert-warning mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Toutes les données associées à ce projet seront également supprimées.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <form method="post" action="{% url 'immobilier:supprimer_projet' projet.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i> Supprimer définitivement
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Initialisation des tooltips Bootstrap
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+})
+</script>
+{% endblock %}

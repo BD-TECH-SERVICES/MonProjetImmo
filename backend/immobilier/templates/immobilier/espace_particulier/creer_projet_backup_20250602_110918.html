@@ -1,0 +1,1246 @@
+{% extends 'immobilier/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Nouveau projet immobilier{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-section {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+    }
+    .form-section h4 {
+        color: #0d6efd;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #0d6efd;
+    }
+    .form-required:after {
+        content: " *";
+        color: #dc3545;
+    }
+    
+    /* Styles pour les onglets */
+    .nav-tabs .nav-link {
+        border: 1px solid transparent;
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .nav-tabs .nav-link.active {
+        color: #0d6efd;
+        background-color: #fff;
+        border-color: #dee2e6 #dee2e6 #fff;
+        border-bottom: 2px solid #0d6efd;
+    }
+    
+    .nav-tabs .nav-link:hover:not(.active) {
+        border-color: #e9ecef #e9ecef #dee2e6;
+        background-color: #f8f9fa;
+    }
+    
+    /* Styles pour les boutons radio personnalisés */
+    .btn-radio {
+        display: inline-block;
+        margin-right: 10px;
+    }
+    
+    .btn-radio input[type="radio"] {
+        display: none;
+    }
+    
+    .btn-radio label {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .btn-radio input[type="radio"]:checked + label {
+        background-color: #0d6efd;
+        color: white;
+        border-color: #0a58ca;
+    }
+    
+    .btn-radio label:hover {
+        background-color: #e9ecef;
+    }
+    
+    .btn-radio input[type="radio"]:checked + label:hover {
+        background-color: #0b5ed7;
+    }
+    
+    /* Styles pour la roadmap visuelle */
+    .roadmap {
+        position: relative;
+        padding-left: 1.5rem;
+    }
+
+    .roadmap-item {
+        position: relative;
+        padding-bottom: 1.5rem;
+    }
+
+    .roadmap-step {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .roadmap-marker {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid #dee2e6;
+        flex-shrink: 0;
+    }
+
+    .roadmap-marker.active {
+        background-color: #0d6efd;
+        border-color: #0a58ca;
+        color: white;
+    }
+
+    .roadmap-marker:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .roadmap-number {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .roadmap-marker.active .roadmap-number {
+        color: white;
+    }
+
+    .roadmap-content {
+        padding-top: 0.25rem;
+    }
+
+    .roadmap-content h6 {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .roadmap-connector {
+        position: absolute;
+        left: 17px; /* Centre du marqueur */
+        top: 36px; /* En dessous du marqueur */
+        bottom: 0;
+        width: 2px;
+        background-color: #dee2e6;
+        z-index: 1;
+    }
+
+    /* Style pour les champs radio cachés */
+    #id_etape_actuelle {
+        display: none;
+    }
+
+    /* Style pour le conteneur de la roadmap */
+    .roadmap-container {
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        border: 1px solid #e9ecef;
+    }
+
+    /* Style pour le survol des étapes */
+    .roadmap-marker:hover + .roadmap-content h6 {
+        color: #0d6efd;
+    }
+
+    /* Style pour le responsive */
+    @media (max-width: 768px) {
+        .roadmap-step {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .roadmap-marker {
+            margin-bottom: 0.5rem;
+        }
+        
+        .roadmap-connector {
+            left: 17px;
+            top: 36px;
+            bottom: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5 mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>Nouveau projet immobilier
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Section Type de projet -->
+                        <div class="form-section">
+                            <h4><i class="fas fa-tasks me-2"></i>Type de projet</h4>
+                            
+                            <div class="mb-4">
+                                <label class="form-label form-required">Je souhaite :</label>
+                                <div class="d-flex flex-wrap gap-3">
+                                    <div class="btn-radio">
+                                        <input type="radio" name="type_projet" id="type_projet_achat" value="achat" required>
+                                        <label for="type_projet_achat">
+                                            <i class="fas fa-shopping-cart me-2"></i>Acheter
+                                        </label>
+                                    </div>
+                                    <div class="btn-radio">
+                                        <input type="radio" name="type_projet" id="type_projet_vente" value="vente" required>
+                                        <label for="type_projet_vente">
+                                            <i class="fas fa-tag me-2"></i>Vendre
+                                        </label>
+                                    </div>
+                                </div>
+                                {% if form.type_projet.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.type_projet.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Section Critères de recherche -->
+                        <div class="form-section" id="criteres-recherche">
+                            <h4><i class="fas fa-search me-2"></i>Critères de recherche</h4>
+                            
+                            <!-- Contenu dynamique qui change selon le type de projet -->
+                            <!-- Panneau pour l'achat -->
+                            <div id="criteres-achat" style="display: none;">
+                                <div class="alert alert-info mb-4">
+                                    <i class="fas fa-info-circle me-2"></i>Veuillez remplir les informations concernant votre projet d'achat
+                                </div>
+                                
+                                <h5 class="mb-3">Caractéristiques du bien recherché</h5>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="{{ form.type_bien.id_for_label }}" class="form-label form-required">
+                                            Type de bien
+                                        </label>
+                                        <select name="type_bien" id="{{ form.type_bien.id_for_label }}" class="form-select" required>
+                                            <option value="" selected disabled>Sélectionnez le type de bien</option>
+                                            <option value="maison">Maison</option>
+                                            <option value="appartement">Appartement</option>
+                                            <option value="immeuble">Immeuble</option>
+                                            <option value="local_commercial">Local commercial</option>
+                                            <option value="terrain">Terrain</option>
+                                            <option value="autre">Autre...</option>
+                                        </select>
+                                        {% if form.type_bien.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.type_bien.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="{{ form.nombre_pieces.id_for_label }}" class="form-label">
+                                            Nombre de pièces
+                                        </label>
+                                        {{ form.nombre_pieces|add_class:"form-control" }}
+                                        {% if form.nombre_pieces.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.nombre_pieces.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Superficie souhaitée</label>
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <div class="input-group">
+                                                    {{ form.surface_min|add_class:"form-control"|attr:"required"|attr:"placeholder:Min" }}
+                                                    <span class="input-group-text">m²</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="input-group">
+                                                    {{ form.surface_max|add_class:"form-control"|attr:"required"|attr:"placeholder:Max" }}
+                                                    <span class="input-group-text">m²</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% if form.surface_min.errors or form.surface_max.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {% if form.surface_min.errors %}{{ form.surface_min.errors.0 }}{% endif %}
+                                                {% if form.surface_max.errors %}{{ form.surface_max.errors.0 }}{% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Extérieur</label>
+                                        <div class="form-check form-switch mb-2">
+                                            {{ form.avec_exterieur|add_class:"form-check-input" }}
+                                            <label class="form-check-label" for="{{ form.avec_exterieur.id_for_label }}">
+                                                Avec extérieur
+                                            </label>
+                                        </div>
+                                        <div id="surface-exterieur-group" style="display: none;">
+                                            <div class="input-group">
+                                                {{ form.surface_exterieur|add_class:"form-control"|attr:"placeholder:Superficie de l'extérieur" }}
+                                                <span class="input-group-text">m²</span>
+                                            </div>
+                                            {% if form.surface_exterieur.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.surface_exterieur.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Garage</label>
+                                        <div class="form-check form-switch">
+                                            {{ form.avec_garage|add_class:"form-check-input" }}
+                                            <label class="form-check-label" for="{{ form.avec_garage.id_for_label }}">
+                                                Avec garage
+                                            </label>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="col-md-6">
+                                        <label for="{{ form.travaux_envisages.id_for_label }}" class="form-label">
+                                            Travaux possibles
+                                        </label>
+                                        <select name="travaux_envisages" id="{{ form.travaux_envisages.id_for_label }}" class="form-select">
+                                            <option value="">Aucun travaux envisagé</option>
+                                            <option value="amenagement">Aménagement</option>
+                                            <option value="deco">Décoration</option>
+                                            <option value="petite_renovation">Petite rénovation</option>
+                                            <option value="renovation_complete">Rénovation complète</option>
+                                        </select>
+                                        {% if form.travaux_envisages.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.travaux_envisages.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="{{ form.secteur_geographique.id_for_label }}" class="form-label form-required">
+                                            Secteur géographique
+                                        </label>
+                                        {{ form.secteur_geographique|add_class:"form-control"|attr:"required" }}
+                                        {% if form.secteur_geographique.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.secteur_geographique.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="{{ form.proximite_transports.id_for_label }}" class="form-label">
+                                            Proximité des transports
+                                        </label>
+                                        <select name="proximite_transports" id="{{ form.proximite_transports.id_for_label }}" class="form-select" multiple>
+                                            <option value="tram">Tram</option>
+                                            <option value="metro">Métro</option>
+                                            <option value="bus">Bus</option>
+                                            <option value="gare">Gare</option>
+                                        </select>
+                                        <small class="form-text text-muted">Sélectionnez les transports souhaités à proximité</small>
+                                        {% if form.proximite_transports.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.proximite_transports.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                            <!-- Panneau pour la vente -->
+                            <div id="criteres-vente" style="display: none;">
+                                <div class="alert alert-info mb-4">
+                                    <i class="fas fa-info-circle me-2"></i>Veuillez remplir les informations concernant votre bien à vendre
+                                </div>
+                                
+                                <h5 class="mb-3">Caractéristiques du bien à vendre</h5>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                    <label for="{{ form.type_bien.id_for_label }}" class="form-label form-required">
+                                        Type de bien
+                                    </label>
+                                    <select name="type_bien" id="{{ form.type_bien.id_for_label }}" class="form-select" required>
+                                        <option value="" selected disabled>Sélectionnez le type de bien</option>
+                                        <option value="maison">Maison</option>
+                                        <option value="appartement">Appartement</option>
+                                        <option value="immeuble">Immeuble</option>
+                                        <option value="local_commercial">Local commercial</option>
+                                        <option value="terrain">Terrain</option>
+                                        <option value="autre">Autre...</option>
+                                    </select>
+                                    {% if form.type_bien.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.type_bien.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                    <div class="col-md-6">
+                                        <label for="{{ form.nombre_pieces.id_for_label }}" class="form-label">
+                                            Nombre de pièces
+                                        </label>
+                                        {{ form.nombre_pieces|add_class:"form-control" }}
+                                        {% if form.nombre_pieces.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.nombre_pieces.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="{{ form.surface.id_for_label }}" class="form-label form-required">
+                                            Superficie
+                                        </label>
+                                        <div class="input-group">
+                                            {{ form.surface|add_class:"form-control"|attr:"required" }}
+                                            <span class="input-group-text">m²</span>
+                                        </div>
+                                        {% if form.surface.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.surface.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="{{ form.secteur_geographique.id_for_label }}" class="form-label form-required">
+                                            Secteur géographique
+                                        </label>
+                                        {{ form.secteur_geographique|add_class:"form-control"|attr:"required" }}
+                                        {% if form.secteur_geographique.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.secteur_geographique.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="{{ form.caracteristiques.id_for_label }}" class="form-label form-required">
+                                            Caractéristiques du bien
+                                        </label>
+                                        {{ form.caracteristiques|add_class:"form-control"|attr:"required" }}
+                                        <small class="form-text text-muted">Décrivez les caractéristiques de votre bien (jardin, balcon, garage, etc.)</small>
+                                        {% if form.caracteristiques.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.caracteristiques.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="{{ form.date_achat.id_for_label }}" class="form-label">
+                                            Date d'achat
+                                        </label>
+                                        {{ form.date_achat|add_class:"form-control" }}
+                                        {% if form.date_achat.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.date_achat.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ form.type_professionnel.id_for_label }}" class="form-label form-required">
+                                        Type de professionnel souhaité
+                                    </label>
+                                    <select name="type_professionnel" id="{{ form.type_professionnel.id_for_label }}" class="form-select" required>
+                                        <option value="" selected disabled>Sélectionnez le type de professionnel</option>
+                                        <option value="agent_immobilier">Agent immobilier</option>
+                                        <option value="notaire">Notaire</option>
+                                        <option value="mandataire">Mandataire immobilier</option>
+                                        <option value="autre">Autre...</option>
+                                    </select>
+                                    {% if form.type_professionnel.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.type_professionnel.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section Étape actuelle -->
+                        <div class="card mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Votre parcours immobilier</h5>
+                                <div class="btn-group btn-group-sm" role="group" id="toggle-view-buttons">
+                                    <button type="button" class="btn btn-outline-primary active" data-view="simple">
+                                        <i class="fas fa-list me-1"></i> Vue simple
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary" data-view="detaillee">
+                                        <i class="fas fa-map-marked-alt me-1"></i> Vue détaillée
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <!-- Vue Simple (Menu déroulant) -->
+                                <div id="vue-simple">
+                                    <div class="mb-4">
+                                        <label for="id_etape_actuelle" class="form-label">Où en êtes-vous dans votre projet ?</label>
+                                        <select name="etape_actuelle" class="form-select" id="id_etape_actuelle" required>
+                                            <option value="" selected disabled>--- Sélectionnez une étape ---</option>
+                                            {% for etape in form.etape_actuelle %}
+                                                {{ etape }}
+                                            {% endfor %}
+                                        </select>
+                                        {% if form.etape_actuelle.help_text %}
+                                            <small class="form-text text-muted">{{ form.etape_actuelle.help_text }}</small>
+                                        {% endif %}
+                                        {% if form.etape_actuelle.errors %}
+                                            <div class="alert alert-danger mt-2">
+                                                {% for error in form.etape_actuelle.errors %}
+                                                    <p class="mb-0">{{ error }}</p>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Vue Détaillée (Roadmap) -->
+                                <div id="vue-detaillee" style="display: none;">
+                                    <div class="roadmap-container mt-4">
+                                        <div class="roadmap" id="roadmap-visual">
+                                            <!-- La roadmap sera chargée dynamiquement par JavaScript -->
+                                            <div class="text-center py-4 text-muted">
+                                                <i class="fas fa-sync fa-spin me-2"></i>
+                                                Chargement de votre parcours...
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section Description -->
+                        <div class="form-section">
+                            <h4><i class="fas fa-align-left me-2"></i>Description détaillée</h4>
+                            <div class="mb-3">
+                                {{ form.description|add_class:"form-control" }}
+                                {% if form.description.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.description.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Décrivez votre projet en détail : critères importants, préférences, éventuelles contraintes, etc.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{% url 'immobilier:espace_particulier' %}" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-arrow-left me-1"></i> Annuler
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Enregistrer le projet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Fonction pour marquer un champ comme requis ou non
+function setRequired(input, isRequired) {
+    input.required = isRequired;
+    const formGroup = input.closest('.form-group') || input.closest('.mb-3') || input.closest('.form-check');
+    if (formGroup) {
+        if (isRequired) {
+            formGroup.classList.add('required');
+        } else {
+            formGroup.classList.remove('required');
+        }
+    }
+}
+
+// Fonction pour gérer l'affichage d'un panneau
+function setPanelDisplay(panel, isVisible) {
+    if (panel) {
+        panel.style.display = isVisible ? 'block' : 'none';
+    }
+}
+
+function toggleSections() {
+    // Récupérer la valeur du type de projet sélectionné
+    const typeProjetElement = document.querySelector('input[name="type_projet"]:checked');
+    
+    // Récupérer les éléments des panneaux
+    const criteresAchat = document.getElementById('criteres-achat');
+    const criteresVente = document.getElementById('criteres-vente');
+    const roadmapAchat = document.getElementById('roadmap-achat');
+    const roadmapVente = document.getElementById('roadmap-vente');
+    
+    if (!typeProjetElement) {
+        setPanelDisplay(criteresAchat, false);
+        setPanelDisplay(criteresVente, false);
+        setPanelDisplay(roadmapAchat, false);
+        setPanelDisplay(roadmapVente, false);
+        return;
+    }
+    
+    const typeProjet = typeProjetElement.value;
+    console.log('Type de projet sélectionné:', typeProjet);
+    
+    // Afficher les sections appropriées en fonction du type de projet
+    if (typeProjet === 'achat') {
+        setPanelDisplay(criteresAchat, true);
+        setPanelDisplay(criteresVente, false);
+        setPanelDisplay(roadmapAchat, true);
+        setPanelDisplay(roadmapVente, false);
+        
+        // Rendre les champs d'achat requis et les champs de vente optionnels
+        if (criteresAchat) {
+            criteresAchat.querySelectorAll('input, select, textarea').forEach(input => {
+                const isRequired = input.hasAttribute('data-required') || 
+                                 (input.required && !input.hasAttribute('data-optional'));
+                setRequired(input, isRequired);
+            });
+        }
+        
+        if (criteresVente) {
+            criteresVente.querySelectorAll('input, select, textarea').forEach(input => {
+                setRequired(input, false);
+            });
+        }
+        
+        // Charger les étapes pour l'achat
+        chargerEtapes('achat');
+        
+    } else if (typeProjet === 'vente') {
+        setPanelDisplay(criteresAchat, false);
+        setPanelDisplay(criteresVente, true);
+        setPanelDisplay(roadmapAchat, false);
+        setPanelDisplay(roadmapVente, true);
+        
+        // Rendre les champs de vente requis et les champs d'achat optionnels
+        if (criteresVente) {
+            criteresVente.querySelectorAll('input, select, textarea').forEach(input => {
+                const isRequired = input.hasAttribute('data-required') || 
+                                 (input.required && !input.hasAttribute('data-optional'));
+                setRequired(input, isRequired);
+            });
+        }
+        
+        if (criteresAchat) {
+            criteresAchat.querySelectorAll('input, select, textarea').forEach(input => {
+                setRequired(input, false);
+            });
+        }
+        
+        // Charger les étapes pour la vente
+        chargerEtapes('vente');
+    }
+    
+    // Gestion de l'affichage de la surface extérieure (uniquement pour l'achat)
+    const avecExterieur = document.getElementById('id_avec_exterieur');
+    const surfaceExterieurGroup = document.getElementById('surface-exterieur-group');
+    
+    function toggleSurfaceExterieur() {
+        if (!surfaceExterieurGroup) return;
+        
+        if (avecExterieur && avecExterieur.checked) {
+            surfaceExterieurGroup.style.display = 'block';
+            // Rendre le champ de surface extérieure requis si la case est cochée
+            const surfaceExterieurInput = document.getElementById('{{ form.surface_exterieur.id_for_label }}');
+            if (surfaceExterieurInput) {
+                setRequired(surfaceExterieurInput, true);
+            }
+        } else {
+            surfaceExterieurGroup.style.display = 'none';
+            // Rendre le champ de surface extérieure optionnel si la case est décochée
+            const surfaceExterieurInput = document.getElementById('{{ form.surface_exterieur.id_for_label }}');
+            if (surfaceExterieurInput) {
+                setRequired(surfaceExterieurInput, false);
+            }
+        }
+    }
+    
+    // Initialisation de l'affichage de la surface extérieure (uniquement pour l'achat)
+    if (typeProjet === 'achat' && avecExterieur && surfaceExterieurGroup) {
+        avecExterieur.removeEventListener('change', toggleSurfaceExterieur);
+        avecExterieur.addEventListener('change', toggleSurfaceExterieur);
+        toggleSurfaceExterieur();
+    } else if (surfaceExterieurGroup) {
+        // Masquer le groupe de surface extérieure si on n'est pas en mode achat
+        surfaceExterieurGroup.style.display = 'none';
+    }
+    
+    // Mise à jour des indicateurs de champs requis
+    updateRequiredFields();
+}
+
+// Fonction pour mettre à jour les indicateurs de champs requis
+function updateRequiredFields() {
+    document.querySelectorAll('input[required], select[required], textarea[required]').forEach(input => {
+        const formGroup = input.closest('.form-group, .mb-3');
+        if (formGroup) {
+            // Supprimer les marqueurs existants
+            const existingMarks = formGroup.querySelectorAll('.field-required');
+            existingMarks.forEach(mark => mark.remove());
+            
+            // Ajouter un nouveau marqueur si nécessaire
+            const label = formGroup.querySelector('label');
+            if (label && !label.textContent.includes('*')) {
+                const requiredMark = document.createElement('span');
+                requiredMark.className = 'field-required text-danger';
+                requiredMark.textContent = ' *';
+                label.appendChild(requiredMark);
+            }
+        }
+    });
+}
+
+// Fonction pour charger les étapes en fonction du type de projet sélectionné
+function chargerEtapes(typeProjet) {
+    if (!typeProjet) return;
+    
+    const container = document.getElementById('etapes-container');
+    if (!container) return;
+    
+    // Afficher un indicateur de chargement
+    container.innerHTML = `
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Chargement...</span>
+            </div>
+            <p class="mt-2 text-muted">Chargement des étapes...</p>
+        </div>
+    `;
+    
+    // Envoyer une requête pour charger les étapes
+    fetch(`/projet/charger_etapes/?type_projet=${typeProjet}`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+    })
+    .then(response => response.text())
+    .then(html => {
+        container.innerHTML = html;
+    })
+    .catch(error => {
+        console.error('Erreur lors du chargement des étapes:', error);
+        container.innerHTML = `
+            <div class="alert alert-danger">
+                Une erreur est survenue lors du chargement des étapes. Veuillez rafraîchir la page.
+            </div>
+        `;
+    });
+}
+
+// Fonction pour basculer entre les vues simple et détaillée
+function toggleView(viewType) {
+    // Mettre à jour les boutons
+    document.querySelectorAll('#toggle-view-buttons button').forEach(btn => {
+        if (btn.dataset.view === viewType) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    
+    // Afficher la vue sélectionnée et masquer l'autre
+    if (viewType === 'simple') {
+        document.getElementById('vue-simple').style.display = 'block';
+        document.getElementById('vue-detaillee').style.display = 'none';
+    } else {
+        document.getElementById('vue-simple').style.display = 'none';
+        document.getElementById('vue-detaillee').style.display = 'block';
+        
+        // Si la roadmap n'a pas encore été chargée, la charger
+        const typeProjetElement = document.querySelector('input[name="type_projet"]:checked');
+        if (typeProjetElement) {
+            loadRoadmap(typeProjetElement.value);
+        }
+    }
+}
+
+// Synchroniser la sélection entre le menu déroulant et la roadmap
+function syncEtapeSelection(etapeId) {
+    // Mettre à jour le menu déroulant
+    const select = document.getElementById('id_etape_actuelle');
+    if (select) {
+        select.value = etapeId;
+    }
+    
+    // Mettre à jour la sélection dans la roadmap
+    document.querySelectorAll('.roadmap-marker').forEach(marker => {
+        if (marker.getAttribute('data-etape-id') === etapeId) {
+            marker.classList.add('active');
+        } else {
+            marker.classList.remove('active');
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM entièrement chargé, initialisation des sections...');
+    
+    // Initialisation des sections au chargement de la page
+    toggleSections();
+    
+    // Ajouter des écouteurs d'événements pour les boutons radio de type de projet
+    document.querySelectorAll('input[name="type_projet"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            console.log('Changement de type de projet détecté:', this.value);
+            toggleSections();
+        });
+    });
+    
+    // Ajouter l'écouteur d'événement pour la case à cocher "Avec extérieur"
+    const avecExterieur = document.getElementById('id_avec_exterieur');
+    if (avecExterieur) {
+        avecExterieur.addEventListener('change', function() {
+            const surfaceExterieurGroup = document.getElementById('surface-exterieur-group');
+            if (surfaceExterieurGroup) {
+                surfaceExterieurGroup.style.display = this.checked ? 'block' : 'none';
+            }
+        });
+        
+        // Initialiser l'affichage au chargement
+        const surfaceExterieurGroup = document.getElementById('surface-exterieur-group');
+        if (surfaceExterieurGroup) {
+            surfaceExterieurGroup.style.display = avecExterieur.checked ? 'block' : 'none';
+        }
+    }
+    
+    // Gestion du bouton Suivant pour passer de l'onglet Inscription à l'onglet Nouveau projet
+    const nextToProjetBtn = document.getElementById('next-to-projet');
+    if (nextToProjetBtn) {
+        nextToProjetBtn.addEventListener('click', function() {
+            // Vérifier que les champs obligatoires sont remplis
+            const nomInput = document.querySelector('input[name="nom"]');
+            const prenomInput = document.querySelector('input[name="prenom"]');
+            const emailInput = document.querySelector('input[name="email"]');
+            const telephoneInput = document.querySelector('input[name="telephone"]');
+            const autorisationInput = document.querySelector('input[name="autorisation_donnees"]');
+            
+            let isValid = true;
+            
+            if (!nomInput.value) {
+                nomInput.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                nomInput.classList.remove('is-invalid');
+            }
+            
+            if (!prenomInput.value) {
+                prenomInput.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                prenomInput.classList.remove('is-invalid');
+            }
+            
+            if (!emailInput.value) {
+                emailInput.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                emailInput.classList.remove('is-invalid');
+            }
+            
+            if (!telephoneInput.value) {
+                telephoneInput.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                telephoneInput.classList.remove('is-invalid');
+            }
+            
+            if (!autorisationInput.checked) {
+                autorisationInput.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                autorisationInput.classList.remove('is-invalid');
+            }
+            
+            if (isValid) {
+                // Activer l'onglet Nouveau projet
+                const nouveauProjetTab = document.getElementById('nouveau-projet-tab');
+                const nouveauProjetTabInstance = new bootstrap.Tab(nouveauProjetTab);
+                nouveauProjetTabInstance.show();
+            }
+        });
+    }
+    
+    // Gestion du clic sur les boutons de basculement de vue
+    document.querySelectorAll('#toggle-view-buttons button').forEach(button => {
+        button.addEventListener('click', function() {
+            const viewType = this.getAttribute('data-view');
+            toggleView(viewType);
+            
+            // Sauvegarder la préférence de l'utilisateur
+            localStorage.setItem('preferredEtapeView', viewType);
+        });
+    });
+    
+    // Restaurer la préférence de vue de l'utilisateur ou utiliser la vue par défaut (simple)
+    const preferredView = localStorage.getItem('preferredEtapeView') || 'simple';
+    toggleView(preferredView);
+    
+    // Mettre à jour l'état des boutons de basculement
+    document.querySelectorAll('#toggle-view-buttons button').forEach(btn => {
+        if (btn.getAttribute('data-view') === preferredView) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    
+    // Gestion du changement de sélection dans le menu déroulant
+    const selectEtape = document.getElementById('id_etape_actuelle');
+    if (selectEtape) {
+        selectEtape.addEventListener('change', function() {
+            // Mettre à jour la sélection dans la roadmap
+            const etapeId = this.value;
+            if (etapeId) {
+                syncEtapeSelection(etapeId);
+            }
+        });
+    }
+    
+    // Fonction pour gérer le changement de type de projet
+    function handleTypeProjetChange(event) {
+        const typeProjet = event.target.value;
+        console.log('Changement de type de projet détecté:', typeProjet);
+        
+        // Mettre à jour les sections en fonction du type de projet sélectionné
+        console.log('Mise à jour des sections pour le type:', typeProjet);
+        toggleSections();
+        
+        // Charger les étapes correspondant au type de projet sélectionné
+        console.log('Chargement des étapes pour le type:', typeProjet);
+        chargerEtapes(typeProjet);
+        
+        // Recharger la roadmap si la vue détaillée est active
+        const vueDetaillee = document.getElementById('vue-detaillee');
+        if (vueDetaillee && vueDetaillee.style.display === 'block') {
+            console.log('Rechargement de la roadmap pour le type:', typeProjet);
+            loadRoadmap(typeProjet);
+        }
+        
+        // Forcer la validation des champs requis
+        updateRequiredFields();
+    }
+    
+    // Ajout des écouteurs d'événements pour le changement de type de projet
+    const typeProjetRadios = document.querySelectorAll('input[name="type_projet"]');
+    typeProjetRadios.forEach(radio => {
+        // Supprimer tous les écouteurs existants pour éviter les doublons
+        const newRadio = radio.cloneNode(true);
+        radio.parentNode.replaceChild(newRadio, radio);
+        
+        // Ajouter le nouvel écouteur
+        newRadio.addEventListener('change', handleTypeProjetChange);
+    });
+    
+    // Vérifier s'il y a un type de projet présélectionné après l'initialisation
+    const selectedTypeProjet = document.querySelector('input[name="type_projet"]:checked');
+    if (selectedTypeProjet) {
+        console.log('Type de projet présélectionné trouvé après initialisation:', selectedTypeProjet.value);
+        // Déclencher manuellement le changement pour initialiser les sections
+        const event = new Event('change');
+        selectedTypeProjet.dispatchEvent(event);
+    } else {
+        console.warn('Aucun type de projet présélectionné trouvé après initialisation');
+        // Initialisation par défaut
+        toggleSections();
+    }
+});
+    
+    // Fonction pour charger les étapes dans le menu déroulant en fonction du type de projet
+    function chargerEtapes(typeProjet) {
+        const selectEtape = document.getElementById('id_etape_actuelle');
+        if (!selectEtape) return;
+        
+        // Vider le menu déroulant
+        selectEtape.innerHTML = '<option value="" selected disabled>--- Sélectionnez une étape ---</option>';
+        
+        // Définir les étapes en fonction du type de projet
+        let etapes = [];
+        
+        if (typeProjet === 'achat') {
+            etapes = [
+                { id: '1', titre: 'Définition du projet' },
+                { id: '2', titre: 'Recherche de biens' },
+                { id: '3', titre: 'Visites des biens' },
+                { id: '4', titre: 'Offres et négociations' },
+                { id: '5', titre: 'Signature du compromis' },
+                { id: '6', titre: 'Obtention du prêt' },
+                { id: '7', titre: 'Signature de l\'acte définitif' },
+                { id: '8', titre: 'Remise des clés' }
+            ];
+        } else if (typeProjet === 'vente') {
+            etapes = [
+                { id: '1', titre: 'Estimation du bien' },
+                { id: '2', titre: 'Diagnostics immobiliers' },
+                { id: '3', titre: 'Valorisation du bien' },
+                { id: '4', titre: 'Commercialisation' },
+                { id: '5', titre: 'Organisation des visites' },
+                { id: '6', titre: 'Signature du compromis' },
+                { id: '7', titre: 'Signature de l\'acte de vente' },
+                { id: '8', titre: 'Suivi après-vente' }
+            ];
+        }
+        
+        // Ajouter les options au menu déroulant
+        etapes.forEach(etape => {
+            const option = document.createElement('option');
+            option.value = etape.id;
+            option.textContent = `${etape.id}. ${etape.titre}`;
+            selectEtape.appendChild(option);
+        });
+    }
+    
+    // Fonction pour charger la roadmap en fonction du type de projet
+    function loadRoadmap(typeProjet) {
+        const roadmapContainer = document.getElementById('roadmap-visual');
+        
+        // Afficher un indicateur de chargement
+        roadmapContainer.innerHTML = `
+            <div class="text-center py-4 text-muted">
+                <i class="fas fa-sync fa-spin me-2"></i>
+                Chargement de votre parcours...
+            </div>
+        `;
+        
+        // Définir les données de la roadmap en fonction du type de projet
+        let roadmapSteps = [];
+        
+        if (typeProjet === 'achat') {
+            roadmapSteps = [
+                { id: '1', titre: 'Définition du projet', description: 'Définir précisément votre projet d\'achat (budget, localisation, type de bien, etc.)' },
+                { id: '2', titre: 'Recherche de biens', description: 'Identifier et sélectionner des biens correspondant à vos critères' },
+                { id: '3', titre: 'Visites des biens', description: 'Visiter les biens sélectionnés pour affiner votre choix' },
+                { id: '4', titre: 'Offres et négociations', description: 'Faire une offre et négocier les conditions d\'achat' },
+                { id: '5', titre: 'Signature du compromis', description: 'Signer l\'avant-contrat de vente avec le vendeur' },
+                { id: '6', titre: 'Obtention du prêt', description: 'Finaliser le montage du financement avec votre banque' },
+                { id: '7', titre: 'Signature de l\'acte définitif', description: 'Finaliser l\'achat chez le notaire' },
+                { id: '8', titre: 'Remise des clés', description: 'Prendre possession de votre nouveau bien' }
+            ];
+        } else if (typeProjet === 'vente') {
+            roadmapSteps = [
+                { id: '1', titre: 'Estimation du bien', description: 'Évaluer la valeur de votre bien immobilier' },
+                { id: '2', titre: 'Diagnostics immobiliers', description: 'Réaliser les diagnostics obligatoires pour la vente' },
+                { id: '3', titre: 'Valorisation du bien', description: 'Mettre en valeur votre bien pour la vente' },
+                { id: '4', titre: 'Commercialisation', description: 'Diffuser l\'annonce et promouvoir votre bien' },
+                { id: '5', titre: 'Organisation des visites', description: 'Accueillir les visites des acheteurs potentiels' },
+                { id: '6', titre: 'Signature du compromis', description: 'Signer l\'avant-contrat de vente avec l\'acheteur' },
+                { id: '7', titre: 'Signature de l\'acte de vente', description: 'Finaliser la vente chez le notaire' },
+                { id: '8', titre: 'Suivi après-vente', description: 'Clôture du dossier et suivi post-vente' }
+            ];
+        }
+        
+        // Générer le HTML de la roadmap
+        let roadmapHTML = '<div class="roadmap">';
+        
+        // Récupérer l'étape actuellement sélectionnée dans le menu déroulant
+        const selectEtape = document.getElementById('id_etape_actuelle');
+        const etapeSelectionnee = selectEtape ? selectEtape.value : null;
+        
+        roadmapSteps.forEach((etape, index) => {
+            const isLast = index === roadmapSteps.length - 1;
+            // Vérifier si cette étape est sélectionnée dans le menu déroulant
+            const isSelected = etapeSelectionnee === etape.id;
+            
+            roadmapHTML += `
+                <div class="roadmap-item">
+                    <div class="roadmap-step">
+                        <div class="roadmap-marker ${isSelected ? 'active' : ''}" data-etape-id="${etape.id}">
+                            <span class="roadmap-number">${etape.id}</span>
+                        </div>
+                        <div class="roadmap-content">
+                            <h6 class="mb-0">${etape.titre}</h6>
+                            <small class="text-muted d-block">${etape.description}</small>
+                        </div>
+                    </div>
+                    ${!isLast ? '<div class="roadmap-connector"></div>' : ''}
+                </div>
+            `;
+        });
+        
+        roadmapHTML += '</div>';
+        
+        // Mettre à jour le conteneur de la roadmap
+        roadmapContainer.innerHTML = roadmapHTML;
+        
+        // Ajouter les gestionnaires d'événements pour la sélection d'étape
+        document.querySelectorAll('.roadmap-marker').forEach(marker => {
+            marker.addEventListener('click', function() {
+                const etapeId = this.getAttribute('data-etape-id');
+                // Mettre à jour la sélection dans le menu déroulant
+                syncEtapeSelection(etapeId);
+            });
+        });
+    }
+    
+    // Charger la roadmap initiale si un type de projet est déjà sélectionné
+    const typeProjetSelect = document.querySelector('select[name="type_projet"]');
+    if (typeProjetSelect && typeProjetSelect.value) {
+        loadRoadmap(typeProjetSelect.value);
+    }
+    
+    // Mettre à jour la roadmap lorsque le type de projet change
+    if (typeProjetSelect) {
+        typeProjetSelect.addEventListener('change', function() {
+            loadRoadmap(this.value);
+        });
+    }
+    
+    // Mettre à jour l'étape sélectionnée lorsqu'on clique sur un marqueur
+    document.addEventListener('click', function(e) {
+        const radio = e.target.closest('input[type="radio"][name="etape_actuelle"]');
+        if (radio) {
+            const etapeId = radio.value;
+            document.querySelectorAll('.roadmap-marker').forEach(marker => {
+                if (marker.getAttribute('data-etape-id') === etapeId) {
+                    marker.classList.add('active');
+                } else {
+                    marker.classList.remove('active');
+                }
+            });
+        }
+    });
+
+    // Gestion de la soumission du formulaire
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Désactiver les champs cachés pour éviter leur envoi
+            const hiddenInputs = form.querySelectorAll('input[type="hidden"]');
+            hiddenInputs.forEach(input => {
+                if (input.name && !input.value) {
+                    input.disabled = true;
+                }
+            });
+            
+            // Validation supplémentaire si nécessaire
+            const typeProjetElement = document.querySelector('input[name="type_projet"]:checked');
+            if (!typeProjetElement) {
+                e.preventDefault();
+                alert('Veuillez sélectionner un type de projet.');
+                return false;
+            }
+            
+            const typeProjet = typeProjetElement.value;
+            let isValid = true;
+            let errorMessage = '';
+            
+            if (typeProjet === 'achat') {
+                const budgetMin = parseFloat(document.getElementById('{{ form.budget_min.id_for_label }}')?.value) || 0;
+                const budgetMax = parseFloat(document.getElementById('{{ form.budget_max.id_for_label }}')?.value) || 0;
+                const surfaceMin = parseFloat(document.getElementById('{{ form.surface_min.id_for_label }}')?.value) || 0;
+                const surfaceMax = parseFloat(document.getElementById('{{ form.surface_max.id_for_label }}')?.value) || 0;
+                
+                if (budgetMin > budgetMax) {
+                    errorMessage += 'Le budget maximum doit être supérieur au budget minimum.\n';
+                    isValid = false;
+                }
+                
+                if (surfaceMin > surfaceMax) {
+                    errorMessage += 'La surface maximale doit être supérieure à la surface minimale.\n';
+                    isValid = false;
+                }
+                
+                if (surfaceMin <= 0 || surfaceMax <= 0) {
+                    errorMessage += 'Les surfaces doivent être supérieures à zéro.\n';
+                    isValid = false;
+                }
+            } else {
+                // Validation pour la vente
+                const surface = parseFloat(document.getElementById('{{ form.surface.id_for_label }}')?.value) || 0;
+                const caracteristiques = document.getElementById('{{ form.caracteristiques.id_for_label }}')?.value || '';
+                
+                if (surface <= 0) {
+                    errorMessage += 'La surface doit être supérieure à zéro.\n';
+                    isValid = false;
+                }
+                
+                if (caracteristiques.trim() === '') {
+                    errorMessage += 'Veuillez décrire les caractéristiques du bien.\n';
+                    isValid = false;
+                }
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('Veuillez corriger les erreurs suivantes :\n\n' + errorMessage);
+                return false;
+            }
+            
+            // Si tout est valide, permettre la soumission du formulaire
+            return true;
+        });
+    }
+});
+// Activer la validation des champs du formulaire
+(function () {
+    'use strict'
+    
+    // Récupérer tous les formulaires auxquels nous voulons appliquer le style de validation Bootstrap
+    var forms = document.querySelectorAll('.needs-validation')
+    
+    // Boucle sur les champs pour empêcher la soumission
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+</script>
+{% endblock %}

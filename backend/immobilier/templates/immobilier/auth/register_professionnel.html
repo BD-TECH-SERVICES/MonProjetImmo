@@ -1,0 +1,234 @@
+{% extends 'immobilier/auth/auth_base.html' %}
+{% load static %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block title %}{% trans 'Inscription Professionnel' %} | MonProjetImmo{% endblock %}
+
+{% block auth_heading %}
+<p>{% trans 'Créez votre compte professionnel et développez votre activité' %}</p>
+{% endblock %}
+
+{% block auth_content %}
+{% if form.errors %}
+<div class="alert alert-danger">
+    <strong>{% trans 'Erreur' %}</strong> {% trans 'Veuillez corriger les erreurs ci-dessous.' %}
+</div>
+{% endif %}
+                    
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row mb-4">
+                            <div class="col-12 mb-3">
+                                <h5 class="border-bottom pb-2">{% trans 'Informations personnelles' %}</h5>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.first_name.id_for_label }}" class="form-label">{{ form.first_name.label }} *</label>
+                                {% render_field form.first_name class="form-control" placeholder="Votre prénom" %}
+                                {% if form.first_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.first_name.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.last_name.id_for_label }}" class="form-label">{{ form.last_name.label }} *</label>
+                                {% render_field form.last_name class="form-control" placeholder="Votre nom" %}
+                                {% if form.last_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.last_name.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }} *</label>
+                                {% render_field form.email class="form-control" placeholder="exemple@domaine.com" %}
+                                {% if form.email.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.email.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.username.id_for_label }}" class="form-label">{{ form.username.label }} *</label>
+                                {% render_field form.username class="form-control" placeholder="Nom utilisateur" %}
+                                {% if form.username.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.username.errors }}
+                                </div>
+                                {% endif %}
+                                <small class="form-text text-muted">{{ form.username.help_text }}</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-12 mb-3">
+                                <h5 class="border-bottom pb-2">{% trans 'Informations professionnelles' %}</h5>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.nom_entreprise.id_for_label }}" class="form-label">{{ form.nom_entreprise.label }} *</label>
+                                {% render_field form.nom_entreprise class="form-control" placeholder="Nom de votre entreprise" %}
+                                {% if form.nom_entreprise.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.nom_entreprise.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.siret.id_for_label }}" class="form-label">{{ form.siret.label }} *</label>
+                                {% render_field form.siret class="form-control" placeholder="12345678901234" %}
+                                {% if form.siret.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.siret.errors }}
+                                </div>
+                                {% endif %}
+                                <small class="form-text text-muted">{% trans '14 chiffres sans espaces' %}</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-12 mb-3">
+                                <h5 class="border-bottom pb-2">{% trans 'Sécurité' %}</h5>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.password1.id_for_label }}" class="form-label">{{ form.password1.label }} *</label>
+                                <div class="input-group">
+                                    {% render_field form.password1 class="form-control" placeholder="Votre mot de passe" %}
+                                    <button class="btn btn-outline-secondary toggle-password" type="button" data-target="{{ form.password1.id_for_label }}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                {% if form.password1.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.password1.errors }}
+                                </div>
+                                {% endif %}
+                                <small class="form-text text-muted">{{ form.password1.help_text }}</small>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.password2.id_for_label }}" class="form-label">{{ form.password2.label }} *</label>
+                                <div class="input-group">
+                                    {% render_field form.password2 class="form-control" placeholder="Confirmez votre mot de passe" %}
+                                    <button class="btn btn-outline-secondary toggle-password" type="button" data-target="{{ form.password2.id_for_label }}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                {% if form.password2.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.password2.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if form.etapes_achat %}
+                        <div class="row mb-4">
+                            <div class="col-12 mb-3">
+                                <h5 class="border-bottom pb-2">{% trans 'Étapes de projet' %}</h5>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.etapes_achat.label }}</label>
+                                <div class="border rounded p-3">
+                                    {{ form.etapes_achat }}
+                                </div>
+                                <small class="form-text text-muted">{{ form.etapes_achat.help_text }}</small>
+                                {% if form.etapes_achat.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.etapes_achat.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.etapes_vente.label }}</label>
+                                <div class="border rounded p-3">
+                                    {{ form.etapes_vente }}
+                                </div>
+                                <small class="form-text text-muted">{{ form.etapes_vente.help_text }}</small>
+                                {% if form.etapes_vente.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.etapes_vente.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Champ caché pour le type d'utilisateur -->
+                        {% render_field form.user_type %}
+                        
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="accept_cgu" name="accept_cgu" required>
+                            <label class="form-check-label" for="accept_cgu">
+                                {% trans "J'accepte les" %} <a href="#" class="text-decoration-none">{% trans "Conditions Générales d'Utilisation" %}</a> *
+                            </label>
+                        </div>
+                        
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="newsletter" name="newsletter">
+                            <label class="form-check-label" for="newsletter">
+                                {% trans 'Je souhaite recevoir la newsletter et des offres personnalisées' %}
+                            </label>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>{% trans 'Créer mon compte professionnel' %}
+                            </button>
+                        </div>
+                    </form>
+{% endblock %}
+
+{% block auth_footer %}
+<div class="auth-footer">
+    {% trans 'Déjà inscrit ?' %} <a href="/connexion/">{% trans 'Connectez-vous' %}</a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Toggle password visibility
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleButtons = document.querySelectorAll('.toggle-password');
+        
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                const icon = this.querySelector('i');
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+        
+        // Style des cases à cocher pour les étapes de projet
+        const etapeCheckboxes = document.querySelectorAll('.etape-checkbox');
+        if (etapeCheckboxes.length > 0) {
+            etapeCheckboxes.forEach(checkbox => {
+                const label = checkbox.nextElementSibling;
+                if (label) {
+                    label.classList.add('d-block', 'mb-2', 'ps-2');
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

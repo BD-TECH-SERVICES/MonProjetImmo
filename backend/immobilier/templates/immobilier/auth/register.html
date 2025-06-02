@@ -1,0 +1,1182 @@
+{% extends 'immobilier/auth/auth_base.html' %}
+{% load widget_tweaks static i18n %}
+
+{% block title %}{% trans 'Inscription' %} - MonProjetImmo{% endblock %}
+
+{% block extra_css %}
+    <script>
+        console.log('DOMContentLoaded - Début du chargement du document');
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM entièrement chargé');
+            console.log('Type de compte sélectionné:', document.querySelector('input[name="user_type"]:checked').value);
+        });
+    </script>
+<style>
+    /* Style ultra compact */
+    body {
+        background-color: #f8f9fa;
+        padding: 0;
+        font-size: 0.9rem;
+        line-height: 1.3;
+    }
+    
+    /* Styles pour les réseaux sociaux */
+    .bg-facebook { background-color: #3b5998 !important; }
+    .bg-twitter { background-color: #1da1f2 !important; }
+    .bg-linkedin { background-color: #0077b5 !important; }
+    .bg-instagram { background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d) !important; }
+    
+    .input-group-text {
+        min-width: 42px;
+        justify-content: center;
+    }
+    
+    .auth-form-container {
+        background-color: #fff;
+        border-radius: 0;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        padding: 2rem 20%;
+        margin: 0 auto;
+        width: 100%;
+        max-width: 1200px;
+    }
+    
+    .form-section {
+        margin-bottom: 0.75rem;
+    }
+    
+    .section-title {
+        font-size: 1rem;
+        margin: 0.5rem 0;
+        color: #2c3e50;
+        font-weight: 600;
+        padding: 0.25rem 0;
+    }
+    /* Style pour les champs professionnels */
+    .professional-fields {
+        display: none;
+        background-color: #f8f9fa;
+        border-radius: 0.2rem;
+        padding: 0.5rem 1rem;
+        margin: 0.5rem 0;
+        border: 1px solid #e9ecef;
+        font-size: 0.85em;
+        width: 100%;
+    }
+    
+    /* Champs de formulaire */
+    .form-control, .form-select {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.9rem;
+        border-radius: 0.2rem;
+        height: calc(1.5em + 0.6rem);
+    }
+    
+    /* Style pour les groupes de champs */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Style pour les labels */
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: #495057;
+    }
+    
+    /* Style pour les messages d'erreur */
+    .invalid-feedback {
+        display: block;
+        width: 100%;
+        margin-top: 0.25rem;
+        font-size: 0.875em;
+        color: #dc3545;
+    }
+    
+    /* Style pour les boutons radio personnalisés */
+    .account-type-radio:checked + .account-type-label {
+        border-color: #0d6efd;
+        background-color: #e7f1ff;
+    }
+    
+    /* Augmenter la largeur du conteneur principal */
+    .auth-form {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    /* Espacement amélioré */
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -1rem;
+        margin-left: -1rem;
+        width: 100%;
+    }
+    
+    .form-group {
+        padding-right: 1rem;
+        padding-left: 1rem;
+        margin-bottom: 1rem;
+        flex: 1 0 0%;
+        min-width: 48%;
+        max-width: 100%;
+    }
+    
+    /* Taille de police des champs */
+    .form-control, .form-select {
+        padding: 0.7rem 1rem;
+        font-size: 1rem;
+    }
+    
+    /* Hauteur des champs */
+    .form-control, .form-select {
+        height: auto;
+        min-height: 48px;
+    }
+    
+    /* Icônes dans les champs */
+    .input-group-text {
+        min-width: 48px;
+        justify-content: center;
+    }
+    
+    .professional-fields h5 {
+        color: #0d6efd;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #0d6efd;
+    }
+    
+    /* Style pour les boutons radio de type de compte */
+    .account-type-radio {
+        display: none;
+    }
+    
+    .account-type-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0.4rem 0.2rem;
+        margin-bottom: 0.4rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.2rem;
+        cursor: pointer;
+        background-color: #fff;
+        font-size: 0.85em;
+    }
+    
+                </div>
+                <div class="card-body p-5 text-center">
+                    <h2 class="h5 mb-4">{% trans 'Je suis :' %}</h2>
+                <div id="professionalFields" class="professional-fields mt-4 p-4 bg-light rounded border" style="display: none;">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        {% trans 'Remplissez ces informations pour finaliser votre inscription en tant que professionnel de l\'immobilier.' %}
+                    </div>
+                    
+                    <h5 class="fw-bold mb-4 text-primary">
+                        <i class="fas fa-building me-2"></i>
+                        {% trans 'Informations de l\'entreprise' %}
+                    </h5>
+
+                    <div class="row g-3">
+                <!-- Informations de l'entreprise -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="id_nom_entreprise" class="form-label fw-bold">
+                            <i class="fas fa-building me-1"></i> Raison sociale <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-building"></i></span>
+                            {{ form.nom_entreprise|add_class:"form-control"|attr:"placeholder:Nom de l'entreprise"|attr:"data-required=true" }}
+                        </div>
+                        <small class="form-text text-muted">La dénomination officielle de votre entreprise</small>
+                    </div>
+                </div>
+
+                <!-- SIRET et RCS -->
+                <div class="col-md-6">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="id_siret" class="form-label fw-bold">
+                                    <i class="fas fa-id-card me-1"></i> N° SIRET <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                                    {{ form.siret|add_class:"form-control"|attr:"placeholder:14 chiffres"|attr:"data-required=true"|attr:"pattern:\\d{14}"|attr:"maxlength:14" }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="id_rcs" class="form-label fw-bold">
+                                    <i class="fas fa-file-invoice me-1"></i> N° RCS <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-file-alt"></i></span>
+                                    {{ form.rcs|add_class:"form-control"|attr:"placeholder:N° RCS"|attr:"data-required=true" }}
+                                </div>
+                                <small class="form-text text-muted">Ex: RCS Paris 123 456 789</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Forme juridique et capital -->
+                <div class="col-md-6">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="id_forme_juridique" class="form-label fw-bold">
+                                    <i class="fas fa-balance-scale me-1"></i> Forme juridique <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select" id="id_forme_juridique" name="forme_juridique" required>
+                                    <option value="" selected disabled>Sélectionnez...</option>
+                                    <option value="SARL">SARL</option>
+                                    <option value="SAS">SAS</option>
+                                    <option value="SASU">SASU</option>
+                                    <option value="EURL">EURL</option>
+                                    <option value="EI">Entreprise Individuelle</option>
+                                    <option value="EIRL">EIRL</option>
+                                    <option value="SA">SA</option>
+                                    <option value="SNC">SNC</option>
+                                    <option value="SCP">SCP</option>
+                                    <option value="Autre">Autre</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="id_capital" class="form-label fw-bold">
+                                    <i class="fas fa-euro-sign me-1"></i> Capital social
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">€</span>
+                                    {{ form.capital|add_class:"form-control"|attr:"placeholder:Montant en euros"|attr:"step:0.01" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Numéro de TVA et horaires -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="id_tva_intracom" class="form-label fw-bold">
+                            <i class="fas fa-file-invoice-dollar me-1"></i> N° TVA intracommunautaire <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">FR</span>
+                            {{ form.tva_intracom|add_class:"form-control"|attr:"placeholder:FRXX123456789"|attr:"required"|attr:"pattern:FR[0-9A-Z]{2}[0-9]{9}" }}
+                        </div>
+                        <small class="form-text text-muted">Format: FR + 2 lettres + 9 chiffres</small>
+                    </div>
+                </div>
+
+                <!-- Date de création et effectif -->
+                <div class="col-md-6">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="id_date_creation" class="form-label fw-bold">
+                                    <i class="far fa-calendar-alt me-1"></i> Date de création <span class="text-danger">*</span>
+                                </label>
+                                {{ form.date_creation|add_class:"form-control"|attr:"type:date"|attr:"required" }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="id_effectif" class="form-label fw-bold">
+                                    <i class="fas fa-users me-1"></i> Effectif
+                                </label>
+                                <select class="form-select" id="id_effectif" name="effectif">
+                                    <option value="" selected>Non précisé</option>
+                                    <option value="1-2">1-2 salariés</option>
+                                    <option value="3-5">3-5 salariés</option>
+                                    <option value="6-9">6-9 salariés</option>
+                                    <option value="10-19">10-19 salariés</option>
+                                    <option value="20-49">20-49 salariés</option>
+                                    <option value="50-99">50-99 salariés</option>
+                                    <option value="100+">100+ salariés</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description de l'entreprise -->
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label for="id_description" class="form-label fw-bold">
+                            <i class="fas fa-align-left me-1"></i> Description de l'entreprise <span class="text-danger">*</span>
+                        </label>
+                        {{ form.description|add_class:"form-control"|attr:"rows:4"|attr:"placeholder:Présentez votre entreprise en quelques lignes..."|attr:"required" }}
+                        <small class="form-text text-muted">Décrivez vos activités, vos valeurs et votre expérience dans l'immobilier</small>
+                    </div>
+                </div>
+
+                <!-- Logo de l'entreprise -->
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label for="id_logo" class="form-label fw-bold">
+                            <i class="fas fa-image me-1"></i> Logo de l'entreprise
+                        </label>
+                        {{ form.logo|add_class:"form-control"|attr:"type:file"|attr:"accept:image/*" }}
+                        <small class="form-text text-muted">Format JPG, PNG ou GIF - Taille max: 5Mo</small>
+                    </div>
+                </div>
+
+                <!-- Réseaux sociaux -->
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-share-alt me-1"></i> Réseaux sociaux
+                        </label>
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text bg-facebook text-white"><i class="fab fa-facebook-f"></i></span>
+                                    {{ form.facebook|add_class:"form-control"|attr:"placeholder:https://facebook.com/votrepage" }}
+                                </div>
+                                {% if form.facebook.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.facebook.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text bg-linkedin text-white"><i class="fab fa-linkedin-in"></i></span>
+                                    {{ form.linkedin|add_class:"form-control"|attr:"placeholder:https://linkedin.com/company/votresociete" }}
+                                </div>
+                                {% if form.linkedin.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.linkedin.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text bg-instagram text-white"><i class="fab fa-instagram"></i></span>
+                                    {{ form.instagram|add_class:"form-control"|attr:"placeholder:https://instagram.com/votrecompte" }}
+                                </div>
+                                {% if form.instagram.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.instagram.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <small class="form-text text-muted">Ces champs sont facultatifs</small>
+                    </div>
+                </div>
+
+                <!-- Site web -->
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label for="id_site_web" class="form-label fw-bold">
+                            <i class="fas fa-globe me-1"></i> Site web
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-link"></i></span>
+                            {{ form.site_web|add_class:"form-control"|attr:"placeholder:https://www.votresociete.com" }}
+                        </div>
+                        {% if form.site_web.help_text %}
+                            <small class="form-text text-muted">{{ form.site_web.help_text }}</small>
+                        {% endif %}
+                        {% if form.site_web.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.site_web.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Téléphone professionnel -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="id_telephone_pro" class="form-label fw-bold">
+                            <i class="fas fa-phone-alt me-1"></i> Téléphone professionnel <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                            {{ form.telephone|add_class:"form-control"|attr:"placeholder:Votre numéro de téléphone"|attr:"required" }}
+                        </div>
+                        {% if form.telephone.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.telephone.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                    </div>
+                </div>
+
+                <!-- Spécialités (uniquement pour les professionnels) -->
+                <div class="col-md-6 professional-only">
+                    <div class="mb-3">
+                        <label for="id_specialites" class="form-label fw-bold">
+                            <i class="fas fa-star me-1"></i> {{ form.specialites.label }}
+                        </label>
+                        {{ form.specialites|add_class:"form-control"|attr:"rows:2"|attr:"placeholder:Ex: Immobilier neuf, Location saisonnière, Gestion locative..."|attr:"data-required=true" }}
+                        <small class="form-text text-muted">Séparez les spécialités par des virgules</small>
+                        {% if form.specialites.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.specialites.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Champs professionnels spécifiques (déjà inclus dans la section professionnelle) -->
+                <div id="professionalFields" class="professional-fields mt-4 p-4 bg-light rounded border" style="display: none;">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        {% trans 'Remplissez ces informations pour finaliser votre inscription en tant que professionnel de l\'immobilier.' %}
+                    </div>
+                    
+                    <h5 class="fw-bold mb-4 text-primary">
+                        <i class="fas fa-building me-2"></i>
+                        {% trans 'Informations professionnelles' %}
+                    </h5>
+                    
+                    <div class="row g-3">
+                        <!-- TVA Intracom -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="id_tva_intracom" class="form-label fw-bold">
+                                    <i class="fas fa-receipt me-1"></i> N° TVA intracommunautaire <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">FR</span>
+                                    {{ form.tva_intracom|add_class:"form-control"|attr:"placeholder:FRXX123456789"|attr:"required" }}
+                                </div>
+                                <small class="form-text text-muted">Format: FR + 2 lettres + 9 chiffres</small>
+                                {% if form.tva_intracom.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.tva_intracom.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- RCS -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="id_rcs" class="form-label fw-bold">
+                                    <i class="fas fa-file-alt me-1"></i> N° RCS <span class="text-danger">*</span>
+                                </label>
+                                {{ form.rcs|add_class:"form-control"|attr:"placeholder:RCS Paris 123 456 789"|attr:"required" }}
+                                {% if form.rcs.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.rcs.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Forme juridique -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="id_forme_juridique" class="form-label fw-bold">
+                                    <i class="fas fa-building me-1"></i> Forme juridique <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select" id="id_forme_juridique" name="forme_juridique" required>
+                                    <option value="" selected disabled>Sélectionnez une forme juridique</option>
+                                    <option value="SARL">SARL</option>
+                                    <option value="SAS">SAS</option>
+                                    <option value="SASU">SASU</option>
+                                    <option value="EURL">EURL</option>
+                                    <option value="EI">Entreprise Individuelle</option>
+                                    <option value="EIRL">EIRL</option>
+                                    <option value="SA">SA</option>
+                                    <option value="SNC">SNC</option>
+                                    <option value="SCP">SCP</option>
+                                    <option value="Autre">Autre</option>
+                                </select>
+                                {% if form.forme_juridique.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.forme_juridique.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Date de création -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="id_date_creation" class="form-label fw-bold">
+                                    <i class="far fa-calendar-alt me-1"></i> Date de création <span class="text-danger">*</span>
+                                </label>
+                                {{ form.date_creation|add_class:"form-control"|attr:"type:date"|attr:"required" }}
+                                {% if form.date_creation.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.date_creation.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Capital social -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="id_capital" class="form-label fw-bold">
+                                    <i class="fas fa-euro-sign me-1"></i> Capital social
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">€</span>
+                                    {{ form.capital|add_class:"form-control"|attr:"placeholder:Montant en euros"|attr:"step:0.01" }}
+                                </div>
+                                <small class="form-text text-muted">Laissez vide si non applicable</small>
+                                {% if form.capital.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.capital.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Horaires d'ouverture -->
+                        <div class="col-12">
+                            <h6 class="fw-bold mt-2 mb-3">
+                                <i class="far fa-clock me-2"></i>Horaires d'ouverture
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-3 col-6 mb-2">
+                                    <label class="form-label small">Lundi</label>
+                                    {{ form.horaire_lundi|add_class:"form-control form-control-sm" }}
+                                </div>
+                                <div class="col-md-3 col-6 mb-2">
+                                    <label class="form-label small">Mardi</label>
+                                    {{ form.horaire_mardi|add_class:"form-control form-control-sm" }}
+                                </div>
+                                <div class="col-md-3 col-6 mb-2">
+                                    <label class="form-label small">Mercredi</label>
+                                    {{ form.horaire_mercredi|add_class:"form-control form-control-sm" }}
+                                </div>
+                                <div class="col-md-3 col-6 mb-2">
+                                    <label class="form-label small">Jeudi</label>
+                                    {{ form.horaire_jeudi|add_class:"form-control form-control-sm" }}
+                                </div>
+                                <div class="col-md-3 col-6 mb-2">
+                                    <label class="form-label small">Vendredi</label>
+                                    {{ form.horaire_vendredi|add_class:"form-control form-control-sm" }}
+                                </div>
+                                <div class="col-md-3 col-6 mb-2">
+                                    <label class="form-label small">Samedi</label>
+                                    {{ form.horaire_samedi|add_class:"form-control form-control-sm" }}
+                                </div>
+                                <div class="col-md-3 col-6 mb-2">
+                                    <label class="form-label small">Dimanche</label>
+                                    {{ form.horaire_dimanche|add_class:"form-control form-control-sm" }}
+                                </div>
+                            </div>
+                            <small class="form-text text-muted">Exemple: 9h-12h / 14h-18h</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section Spécialités et services -->
+                <div class="professional-fields mt-4 p-4 bg-light rounded border" style="display: none;">
+                    <h5 class="fw-bold mb-4 text-primary">
+                        <i class="fas fa-star me-2"></i>
+                        {% trans 'Spécialités et services' %}
+                    </h5>
+                    
+                    <div class="row g-3">
+                        <!-- Type de biens gérés -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-home me-1"></i> {% trans 'Types de biens gérés' %}
+                                </label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="biens_geres" value="appartement" id="appartement">
+                                    <label class="form-check-label" for="appartement">
+                                        {% trans 'Appartements' %}
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="biens_geres" value="maison" id="maison">
+                                    <label class="form-check-label" for="maison">
+                                        {% trans 'Maisons' %}
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="biens_geres" value="bureau" id="bureau">
+                                    <label class="form-check-label" for="bureau">
+                                        {% trans 'Bureaux' %}
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="biens_geres" value="local" id="local">
+                                    <label class="form-check-label" for="local">
+                                        {% trans 'Locaux commerciaux' %}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Services proposés -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-concierge-bell me-1"></i> {% trans 'Services proposés' %}
+                                </label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="services" value="vente" id="vente">
+                                    <label class="form-check-label" for="vente">
+                                        {% trans 'Vente' %}
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="services" value="location" id="location">
+                                    <label class="form-check-label" for="location">
+                                        {% trans 'Location' %}
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="services" value="gestion" id="gestion">
+                                    <label class="form-check-label" for="gestion">
+                                        {% trans 'Gestion locative' %}
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="services" value="estimation" id="estimation">
+                                    <label class="form-check-label" for="estimation">
+                                        {% trans 'Estimation gratuite' %}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Zone d'intervention -->
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="zones_intervention" class="form-label fw-bold">
+                                    <i class="fas fa-map-marked-alt me-1"></i> {% trans 'Zones d\'intervention' %}
+                                </label>
+                                <textarea class="form-control" id="zones_intervention" name="zones_intervention" 
+                                          rows="2" placeholder="{% trans 'Listez les villes ou quartiers où vous intervenez, séparés par des virgules' %}"></textarea>
+                                <small class="form-text text-muted">
+                                    {% trans 'Ex: Paris 16e, Neuilly-sur-Seine, Boulogne-Billancourt' %}
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <!-- Langues parlées -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="langues" class="form-label fw-bold">
+                                    <i class="fas fa-language me-1"></i> {% trans 'Langues parlées' %}
+                                </label>
+                                <select class="form-select" id="langues" name="langues" multiple>
+                                    <option value="fr">Français</option>
+                                    <option value="en">Anglais</option>
+                                    <option value="es">Espagnol</option>
+                                    <option value="de">Allemand</option>
+                                    <option value="it">Italien</option>
+                                    <option value="pt">Portugais</option>
+                                    <option value="ru">Russe</option>
+                                    <option value="zh">Chinois</option>
+                                    <option value="ar">Arabe</option>
+                                </select>
+                                <small class="form-text text-muted">
+                                    {% trans 'Maintenez la touche Ctrl (ou Cmd sur Mac) pour sélectionner plusieurs langues' %}
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <!-- Années d'expérience -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="experience" class="form-label fw-bold">
+                                    <i class="fas fa-chart-line me-1"></i> {% trans 'Années d\'expérience' %}
+                                </label>
+                                <select class="form-select" id="experience" name="experience">
+                                    <option value="">{% trans 'Sélectionnez...' %}</option>
+                                    <option value="0-2">{% trans 'Moins de 2 ans' %}</option>
+                                    <option value="2-5">{% trans '2 à 5 ans' %}</option>
+                                    <option value="5-10">{% trans '5 à 10 ans' %}</option>
+                                    <option value="10-20">{% trans '10 à 20 ans' %}</option>
+                                    <option value="20+">{% trans 'Plus de 20 ans' %}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section Contacts supplémentaires -->
+                <div class="professional-fields mt-4 p-4 bg-light rounded border" style="display: none;">
+                    <h5 class="fw-bold mb-4 text-primary">
+                        <i class="fas fa-network-wired me-2"></i>
+                        {% trans 'Réseaux et contacts' %}
+                    </h5>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="site_web" class="form-label fw-bold">
+                                    <i class="fas fa-globe me-1"></i> {% trans 'Site web professionnel' %}
+                                </label>
+                                <input type="url" class="form-control" id="site_web" name="site_web" 
+                                       placeholder="https://www.votresite.com">
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="linkedin" class="form-label fw-bold">
+                                    <i class="fab fa-linkedin me-1"></i> LinkedIn
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">https://linkedin.com/in/</span>
+                                    <input type="text" class="form-control" id="linkedin" name="linkedin" 
+                                           placeholder="votrepseudo">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="newsletter" name="newsletter" checked>
+                                <label class="form-check-label" for="newsletter">
+                                    {% trans 'Je souhaite recevoir la newsletter professionnelle et des offres personnalisées' %}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conditions générales -->
+                <div class="col-12">
+                    <div class="form-check mb-3">
+                        {{ form.cgu_acceptees|add_class:"form-check-input"|attr:"required" }}
+                        <label class="form-check-label" for="{{ form.cgu_acceptees.id_for_label }}">
+                            {{ form.cgu_acceptees.label }}
+                        </label>
+                        {% if form.cgu_acceptees.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.cgu_acceptees.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+                    <!-- Informations personnelles -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-user me-2"></i>
+                            {% trans 'Informations personnelles' %}
+                        </h3>
+                        <p class="text-muted mb-4">{% trans 'Renseignez vos informations personnelles' %}</p>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label for="id_first_name" class="form-label">Prénom <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    {{ form.first_name|add_class:"form-control"|attr:"placeholder:Votre prénom"|attr:"required" }}
+                                </div>
+                                {% if form.first_name.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.first_name.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_last_name" class="form-label">Nom <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    {{ form.last_name|add_class:"form-control"|attr:"placeholder:Votre nom"|attr:"required" }}
+                                </div>
+                                {% if form.last_name.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.last_name.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_phone" class="form-label">{% trans 'Téléphone' %} <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                    {{ form.phone|add_class:"form-control"|attr:"placeholder:06 12 34 56 78"|attr:"required" }}
+                                </div>
+                                {% if form.phone.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.phone.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_username" class="form-label">{% trans "Nom d'utilisateur" %} <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-at"></i></span>
+                                    {{ form.username|add_class:"form-control"|attr:"placeholder:Choisissez un nom d'utilisateur"|attr:"required" }}
+                                </div>
+                                {% if form.username.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.username.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <small class="form-text text-muted">
+                                    {% trans "150 caractères maximum. Lettres, chiffres et @/./+/-/_ uniquement." %}
+                                </small>
+                            </div>
+            <div class="col-md-6">
+                <label for="id_email" class="form-label">{% trans 'Adresse email' %} <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                    {{ form.email|add_class:"form-control"|attr:"placeholder:votre@email.com"|attr:"required" }}
+                </div>
+                {% if form.email.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.email.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Adresse -->
+            <div class="col-12">
+                <label for="id_address" class="form-label">{% trans 'Adresse' %} <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                    {{ form.address|add_class:"form-control"|attr:"placeholder:Votre adresse complète"|attr:"required" }}
+                </div>
+                {% if form.address.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.address.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="col-md-4">
+                <label for="id_zip_code" class="form-label">{% trans 'Code postal' %} <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-mail-bulk"></i></span>
+                    {{ form.zip_code|add_class:"form-control"|attr:"placeholder:75000"|attr:"required"|attr:"pattern:\\d{5}"|attr:"maxlength:5" }}
+                </div>
+                {% if form.zip_code.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.zip_code.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="col-md-8">
+                <label for="id_city" class="form-label">{% trans 'Ville' %} <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-city"></i></span>
+                    {{ form.city|add_class:"form-control"|attr:"placeholder:Votre ville"|attr:"required" }}
+                </div>
+                {% if form.city.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.city.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="col-md-6">
+                <label for="id_password1" class="form-label">Mot de passe <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    {{ form.password1|add_class:"form-control"|attr:"placeholder:Créez un mot de passe"|attr:"required" }}
+                    <button class="btn btn-outline-secondary toggle-password" type="button">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                {% if form.password1.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.password1.errors.0 }}
+                    </div>
+                {% endif %}
+                <small class="form-text text-muted">
+                    {% trans 'Minimum 8 caractères, avec des lettres et des chiffres' %}
+                </small>
+            </div>
+            <div class="col-md-6">
+                <label for="id_password2" class="form-label">Confirmer le mot de passe <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    {{ form.password2|add_class:"form-control"|attr:"placeholder:Confirmez votre mot de passe"|attr:"required" }}
+                    <button class="btn btn-outline-secondary toggle-password" type="button">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                {% if form.password2.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.password2.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+            
+                            <div class="col-12 mt-4">
+                                <div class="form-check">
+                                    {{ form.cgu_acceptees|add_class:"form-check-input"|attr:"required" }}
+                                    <label class="form-check-label" for="{{ form.cgu_acceptees.id_for_label }}">
+                                        {% trans 'J\'accepte les' %} <a href="#" class="text-primary">{% trans 'conditions générales d\'utilisation' %}</a> <span class="text-danger">*</span>
+                                    </label>
+                                    {% if form.cgu_acceptees.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.cgu_acceptees.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg w-100 py-3 fw-bold">
+                                    <i class="fas fa-user-plus me-2"></i> {% trans 'Créer mon compte' %}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block auth_footer %}
+    <div class="auth-footer">
+        <p class="mb-0">
+            {% trans 'Déjà inscrit ?' %}
+            <a href="/connection/">
+                {% trans 'Connectez-vous ici' %}
+            </a>
+        </p>
+    </div>
+{% endblock %}
+
+    {% block extra_js %}
+    <script src="{% static 'js/cleave.min.js' %}"></script>
+    <script>
+    // Vérification du chargement du script
+    console.log('=== SCRIPT REGISTER.HTML CHARGÉ ===');
+    console.log('URL de la page:', window.location.href);
+    console.log('Type de compte sélectionné au chargement:', document.querySelector('input[name="user_type"]:checked').value);
+    
+    // Afficher tous les champs pour le débogage
+    const allFields = document.querySelectorAll('input, select, textarea');
+    console.log('Champs de formulaire trouvés:', allFields.length);
+    
+    // Fonction pour afficher/masquer les champs professionnels
+    function toggleProfessionalFields(show) {
+        console.log('toggleProfessionalFields appelée avec show =', show);
+        
+        // Afficher/masquer la section des champs professionnels
+        const professionalSection = document.getElementById('professionalFields');
+        if (professionalSection) {
+            professionalSection.style.display = show ? 'block' : 'none';
+            
+            // Activer/désactiver les champs de formulaire
+            const formFields = professionalSection.querySelectorAll('input, select, textarea');
+            formFields.forEach(field => {
+                field.disabled = !show;
+                // Rendre les champs obligatoires uniquement si visibles
+                if (field.hasAttribute('data-required')) {
+                    field.required = show;
+                }
+            });
+        }
+        
+        // Gérer les champs professionnels individuels en dehors de la section
+        const professionalOnlyFields = document.querySelectorAll('.professional-only');
+        professionalOnlyFields.forEach(element => {
+            element.style.display = show ? 'block' : 'none';
+            const fields = element.querySelectorAll('input, select, textarea');
+            fields.forEach(field => {
+                field.disabled = !show;
+                if (field.hasAttribute('data-required')) {
+                    field.required = show;
+                }
+            });
+        });
+        
+        console.log('Champs professionnels', show ? 'affichés' : 'masqués');
+    }
+    
+    // Fonction pour basculer la visibilité du mot de passe
+    function setupPasswordToggles() {
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const input = this.closest('.input-group').querySelector('input');
+                const icon = this.querySelector('i');
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+    }
+    
+    // Fonction pour gérer le changement de type de compte
+    function handleAccountTypeChange() {
+        const userType = document.querySelector('input[name="user_type"]:checked').value;
+        const isProfessional = userType === 'professionnel';
+        toggleProfessionalFields(isProfessional);
+        
+        // Mettre à jour les champs requis
+        const professionalRequired = document.querySelectorAll('.professional-required');
+        professionalRequired.forEach(field => {
+            field.required = isProfessional;
+        });
+    }
+    
+    // Fonction pour initialiser la validation des champs
+    function initValidation() {
+        // Validation du SIRET (14 chiffres)
+        const siretInput = document.getElementById('id_siret');
+        if (siretInput) {
+            siretInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, ''); // Supprime tout ce qui n'est pas un chiffre
+                e.target.value = value.slice(0, 14); // Limite à 14 chiffres
+            });
+        }
+        
+        // Validation du téléphone (10 chiffres)
+        const telInput = document.getElementById('id_telephone');
+        if (telInput) {
+            telInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, ''); // Supprime tout ce qui n'est pas un chiffre
+                e.target.value = value.slice(0, 10); // Limite à 10 chiffres
+            });
+        }
+        
+        // Validation du code postal (5 chiffres)
+        const cpInput = document.getElementById('id_code_postal');
+        if (cpInput) {
+            cpInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, ''); // Supprime tout ce qui n'est pas un chiffre
+                e.target.value = value.slice(0, 5); // Limite à 5 chiffres
+            });
+        }
+    }
+    
+    // Fonction pour afficher l'état des champs professionnels
+    function logProfessionalFieldsState() {
+        const professionalSections = document.querySelectorAll('.professional-fields');
+        console.log('=== ÉTAT DES CHAMPS PROFESSIONNELS ===');
+        console.log('Nombre de sections professionnelles:', professionalSections.length);
+        professionalSections.forEach((section, index) => {
+            console.log(`Section ${index + 1}:`, {
+                id: section.id || 'Aucun ID',
+                display: window.getComputedStyle(section).display,
+                visibility: window.getComputedStyle(section).visibility,
+                isConnected: section.isConnected
+            });
+        });
+        
+        const radios = document.querySelectorAll('input[name="user_type"]');
+        console.log('Boutons radio trouvés:', radios.length);
+        radios.forEach(radio => {
+            console.log(`Bouton ${radio.value}:`, {
+                checked: radio.checked,
+                id: radio.id,
+                isConnected: radio.isConnected
+            });
+        });
+    }
+    
+    // Fonction pour gérer le changement de type de compte
+    function handleAccountTypeChange() {
+        const userType = document.querySelector('input[name="user_type"]:checked').value;
+        const isProfessional = userType === 'professionnel';
+        console.log('Changement de type de compte:', userType);
+        toggleProfessionalFields(isProfessional);
+    }
+
+    // Initialisation au chargement de la page
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('=== INITIALISATION DU FORMULAIRE ===');
+        
+        // Initialiser les bascules de mot de passe
+        setupPasswordToggles();
+        
+        // Vérifier l'état initial des boutons radio
+        const professionnelRadio = document.querySelector('input[value="professionnel"]');
+        const isProfessional = professionnelRadio && professionnelRadio.checked;
+        toggleProfessionalFields(isProfessional);
+        
+        // Ajouter les écouteurs d'événements sur les boutons radio
+        document.querySelectorAll('input[name="user_type"]').forEach(radio => {
+            radio.addEventListener('change', handleAccountTypeChange);
+        });
+        
+        // Initialiser la validation des champs SIRET, téléphone et code postal
+        initValidation();
+        
+        // Initialiser le sélecteur de langues multiples
+        const languesSelect = document.getElementById('langues');
+        if (languesSelect) {
+            // Vérifier si Choices.js est chargé
+            if (typeof Choices !== 'undefined') {
+                new Choices(languesSelect, {
+                    removeItemButton: true,
+                    searchEnabled: true,
+                    placeholder: true,
+                    placeholderValue: 'Sélectionnez les langues parlées',
+                    searchPlaceholderValue: 'Rechercher une langue',
+                    noResultsText: 'Aucun résultat',
+                    itemSelectText: 'Cliquez pour sélectionner',
+                    classNames: {
+                        containerInner: 'choices__inner',
+                        input: 'choices__input',
+                    },
+                });
+            } else {
+                console.warn('Choices.js n\'est pas chargé. Le sélecteur de langues ne sera pas optimisé.');
+            }
+        }
+        
+        // Validation du formulaire
+        const form = document.querySelector('.needs-validation');
+        if (form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        }
+        
+        console.log('Initialisation terminée');
+    });
+    
+    });
+    
+    // Vérification finale de l'état des champs
+    console.log('=== VÉRIFICATION FINALE ===');
+    logProfessionalFieldsState();
+    
+    // Vérifier si les événements sont correctement attachés
+    const radios = document.querySelectorAll('input[name="user_type"]');
+    radios.forEach(radio => {
+        const hasListener = radio.onchange !== null;
+        console.log(`Bouton ${radio.value} a un écouteur:`, hasListener);
+        
+        // Ajouter un écouteur manuellement si nécessaire
+        if (!hasListener) {
+            console.log(`Ajout d'un écouteur sur le bouton ${radio.value}`);
+            radio.addEventListener('change', handleAccountTypeChange);
+        }
+    });
+    
+    // Forcer l'affichage initial des champs professionnels si nécessaire
+    const initialType = document.querySelector('input[name="user_type"]:checked').value;
+    console.log('Type de compte initial:', initialType);
+    toggleProfessionalFields(initialType === 'professionnel');
+</script>
+{% endblock %}

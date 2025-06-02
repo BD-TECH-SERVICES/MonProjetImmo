@@ -1,0 +1,114 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* Styles personnalisés pour la page de connexion */
+    .login-box {
+        background: #fff;
+        border: 1px solid #eaeaea;
+        border-radius: 4px;
+        padding: 20px;
+        max-width: 400px;
+        margin: 50px auto;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .login-header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .login-form .form-row {
+        margin-bottom: 15px;
+    }
+    .login-form label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    .login-form input[type="text"],
+    .login-form input[type="password"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    .submit-row {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .submit-row input[type="submit"] {
+        background: #417690;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .submit-row input[type="submit"]:hover {
+        background: #205067;
+    }
+    .back-to-site {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .login-logo {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .login-logo img {
+        max-width: 200px;
+        height: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-box">
+    <div class="login-logo">
+        <h1>{% translate 'Connexion' %}</h1>
+    </div>
+    
+    {% if form.errors and not form.non_field_errors %}
+        <p class="errornote">
+            {% if form.errors.items|length == 1 %}{% translate "Corrigez l'erreur ci-dessous." %}{% else %}{% translate "Corrigez les erreurs ci-dessous." %}{% endif %}
+        </p>
+    {% endif %}
+
+    {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+            <p class="errornote">{{ error }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <div id="content-main">
+        <form action="{{ app_path }}" method="post" id="login-form" class="login-form">
+            {% csrf_token %}
+            <div class="form-row">
+                {{ form.username.errors }}
+                <label for="{{ form.username.id_for_label }}" class="required">{{ form.username.label }}:</label>
+                {{ form.username }}
+            </div>
+            <div class="form-row">
+                {{ form.password.errors }}
+                <label for="{{ form.password.id_for_label }}" class="required">{{ form.password.label }}:</label>
+                {{ form.password }}
+                <input type="hidden" name="next" value="{{ next }}">
+            </div>
+            <div class="submit-row">
+                <input type="submit" value="{% translate 'Se connecter' %}">
+            </div>
+        </form>
+        
+        <div class="back-to-site">
+            <a href="{% url 'immobilier:accueil' %}">
+                ← {% translate 'Retour au site' %}
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<div id="footer"></div>
+{% endblock %}

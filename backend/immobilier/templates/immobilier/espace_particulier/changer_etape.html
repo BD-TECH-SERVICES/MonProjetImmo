@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Changer l'étape du projet" %} - {{ projet.nom }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'immobilier:espace_particulier' %}">{% trans "Mes projets" %}</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'immobilier:detail_projet' projet.pk %}">{{ projet.nom|default:"Projet sans nom"|truncatechars:20 }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{% trans "Changer d'étape" %}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5 mb-0">{% trans "Changer l'étape du projet" %}</h2>
+                </div>
+                <div class="card-body">
+                    <div class="progress mb-4" style="height: 10px;">
+                        <div class="progress-bar bg-primary" role="progressbar" 
+                             style="width: {{ projet.get_avancement }}%" 
+                             aria-valuenow="{{ projet.get_avancement }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                        </div>
+                    </div>
+
+                    <form method="post" id="etapeForm" class="mb-4">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <h4 class="h6 text-muted mb-3">{% trans "Sélectionnez votre étape actuelle :" %}</h4>
+                            <div class="list-group">
+                                {% for etape in etapes %}
+                                    <label class="list-group-item list-group-item-action d-flex align-items-center">
+                                        <input type="radio" 
+                                               name="etape_actuelle" 
+                                               value="{{ etape.id }}" 
+                                               class="form-check-input me-3" 
+                                               {% if projet.etape_actuelle_id == etape.id %}checked{% endif %}>
+                                        <div class="ms-2">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h5 class="mb-1">{{ etape.titre }}</h5>
+                                                <small class="text-muted">
+                                                    {% if etape in etapes_terminees %}
+                                                        <i class="fas fa-check-circle text-success"></i> {% trans "Terminée" %}
+                                                    {% endif %}
+                                                </small>
+                                            </div>
+                                            <p class="mb-1 text-muted">{{ etape.description|default:""|truncatewords:20 }}</p>
+                                            {% if etape.professionnels_associes.exists %}
+                                                <div class="mt-2">
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-user-tie me-1"></i>
+                                                        {% for professionnel in etape.professionnels_associes.all %}
+                                                            <span class="badge bg-info text-dark me-1">{{ professionnel.nom }}</span>
+                                                        {% endfor %}
+                                                    </small>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'immobilier:detail_projet' projet.pk %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> {% trans "Retour" %}
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> {% trans "Enregistrer les modifications" %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('etapeForm');
+        
+        // Gestion de la soumission du formulaire en AJAX
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mise à jour de l'interface utilisateur
+                    const currentStep = document.querySelector('.list-group-item.active');
+                    if (currentStep) {
+                        currentStep.classList.remove('active');
+                    }
+                    
+                    const selectedStep = document.querySelector(`input[value="${data.etape_actuelle_id}"]`).closest('.list-group-item');
+                    if (selectedStep) {
+                        selectedStep.classList.add('active');
+                    }
+                    
+                    // Afficher un message de succès
+                    showToast('{% trans "L\'étape a été mise à jour avec succès" %}', 'success');
+                    
+                    // Mettre à jour la barre de progression si nécessaire
+                    const progressBar = document.querySelector('.progress-bar');
+                    if (progressBar) {
+                        // Vous pouvez mettre à jour la largeur de la barre de progression ici
+                        // en fonction de la nouvelle étape
+                    }
+                } else {
+                    showToast('{% trans "Une erreur est survenue" %}', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showToast('{% trans "Une erreur est survenue" %}', 'error');
+            });
+        });
+        
+        // Fonction utilitaire pour afficher des messages toast
+        function showToast(message, type = 'info') {
+            // Implémentez votre propre système de notification toast ici
+            // Par exemple, avec Bootstrap :
+            const toastContainer = document.createElement('div');
+            toastContainer.innerHTML = `
+                <div class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(toastContainer);
+            const toast = new bootstrap.Toast(toastContainer.querySelector('.toast'));
+            toast.show();
+            
+            // Supprimer le toast après sa fermeture
+            toastContainer.addEventListener('hidden.bs.toast', function() {
+                document.body.removeChild(toastContainer);
+            });
+        }
+    });
+</script>
+{% endblock %}

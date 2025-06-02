@@ -1,0 +1,4 @@
+Ce dossier contient des images statiques pour le site MonProjetImmo.
+Veuillez ajouter ici vos propres images :
+- hero-background.jpg : Image d'arrière-plan pour la section héro de la page d'accueil
+- how-it-works-background.jpg : Image d'arrière-plan pour la section "Comment ça marche"

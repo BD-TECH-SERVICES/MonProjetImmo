@@ -1,0 +1,173 @@
+{% extends 'immobilier/base.html' %}
+{% load static %}
+
+{% block title %}Choisir un professionnel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .professional-card {
+        transition: all 0.2s ease;
+        border-left: 4px solid transparent;
+    }
+    .professional-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    .specialty-badge {
+        font-size: 0.75rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'immobilier:accueil' %}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'immobilier:espace_particulier' %}">Mon espace</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Choisir un professionnel</li>
+                </ol>
+            </nav>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-user-tie me-2"></i>
+                    Choisir un professionnel
+                </h1>
+                <a href="{% url 'immobilier:espace_particulier' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Retour
+                </a>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="mb-0">
+                                <i class="fas fa-info-circle text-primary me-2"></i>
+                                À propos de cette étape
+                            </h5>
+                            <p class="text-muted mb-0 mt-2">
+                                Sélectionnez un professionnel de l'immobilier pour discuter de votre projet.
+                                Vous pourrez échanger des messages et partager des documents en toute sécurité.
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center h-100">
+                                <div class="w-100">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white">
+                                            <i class="fas fa-search text-muted"></i>
+                                        </span>
+                                        <input type="text" class="form-control" id="searchInput" placeholder="Rechercher un professionnel...">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if not professionnels %}
+            <div class="card shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
+                    <h3 class="h5">Aucun professionnel trouvé</h3>
+                    <p class="text-muted">
+                        Aucun professionnel n'est actuellement disponible. Veuillez réessayer ultérieurement.
+                    </p>
+                </div>
+            </div>
+            {% else %}
+            <div class="row" id="professionalsContainer">
+                {% for professionnel in professionnels %}
+                <div class="col-md-6 col-lg-4 mb-4 professional-item">
+                    <div class="card h-100 shadow-sm professional-card">
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <img src="{{ professionnel.profile.image.url|default:'/static/images/avatar-pro.png' }}" 
+                                         alt="{{ professionnel.get_full_name }}" 
+                                         class="avatar mb-2">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title mb-1">
+                                        {{ professionnel.get_full_name|default:professionnel.username }}
+                                    </h5>
+                                    {% if professionnel.profil_pro %}
+                                    <p class="text-muted mb-2">
+                                        <i class="fas fa-building me-1"></i>
+                                        {{ professionnel.profil_pro.nom_entreprise }}
+                                    </p>
+                                    {% endif %}
+                                    
+                                    <div class="d-flex flex-wrap gap-1 mb-2">
+                                        <span class="badge bg-primary text-white-50 specialty-badge">
+                                            <i class="fas fa-home me-1"></i>
+                                            {{ professionnel.profil_pro.get_type_entreprise_display|default:'Professionnel' }}
+                                        </span>
+                                        {% if professionnel.profil_pro.annee_creation %}
+                                        <span class="badge bg-secondary text-white-50 specialty-badge">
+                                            <i class="fas fa-calendar-alt me-1"></i>
+                                            Depuis {{ professionnel.profil_pro.annee_creation }}
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {% if professionnel.profil_pro.description %}
+                                    <p class="small text-muted mb-2 line-clamp-2">
+                                        {{ professionnel.profil_pro.description|truncatewords:20 }}
+                                    </p>
+                                    {% endif %}
+                                    
+                                    <form method="post" action="{% url 'immobilier:nouvelle_conversation' projet_id=projet_id %}" class="mt-3">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="professionnel_id" value="{{ professionnel.id }}">
+                                        <button type="submit" class="btn btn-outline-primary w-100">
+                                            <i class="fas fa-comment-dots me-1"></i> Contacter
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const professionals = document.querySelectorAll('.professional-item');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            professionals.forEach(professional => {
+                const text = professional.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    professional.style.display = '';
+                } else {
+                    professional.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

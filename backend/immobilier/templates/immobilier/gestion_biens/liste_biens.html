@@ -1,0 +1,175 @@
+{% extends 'immobilier/base.html' %}
+{% load static humanize %}
+
+{% block title %}Gestion de mes biens immobiliers{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- En-tête de la page -->
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'immobilier:accueil' %}">Accueil</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Gestion de mes biens</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-home me-2"></i>
+                    Gestion de mes biens immobiliers
+                </h1>
+                <a href="{% url 'immobilier:creer_bien' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i> Ajouter un bien
+                </a>
+            </div>
+            
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <!-- Liste des biens -->
+            {% if biens %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Photo</th>
+                                <th>Détails</th>
+                                <th>Prix</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bien in biens %}
+                            <tr>
+                                <td style="width: 120px;">
+                                    {% if bien.image_principale %}
+                                        <img src="{{ bien.image_principale.url }}" alt="{{ bien.titre }}" class="img-thumbnail">
+                                    {% else %}
+                                        <div class="bg-light d-flex align-items-center justify-content-center" style="width: 100px; height: 70px;">
+                                            <i class="fas fa-home fa-2x text-muted"></i>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <h6 class="mb-1">{{ bien.titre }}</h6>
+                                    <p class="mb-1 text-muted small">
+                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                        {{ bien.adresse }}, {{ bien.code_postal }} {{ bien.ville|title }}
+                                    </p>
+                                    <p class="mb-0 small">
+                                        <span class="badge bg-{% if bien.type_transaction == 'vente' %}success{% else %}info{% endif %} me-2">
+                                            {{ bien.get_type_transaction_display }}
+                                        </span>
+                                        <i class="fas fa-ruler-combined me-1"></i> {{ bien.surface }} m²
+                                        <i class="fas fa-door-open ms-2 me-1"></i> {{ bien.nombre_pieces }} pièces
+                                    </p>
+                                </td>
+                                <td class="align-middle">
+                                    <strong>{{ bien.prix|intcomma }} €</strong>
+                                    {% if bien.type_transaction == 'location' %}/ mois{% endif %}
+                                </td>
+                                <td class="align-middle">
+                                    {% if bien.disponible %}
+                                        <span class="badge bg-success">Disponible</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Non disponible</span>
+                                    {% endif %}
+                                </td>
+                                <td class="align-middle">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{% url 'immobilier:modifier_bien' bien.id %}" class="btn btn-outline-primary" 
+                                           data-bs-toggle="tooltip" title="Modifier">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'immobilier:supprimer_bien' bien.id %}" class="btn btn-outline-danger" 
+                                           data-bs-toggle="tooltip" title="Supprimer"
+                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce bien ? Cette action est irréversible.');">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                {% if is_paginated %}
+                <nav aria-label="Navigation des pages">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Précédent">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo;</span>
+                            </li>
+                        {% endif %}
+                        
+                        {% for i in paginator.page_range %}
+                            {% if page_obj.number == i %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ i }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Suivant">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                
+            {% else %}
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-home fa-4x text-muted"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Aucun bien enregistré</h3>
+                    <p class="text-muted mb-4">Commencez par ajouter votre premier bien immobilier</p>
+                    <a href="{% url 'immobilier:creer_bien' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Ajouter un bien
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Activer les tooltips Bootstrap
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+});
+</script>
+{% endblock %}

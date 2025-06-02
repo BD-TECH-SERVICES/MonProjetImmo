@@ -1,0 +1,45 @@
+{% extends "immobilier/auth/auth_minimal.html" %}
+{% load i18n static %}
+
+{% block title %}{% trans 'Inscription' %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h1 class="h4 mb-0">
+                        <i class="fas fa-user-plus me-2"></i>
+                        {% trans 'Créer un compte' %}
+                    </h1>
+                </div>
+                <div class="card-body p-5 text-center">
+                    <h2 class="h5 mb-4">{% trans 'Je suis :' %}</h2>
+                    
+                    <div class="d-grid gap-4">
+                        <a href="{% url 'immobilier:register_particulier' %}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-user fa-2x mb-2 d-block"></i>
+                            <span class="h5">{% trans 'Un particulier' %}</span>
+                            <p class="small text-muted mb-0 mt-2">{% trans 'Je cherche ou propose un bien immobilier' %}</p>
+                        </a>
+                        
+                        <a href="{% url 'immobilier:register_professionnel' %}" class="btn btn-outline-success btn-lg">
+                            <i class="fas fa-briefcase fa-2x mb-2 d-block"></i>
+                            <span class="h5">{% trans 'Un professionnel' %}</span>
+                            <p class="small text-muted mb-0 mt-2">{% trans 'Je suis un professionnel de l\'immobilier' %}</p>
+                        </a>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <p class="mb-0">
+                        {% trans 'Déjà inscrit ?' %}
+                        <a href="/connexion" class="text-primary">{% trans 'Connectez-vous' %}</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

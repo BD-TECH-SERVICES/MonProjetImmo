@@ -1,0 +1,280 @@
+{% extends 'immobilier/base.html' %}
+{% load static %}
+
+{% block title %}Espace Professionnel - Tableau de bord{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-card {
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .card-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #0d6efd;
+    }
+    
+    .welcome-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 10px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .profile-completion {
+        height: 10px;
+        border-radius: 5px;
+        background-color: #e9ecef;
+        margin-top: 1rem;
+        overflow: hidden;
+    }
+    
+    .profile-completion-bar {
+        height: 100%;
+        background-color: #198754;
+        width: {{ completion_percentage }}%;
+        transition: width 0.5s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- En-tête avec message de bienvenue -->
+    <div class="welcome-section mb-5">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold">Bienvenue, {{ request.user.get_full_name|default:request.user.username }} !</h1>
+                <p class="lead mb-0">Gérez votre activité professionnelle et vos projets immobiliers en un seul endroit.</p>
+                
+                <!-- Barre de progression du profil -->
+                <div class="mt-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Complétion du profil</span>
+                        <span>{{ completion_percentage }}%</span>
+                    </div>
+                    <div class="profile-completion">
+                        <div class="profile-completion-bar"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end mt-4 mt-md-0">
+                {% if profil and profil.logo %}
+                    <img src="{{ profil.logo.url }}" alt="Logo de {{ profil.nom_entreprise }}" class="img-fluid rounded-circle" style="max-width: 150px; border: 4px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                {% else %}
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
+                        <i class="fas fa-building fa-4x"></i>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Cartes de statistiques -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card dashboard-card border-0 h-100">
+                <div class="card-body text-center p-4">
+                    <div class="card-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3 class="h5">Messages non lus</h3>
+                    <p class="display-6 fw-bold text-primary mb-0">{{ unread_messages_count }}</p>
+                    <a href="{% url 'immobilier:liste_conversations' %}" class="btn btn-outline-primary btn-sm mt-3">Voir les messages</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card dashboard-card border-0 h-100">
+                <div class="card-body text-center p-4">
+                    <div class="card-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <h3 class="h5">Biens en ligne</h3>
+                    <p class="display-6 fw-bold text-primary mb-0">{{ biens_count }}</p>
+                    <a href="{% url 'immobilier:liste_projets_pro' %}" class="btn btn-outline-primary btn-sm mt-3">Voir les projets</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card dashboard-card border-0 h-100">
+                <div class="card-body text-center p-4">
+                    <div class="card-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="h5">Avis clients</h3>
+                    <p class="display-6 fw-bold text-primary mb-0">{{ avis_count }}</p>
+                    <a href="{% url 'immobilier:espace_professionnel' %}" class="btn btn-outline-primary btn-sm mt-3">Voir les avis</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dernières activités -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <h2 class="h5 mb-0">Dernières activités</h2>
+                </div>
+                <div class="card-body">
+                    {% if activites %}
+                        <div class="list-group list-group-flush">
+                            {% for activite in activites|slice:":5" %}
+                                <div class="list-group-item border-0 px-0 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0 me-3 bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="fas {{ activite.icone }} text-primary"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <p class="mb-1">{{ activite.description }}</p>
+                                            <small class="text-muted">
+                                                <i class="far fa-clock me-1"></i> {{ activite.date|timesince }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="{% url 'immobilier:espace_professionnel' %}" class="btn btn-link">Voir toutes les activités</a>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <p class="text-muted mb-0">Aucune activité récente</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Prochaines étapes -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <h2 class="h5 mb-0">Prochaines étapes</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        {% if not profil.complet %}
+                            <li class="mb-3">
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0 me-3">
+                                        <i class="fas fa-exclamation-circle text-warning"></i>
+                                    </div>
+                                    <div>
+                                        <p class="mb-0">Complétez votre profil pour être plus visible</p>
+                                        <a href="{% url 'immobilier:modifier_profil_pro' %}" class="btn btn-sm btn-outline-primary mt-1">Compléter</a>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endif %}
+                        
+                        {% if documents_a_verifier %}
+                            <li class="mb-3">
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0 me-3">
+                                        <i class="fas fa-file-alt text-info"></i>
+                                    </div>
+                                    <div>
+                                        <p class="mb-0">Documents en attente de vérification</p>
+                                        <a href="{% url 'immobilier:gestion_documents' %}" class="btn btn-sm btn-outline-primary mt-1">Vérifier</a>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="mb-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <i class="fas fa-question-circle text-secondary"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-0">Besoin d'aide ? Consultez notre centre d'aide</p>
+                                    <a href="https://docs.djangoproject.com/" target="_blank" class="btn btn-sm btn-outline-secondary mt-1">Centre d'aide</a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Statistiques rapides -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h2 class="h5 mb-0">Statistiques</h2>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Vues de profil (30j)</span>
+                            <span class="fw-bold">{{ vues_profil }}</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar" role="progressbar" style="width: {{ vues_profil_pourcentage }}%" aria-valuenow="{{ vues_profil_pourcentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Contacts (30j)</span>
+                            <span class="fw-bold">{{ contacts_count }}</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ contacts_pourcentage }}%" aria-valuenow="{{ contacts_pourcentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Taux de réponse</span>
+                            <span class="fw-bold">{{ taux_reponse }}%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: {{ taux_reponse }}%" aria-valuenow="{{ taux_reponse }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Initialisation des tooltips Bootstrap
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+});
+
+// Mise à jour de l'heure actuelle
+function updateCurrentTime() {
+    const now = new Date();
+    const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    document.getElementById('current-time').textContent = now.toLocaleDateString('fr-FR', options);
+}
+
+// Mettre à jour l'heure toutes les minutes
+updateCurrentTime();
+setInterval(updateCurrentTime, 60000);
+</script>
+{% endblock %}

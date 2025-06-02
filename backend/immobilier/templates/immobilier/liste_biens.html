@@ -1,0 +1,221 @@
+{% extends 'immobilier/base.html' %}
+{% load static %}
+
+{% block title %}{% if type_transaction == 'vente' %}Biens à vendre{% else %}Biens à louer{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- En-tête de la page -->
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'immobilier:accueil' %}">Accueil</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        {% if type_transaction == 'vente' %}À vendre{% else %}À louer{% endif %}
+                    </li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-home me-2"></i>
+                    {% if type_transaction == 'vente' %}Biens à vendre{% else %}Biens à louer{% endif %}
+                    {% if ville %}<small class="text-muted">à {{ ville|capfirst }}</small>{% endif %}
+                </h1>
+                <div>
+                    <span class="badge bg-primary fs-6">{{ page_obj.paginator.count }} biens</span>
+                </div>
+            </div>
+            
+            <!-- Filtres de recherche -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-3">
+                    <form method="get" class="row g-3 align-items-end">
+                        <input type="hidden" name="type_transaction" value="{{ type_transaction }}">
+                        
+                        <div class="col-md-4">
+                            <label for="type_bien" class="form-label">Type de bien</label>
+                            <select name="type_bien" id="type_bien" class="form-select">
+                                <option value="">Tous les types</option>
+                                {% for type in types_bien %}
+                                    <option value="{{ type.id }}" {% if type_bien == type.id|stringformat:'s' %}selected{% endif %}>
+                                        {{ type.nom }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="ville" class="form-label">Ville</label>
+                            <input type="text" class="form-control" id="ville" name="ville" value="{{ ville }}" placeholder="Toutes les villes">
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="prix_max" class="form-label">Prix max</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="prix_max" name="prix_max" 
+                                       value="{{ prix_max }}" placeholder="Illimité" min="0">
+                                <span class="input-group-text">€</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-2 d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-1"></i> Filtrer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Liste des biens -->
+    <div class="row">
+        {% for bien in biens %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                {% if bien.image_principale %}
+                <div class="position-relative" style="height: 200px; overflow: hidden;">
+                    <img src="{{ bien.image_principale.url }}" class="card-img-top h-100 w-100" alt="{{ bien.titre }}" style="object-fit: cover;">
+                    <div class="position-absolute top-0 end-0 m-2">
+                        <span class="badge bg-{% if bien.type_transaction == 'vente' %}success{% else %}info{% endif %} p-2">
+                            {% if bien.type_transaction == 'vente' %}
+                                À vendre
+                            {% else %}
+                                À louer
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="fas fa-home fa-4x text-muted"></i>
+                </div>
+                {% endif %}
+                
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h2 class="h5 card-title mb-0">
+                            <a href="{% url 'immobilier:detail_bien' bien.id %}" class="text-decoration-none text-dark">
+                                {{ bien.titre|truncatechars:40 }}
+                            </a>
+                        </h2>
+                        <div class="text-primary fw-bold">
+                            {{ bien.prix }} €
+                            {% if bien.type_transaction == 'location' %}<small class="text-muted">/mois</small>{% endif %}
+                        </div>
+                    </div>
+                    
+                    <p class="card-text text-muted small">
+                        <i class="fas fa-map-marker-alt me-1"></i> {{ bien.adresse }}, {{ bien.code_postal }} {{ bien.ville }}
+                    </p>
+                    
+                    <div class="d-flex justify-content-between text-muted small mb-3">
+                        <span><i class="fas fa-ruler-combined me-1"></i> {{ bien.surface }} m²</span>
+                        <span><i class="fas fa-door-open me-1"></i> {{ bien.nombre_pieces }} pièce{% if bien.nombre_pieces > 1 %}s{% endif %}</span>
+                        <span><i class="fas fa-building me-1"></i> {{ bien.type_bien.nom }}</span>
+                    </div>
+                    
+                    <div class="mt-auto">
+                        <a href="{% url 'immobilier:detail_bien' bien.id %}" class="btn btn-outline-primary w-100">
+                            Voir les détails <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h3 class="h5">Aucun bien ne correspond à votre recherche</h3>
+                    <p class="text-muted">Essayez de modifier vos critères de recherche ou revenez plus tard.</p>
+                    <a href="?type_transaction={{ type_transaction }}" class="btn btn-outline-primary mt-2">
+                        <i class="fas fa-redo me-1"></i> Réinitialiser les filtres
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Navigation des pages" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% if type_transaction %}type_transaction={{ type_transaction }}&{% endif %}{% if type_bien %}type_bien={{ type_bien }}&{% endif %}{% if ville %}ville={{ ville }}&{% endif %}{% if prix_max %}prix_max={{ prix_max }}&{% endif %}page={{ page_obj.previous_page_number }}" aria-label="Précédent">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link" aria-hidden="true">&laquo;</span>
+                </li>
+            {% endif %}
+            
+            {% for i in page_obj.paginator.page_range %}
+                {% if page_obj.number == i %}
+                    <li class="page-item active" aria-current="page">
+                        <span class="page-link">{{ i }}</span>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if type_transaction %}type_transaction={{ type_transaction }}&{% endif %}{% if type_bien %}type_bien={{ type_bien }}&{% endif %}{% if ville %}ville={{ ville }}&{% endif %}{% if prix_max %}prix_max={{ prix_max }}&{% endif %}page={{ i }}">
+                            {{ i }}
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% if type_transaction %}type_transaction={{ type_transaction }}&{% endif %}{% if type_bien %}type_bien={{ type_bien }}&{% endif %}{% if ville %}ville={{ ville }}&{% endif %}{% if prix_max %}prix_max={{ prix_max }}&{% endif %}page={{ page_obj.next_page_number }}" aria-label="Suivant">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link" aria-hidden="true">&raquo;</span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Mise à jour de l'URL avec les paramètres de recherche
+function updateUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const typeBien = document.getElementById('type_bien').value;
+    const ville = document.getElementById('ville').value;
+    const prixMax = document.getElementById('prix_max').value;
+    
+    if (typeBien) params.set('type_bien', typeBien);
+    else params.delete('type_bien');
+    
+    if (ville) params.set('ville', ville);
+    else params.delete('ville');
+    
+    if (prixMax) params.set('prix_max', prixMax);
+    else params.delete('prix_max');
+    
+    // Mettre à jour l'URL sans recharger la page
+    window.history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
+}
+
+// Écouter les changements des champs de formulaire
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('type_bien').addEventListener('change', updateUrl);
+    document.getElementById('ville').addEventListener('change', updateUrl);
+    document.getElementById('prix_max').addEventListener('change', updateUrl);
+});
+</script>
+{% endblock %}

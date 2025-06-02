@@ -1,0 +1,111 @@
+{% extends 'immobilier/base.html' %}
+{% load static %}
+
+{% block title %}Contacter le propriétaire - {{ projet.titre }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-8">
+            <a href="{% url 'immobilier:liste_projets_pro' %}" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 transition-colors mb-6">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Retour aux projets
+            </a>
+            <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                Contacter le propriétaire
+            </h1>
+            <p class="mt-3 text-xl text-gray-500">
+                Envoyez un message concernant ce projet
+            </p>
+        </div>
+
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+            <div class="px-4 py-5 sm:px-6 bg-indigo-50">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Projet : {{ projet.titre }}
+                </h3>
+                <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                    <i class="fas fa-map-marker-alt mr-2 text-indigo-500"></i>
+                    {{ projet.ville }}, {{ projet.code_postal }}
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="rounded-md bg-red-50 p-4 mb-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-exclamation-circle h-5 w-5 text-red-400"></i>
+                                </div>
+                                <div class="ml-3">
+                                    {% for error in form.non_field_errors %}
+                                        <p class="text-sm text-red-700">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="space-y-2">
+                        <label for="{{ form.message.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            Votre message
+                        </label>
+                        {{ form.message }}
+                        {% if form.message.help_text %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.message.help_text }}</p>
+                        {% endif %}
+                        {% for error in form.message.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+
+                    <div class="rounded-md bg-blue-50 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="h-5 w-5 text-blue-400 fas fa-info-circle"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-blue-700">
+                                    Votre message sera envoyé directement au propriétaire. Toute la suite de la conversation sera disponible dans votre messagerie.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-2">
+                        <a href="{% url 'immobilier:liste_projets_pro' %}" 
+                           class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Annuler
+                        </a>
+                        <button type="submit" 
+                                class="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            Envoyer le message
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const messageField = document.getElementById('{{ form.message.id_for_label }}');
+    if (messageField) {
+        messageField.classList.add('block', 'w-full', 'rounded-md', 'border-gray-300', 'shadow-sm', 
+                                 'focus:ring-indigo-500', 'focus:border-indigo-500', 'sm:text-sm',
+                                 'py-3', 'px-4');
+        messageField.rows = 6;
+        messageField.placeholder = 'Bonjour, je suis intéressé(e) par votre projet. Pouvez-vous me fournir plus de détails sur vos attentes ?';
+    }
+});
+</script>
+{% endblock %}

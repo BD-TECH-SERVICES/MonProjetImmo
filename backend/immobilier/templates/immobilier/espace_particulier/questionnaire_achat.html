@@ -1,0 +1,99 @@
+{% extends 'immobilier/base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block title %}Questionnaire Achat Immobilier{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Styles pour le questionnaire */
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .question-container {
+        min-height: 200px;
+    }
+    
+    .recap-container {
+        padding: 1.5rem;
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+    }
+    
+    .recap-item {
+        padding: 1rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .recap-question {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: #495057;
+    }
+    
+    .recap-answer {
+        color: #212529;
+        padding-left: 1.5rem;
+    }
+    
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .progress {
+        height: 8px;
+    }
+    
+    .progress-bar {
+        background-color: #0d6efd;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="form-container bg-white rounded shadow-sm p-4">
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="type_projet" value="achat">
+            
+            <div class="text-center mb-4">
+                <h2 class="h4 mb-2">Votre projet d'achat immobilier</h2>
+                <p class="text-muted" id="question-progress-text">
+                    Question <span id="current-question">1</span>/<span id="total-questions">0</span>
+                </p>
+                <div class="progress mb-4">
+                    <div class="progress-bar" role="progressbar" style="width: 0%" id="progress-bar"></div>
+                </div>
+                
+                <div id="question-container">
+                    <h3 class="h5 mb-4" id="question-text">Chargement de la question...</h3>
+                    <div id="options-container" class="mb-4">
+                        <!-- Les options seront insérées ici par JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="button" class="btn btn-outline-secondary" id="prev-btn">
+                        <i class="fas fa-arrow-left me-2"></i>Précédent
+                    </button>
+                    <button type="button" class="btn btn-primary" id="next-btn">
+                        Suivant<i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                    <button type="submit" class="btn btn-success" id="submit-btn" style="display: none;">
+                        <i class="fas fa-check me-2"></i>Terminer
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/questionnaire_achat.js' %}"></script>
+{% endblock %}

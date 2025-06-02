@@ -1,0 +1,265 @@
+{% extends 'immobilier/base.html' %}
+{% load static %}
+
+{% block title %}Ajouter un bien immobilier{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'immobilier:accueil' %}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'immobilier:gestion_biens' %}">Mes biens</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Ajouter un bien</li>
+                </ol>
+            </nav>
+            
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h1 class="h5 mb-0">
+                        <i class="fas fa-plus-circle me-2 text-primary"></i>
+                        Ajouter un nouveau bien immobilier
+                    </h1>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="row g-4">
+                            <!-- Informations de base -->
+                            <div class="col-md-6">
+                                <h5 class="mb-3 border-bottom pb-2">Informations de base</h5>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ form.titre.id_for_label }}" class="form-label">
+                                        {{ form.titre.label }}
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.titre }}
+                                    {% if form.titre.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.titre.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="{{ form.type_transaction.id_for_label }}" class="form-label">
+                                                Type de transaction
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            {{ form.type_transaction }}
+                                            {% if form.type_transaction.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.type_transaction.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="{{ form.type_bien.id_for_label }}" class="form-label">
+                                                Type de bien
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            {{ form.type_bien }}
+                                            {% if form.type_bien.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.type_bien.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="{{ form.prix.id_for_label }}" class="form-label">
+                                                Prix (€)
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="input-group">
+                                                {{ form.prix }}
+                                                <span class="input-group-text">€</span>
+                                            </div>
+                                            {% if form.prix.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.prix.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="{{ form.surface.id_for_label }}" class="form-label">
+                                                Surface (m²)
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            {{ form.surface }}
+                                            {% if form.surface.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.surface.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ form.nombre_pieces.id_for_label }}" class="form-label">
+                                        Nombre de pièces
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.nombre_pieces }}
+                                    {% if form.nombre_pieces.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.nombre_pieces.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Localisation -->
+                            <div class="col-md-6">
+                                <h5 class="mb-3 border-bottom pb-2">Localisation</h5>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ form.adresse.id_for_label }}" class="form-label">
+                                        Adresse
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.adresse }}
+                                    {% if form.adresse.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.adresse.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="{{ form.code_postal.id_for_label }}" class="form-label">
+                                                Code postal
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            {{ form.code_postal }}
+                                            {% if form.code_postal.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.code_postal.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="{{ form.ville.id_for_label }}" class="form-label">
+                                                Ville
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            {{ form.ville }}
+                                            {% if form.ville.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.ville.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h5 class="mb-3 mt-4 border-bottom pb-2">Image principale</h5>
+                                <div class="mb-3">
+                                    <label for="{{ form.image_principale.id_for_label }}" class="form-label">
+                                        Image du bien
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.image_principale }}
+                                    <div class="form-text">Format JPG, PNG ou WEBP. Taille maximale : 5 Mo.</div>
+                                    {% if form.image_principale.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.image_principale.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Description -->
+                            <div class="col-12">
+                                <h5 class="mb-3 border-bottom pb-2">Description</h5>
+                                <div class="mb-3">
+                                    <label for="{{ form.description.id_for_label }}" class="form-label">
+                                        Description détaillée
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.description }}
+                                    {% if form.description.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.description.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text">Décrivez en détail votre bien (caractéristiques, avantages, etc.)</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Boutons -->
+                            <div class="col-12 mt-3">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{% url 'immobilier:gestion_biens' %}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-arrow-left me-1"></i> Retour à la liste
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-1"></i> Enregistrer le bien
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Activation des tooltips
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+});
+
+// Validation des champs du formulaire
+(function () {
+    'use strict'
+    
+    // Récupérer tous les formulaires auxquels nous voulons appliquer la validation
+    var forms = document.querySelectorAll('.needs-validation')
+    
+    // Boucle sur chaque formulaire pour empêcher la soumission
+    Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                
+                form.classList.add('was-validated')
+            }, false)
+        })
+})()
+</script>
+{% endblock %}

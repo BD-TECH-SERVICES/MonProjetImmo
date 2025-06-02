@@ -1,0 +1,192 @@
+{% extends 'immobilier/base.html' %}
+{% load static humanize %}
+
+{% block title %}Projets immobiliers{% endblock %}
+
+{% block extra_css %}
+<style>
+    .project-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .project-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    .project-description {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .badge-type {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        z-index: 10;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-0">
+                <i class="fas fa-search me-2 text-primary"></i>
+                Projets immobiliers disponibles
+            </h1>
+            <p class="text-muted">Découvrez les projets des particuliers correspondant à votre expertise</p>
+        </div>
+    </div>
+
+    {% if projets %}
+        <div class="row g-4">
+            {% for projet in projets %}
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm project-card border-0">
+                    <div class="position-relative">
+                        <div class="bg-light" style="height: 180px; overflow: hidden;">
+                            <!-- Placeholder pour l'image du projet -->
+                            <div class="w-100 h-100 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-home fa-4x text-muted"></i>
+                            </div>
+                        </div>
+                        <span class="badge bg-{% if projet.type_projet == 'achat' %}success{% elif projet.type_projet == 'vente' %}info{% else %}warning{% endif %} badge-type">
+                            {{ projet.get_type_projet_display|upper }}
+                        </span>
+                    </div>
+                    
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title mb-2">{{ projet.titre|truncatechars:40 }}</h5>
+                        
+                        <div class="mb-2">
+                            <span class="text-muted">
+                                <i class="fas fa-map-marker-alt me-1 text-primary"></i>
+                                {{ projet.secteur_geographique|default:"Non spécifié" }}
+                            </span>
+                        </div>
+                        
+                        <div class="d-flex gap-2 mb-3 flex-wrap">
+                            {% if projet.budget %}
+                            <span class="badge bg-light text-dark border">
+                                <i class="fas fa-euro-sign text-primary me-1"></i>
+                                {{ projet.budget_min|default:0|intcomma }} - {{ projet.budget_max|default:0|intcomma }} €
+                            </span>
+                            {% endif %}
+                            
+                            {% if projet.surface_min %}
+                            <span class="badge bg-light text-dark border">
+                                <i class="fas fa-ruler-combined text-primary me-1"></i>
+                                {{ projet.surface_min }}{% if projet.surface_max %}-{{ projet.surface_max }}{% endif %} m²
+                            </span>
+                            {% endif %}
+                            
+                            <span class="badge bg-light text-dark border">
+                                <i class="fas fa-home text-primary me-1"></i>
+                                {{ projet.get_type_bien_display }}
+                            </span>
+                        </div>
+                        
+                        {% if projet.description %}
+                        <div class="mb-3 project-description text-muted small">
+                            {{ projet.description|truncatewords:20 }}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="far fa-clock me-1"></i>
+                                {{ projet.date_creation|timesince }}
+                            </small>
+                            <a href="{% url 'immobilier:contacter_particulier' projet.id %}" 
+                               class="btn btn-primary btn-sm">
+                                <i class="fas fa-paper-plane me-1"></i> Contacter
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+                
+                {% if is_paginated %}
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <nav aria-label="Navigation des pages">
+                                <ul class="pagination justify-content-center mb-0">
+                                    {% if page_obj.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Précédent">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link">&laquo;</span>
+                                        </li>
+                                    {% endif %}
+                                    
+                                    {% for i in paginator.page_range %}
+                                        {% if page_obj.number == i %}
+                                            <li class="page-item active">
+                                                <span class="page-link">{{ i }}</span>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    {% if page_obj.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Suivant">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link">&raquo;</span>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                                <p class="text-center text-muted small mt-2">
+                                    Page {{ page_obj.number }} sur {{ paginator.num_pages }}
+                                </p>
+                            </nav>
+                        </div>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="text-center py-5 my-5">
+                            <div class="mx-auto mb-4" style="width: 80px; height: 80px;">
+                                <i class="fas fa-inbox fa-4x text-muted"></i>
+                            </div>
+                            <h3 class="h5 mb-2">Aucun projet disponible</h3>
+                            <p class="text-muted">Aucun projet n'est actuellement disponible. Revenez plus tard pour découvrir de nouvelles opportunités.</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Ajouter des classes aux éléments de formulaire si nécessaire
+    const messageForms = document.querySelectorAll('form textarea');
+    messageForms.forEach(textarea => {
+        textarea.classList.add('w-full', 'rounded-md', 'border-gray-300', 'shadow-sm', 'focus:border-purple-500', 'focus:ring-purple-500');
+    });
+});
+</script>
+{% endblock %}

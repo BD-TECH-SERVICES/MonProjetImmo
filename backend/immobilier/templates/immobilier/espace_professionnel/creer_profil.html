@@ -1,0 +1,509 @@
+{% extends 'immobilier/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Créer mon profil professionnel - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Création de votre profil professionnel</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">
+                        Complétez les informations ci-dessous pour finaliser la création de votre profil professionnel.
+                        Tous les champs marqués d'un astérisque (*) sont obligatoires.
+                    </p>
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">Informations professionnelles</h5>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.entreprise.id_for_label }}" class="form-label">
+                                        {{ form.entreprise.label }}{% if form.entreprise.field.required %}*{% endif %}
+                                    </label>
+                                    {% render_field form.entreprise class="form-control" %}
+                                    {% if form.entreprise.help_text %}
+                                        <div class="form-text">{{ form.entreprise.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.entreprise.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.entreprise.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.siret.id_for_label }}" class="form-label">
+                                        {{ form.siret.label }}{% if form.siret.field.required %}*{% endif %}
+                                    </label>
+                                    {% render_field form.siret class="form-control" %}
+                                    {% if form.siret.help_text %}
+                                        <div class="form-text">{{ form.siret.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.siret.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.siret.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.tva_intracom.id_for_label }}" class="form-label">
+                                        {{ form.tva_intracom.label }}{% if form.tva_intracom.field.required %}*{% endif %}
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">FR</span>
+                                        {% render_field form.tva_intracom class="form-control" %}
+                                    </div>
+                                    {% if form.tva_intracom.help_text %}
+                                        <div class="form-text">{{ form.tva_intracom.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.tva_intracom.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.tva_intracom.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.rcs.id_for_label }}" class="form-label">
+                                        {{ form.rcs.label }}{% if form.rcs.field.required %}*{% endif %}
+                                    </label>
+                                    {% render_field form.rcs class="form-control" %}
+                                    {% if form.rcs.help_text %}
+                                        <div class="form-text">{{ form.rcs.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.rcs.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.rcs.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.forme_juridique.id_for_label }}" class="form-label">
+                                        {{ form.forme_juridique.label }}{% if form.forme_juridique.field.required %}*{% endif %}
+                                    </label>
+                                    {% render_field form.forme_juridique class="form-select" %}
+                                    {% if form.forme_juridique.help_text %}
+                                        <div class="form-text">{{ form.forme_juridique.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.forme_juridique.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.forme_juridique.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.date_creation.id_for_label }}" class="form-label">
+                                        {{ form.date_creation.label }}{% if form.date_creation.field.required %}*{% endif %}
+                                    </label>
+                                    {% render_field form.date_creation class="form-control" type="date" %}
+                                    {% if form.date_creation.help_text %}
+                                        <div class="form-text">{{ form.date_creation.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.date_creation.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.date_creation.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.specialites.id_for_label }}" class="form-label">
+                                    {{ form.specialites.label }}{% if form.specialites.field.required %}*{% endif %}
+                                </label>
+                                {% render_field form.specialites class="form-select" %}
+                                <div class="form-text">Séparez les spécialités par des virgules</div>
+                                {% if form.specialites.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.specialites.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Champs professionnels spécifiques -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.tva_intracom.id_for_label }}" class="form-label">
+                                        <i class="fas fa-receipt me-1"></i> N° TVA intracom
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">FR</span>
+                                        {% render_field form.tva_intracom class="form-control" placeholder="FRXX123456789" %}
+                                    </div>
+                                    <div class="form-text">Format: FR + 2 lettres + 9 chiffres</div>
+                                    {% if form.tva_intracom.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.tva_intracom.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.rcs.id_for_label }}" class="form-label">
+                                        <i class="fas fa-file-alt me-1"></i> N° RCS
+                                    </label>
+                                    {% render_field form.rcs class="form-control" placeholder="RCS Paris 123 456 789" %}
+                                    {% if form.rcs.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.rcs.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.forme_juridique.id_for_label }}" class="form-label">
+                                        <i class="fas fa-building me-1"></i> Forme juridique
+                                    </label>
+                                    {% render_field form.forme_juridique class="form-select" %}
+                                    {% if form.forme_juridique.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.forme_juridique.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.date_creation.id_for_label }}" class="form-label">
+                                        <i class="far fa-calendar-alt me-1"></i> Date de création
+                                    </label>
+                                    {% render_field form.date_creation class="form-control" type="date" %}
+                                    {% if form.date_creation.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.date_creation.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.description.id_for_label }}" class="form-label">
+                                    {{ form.description.label }}{% if form.description.field.required %}*{% endif %}
+                                </label>
+                                {% render_field form.description class="form-control" rows="4" %}
+                                {% if form.description.help_text %}
+                                    <div class="form-text">{{ form.description.help_text }}</div>
+                                {% endif %}
+                                {% if form.description.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.description.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">Horaires d'ouverture</h5>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.horaire_lundi.id_for_label }}" class="form-label">
+                                        Lundi
+                                    </label>
+                                    {% render_field form.horaire_lundi class="form-control" %}
+                                    {% if form.horaire_lundi.help_text %}
+                                        <div class="form-text">{{ form.horaire_lundi.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.horaire_mardi.id_for_label }}" class="form-label">
+                                        Mardi
+                                    </label>
+                                    {% render_field form.horaire_mardi class="form-control" %}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.horaire_mercredi.id_for_label }}" class="form-label">
+                                        Mercredi
+                                    </label>
+                                    {% render_field form.horaire_mercredi class="form-control" %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.horaire_jeudi.id_for_label }}" class="form-label">
+                                        Jeudi
+                                    </label>
+                                    {% render_field form.horaire_jeudi class="form-control" %}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.horaire_vendredi.id_for_label }}" class="form-label">
+                                        Vendredi
+                                    </label>
+                                    {% render_field form.horaire_vendredi class="form-control" %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.horaire_samedi.id_for_label }}" class="form-label">
+                                        Samedi
+                                    </label>
+                                    {% render_field form.horaire_samedi class="form-control" %}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="{{ form.horaire_dimanche.id_for_label }}" class="form-label">
+                                        Dimanche
+                                    </label>
+                                    {% render_field form.horaire_dimanche class="form-control" %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">Coordonnées</h5>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.telephone.id_for_label }}" class="form-label">
+                                        {{ form.telephone.label }}{% if form.telephone.field.required %}*{% endif %}
+                                    </label>
+                                    {% render_field form.telephone class="form-control" %}
+                                    {% if form.telephone.help_text %}
+                                        <div class="form-text">{{ form.telephone.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.telephone.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.telephone.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.email_pro.id_for_label }}" class="form-label">
+                                        {{ form.email_pro.label }}
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                        {% render_field form.email_pro class="form-control" %}
+                                    </div>
+                                    {% if form.email_pro.help_text %}
+                                        <div class="form-text">{{ form.email_pro.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.email_pro.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.email_pro.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.site_web.id_for_label }}" class="form-label">
+                                        {{ form.site_web.label }}
+                                    </label>
+                                    {% render_field form.site_web class="form-control" %}
+                                    {% if form.site_web.help_text %}
+                                        <div class="form-text">{{ form.site_web.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.site_web.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.site_web.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.adresse.id_for_label }}" class="form-label">
+                                    {{ form.adresse.label }}{% if form.adresse.field.required %}*{% endif %}
+                                </label>
+                                {% render_field form.adresse class="form-control" %}
+                                {% if form.adresse.help_text %}
+                                    <div class="form-text">{{ form.adresse.help_text }}</div>
+                                {% endif %}
+                                {% if form.adresse.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.adresse.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="{{ form.code_postal.id_for_label }}" class="form-label">
+                                        {{ form.code_postal.label }}{% if form.code_postal.field.required %}*{% endif %}
+                                    </label>
+                                    {% render_field form.code_postal class="form-control" %}
+                                    {% if form.code_postal.help_text %}
+                                        <div class="form-text">{{ form.code_postal.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.code_postal.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.code_postal.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-5">
+                                    <label for="{{ form.ville.id_for_label }}" class="form-label">
+                                        {{ form.ville.label }}{% if form.ville.field.required %}*{% endif %}
+                                    </label>
+                                    {% render_field form.ville class="form-control" %}
+                                    {% if form.ville.help_text %}
+                                        <div class="form-text">{{ form.ville.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.ville.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.ville.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="{{ form.pays.id_for_label }}" class="form-label">
+                                        {{ form.pays.label }}{% if form.pays.field.required %}*{% endif %}
+                                    </label>
+                                    {% render_field form.pays class="form-select" %}
+                                    {% if form.pays.help_text %}
+                                        <div class="form-text">{{ form.pays.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.pays.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.pays.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">Réseaux sociaux</h5>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.facebook.id_for_label }}" class="form-label">
+                                        <i class="fab fa-facebook text-primary me-1"></i> Facebook
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fab fa-facebook-f"></i></span>
+                                        {% render_field form.facebook class="form-control" %}
+                                    </div>
+                                    {% if form.facebook.help_text %}
+                                        <div class="form-text">{{ form.facebook.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.twitter.id_for_label }}" class="form-label">
+                                        <i class="fab fa-twitter text-info me-1"></i> Twitter
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fab fa-twitter"></i></span>
+                                        {% render_field form.twitter class="form-control" %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="{{ form.linkedin.id_for_label }}" class="form-label">
+                                        <i class="fab fa-linkedin text-primary me-1"></i> LinkedIn
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fab fa-linkedin-in"></i></span>
+                                        {% render_field form.linkedin class="form-control" %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.instagram.id_for_label }}" class="form-label">
+                                        <i class="fab fa-instagram text-danger me-1"></i> Instagram
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fab fa-instagram"></i></span>
+                                        {% render_field form.instagram class="form-control" %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">Logo et documents</h5>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.logo.id_for_label }}" class="form-label">
+                                    {{ form.logo.label }}
+                                </label>
+                                {% if form.logo.help_text %}
+                                    <div class="form-text mb-2">{{ form.logo.help_text }}</div>
+                                {% endif %}
+                                {% render_field form.logo class="form-control" %}
+                                {% if form.logo.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.logo.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Documents professionnels</label>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Vous pourrez ajouter vos documents professionnels (KBIS, assurance, certifications, etc.) 
+                                    après avoir créé votre profil.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'immobilier:espace_professionnel' %}" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-arrow-left me-1"></i> Retour
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Enregistrer mon profil
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Script pour la validation du formulaire
+document.addEventListener('DOMContentLoaded', function() {
+    // Ajouter la classe is-invalid aux champs invalides
+    const forms = document.querySelectorAll('form');
+    
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            
+            form.classList.add('was-validated');
+        }, false);
+    });
+    
+    // Masquer les messages d'erreur lorsque l'utilisateur commence à saisir
+    const inputs = document.querySelectorAll('.form-control, .form-select');
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.checkValidity()) {
+                this.classList.remove('is-invalid');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

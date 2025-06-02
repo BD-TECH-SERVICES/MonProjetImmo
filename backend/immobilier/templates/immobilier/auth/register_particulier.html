@@ -1,0 +1,245 @@
+{% extends 'immobilier/auth/auth_minimal.html' %}
+{% load widget_tweaks static i18n %}
+
+{% block title %}{% trans 'Inscription Particulier' %} - MonProjetImmo{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="auth-container">
+        <div class="text-center mb-4">
+            <h1 class="h3 mb-3">{% trans 'Inscription Particulier' %}</h1>
+            <p class="text-muted">{% trans 'Créez votre compte en 2 minutes' %}</p>
+        </div>
+        
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            
+            <!-- Champs cachés -->
+            <input type="hidden" name="user_type" value="particulier">
+            <input type="hidden" name="username" id="username" value="">
+            
+            <div class="mb-4">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_first_name" class="form-label">{% trans 'Prénom' %} *</label>
+                        <input type="text" name="first_name" class="form-control" id="id_first_name" required>
+                        <div class="invalid-feedback">
+                            {% trans 'Veuillez entrer votre prénom.' %}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_last_name" class="form-label">{% trans 'Nom' %} *</label>
+                        <input type="text" name="last_name" class="form-control" id="id_last_name" required>
+                        <div class="invalid-feedback">
+                            {% trans 'Veuillez entrer votre nom.' %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_email" class="form-label">{% trans 'Adresse email' %} *</label>
+                    <input type="email" name="email" class="form-control" id="id_email" required>
+                    <div class="invalid-feedback">
+                        {% trans 'Veuillez entrer une adresse email valide.' %}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_phone" class="form-label">{% trans 'Téléphone' %} *</label>
+                    <div class="input-group">
+                        <span class="input-group-text">+33</span>
+                        <input type="tel" name="phone" class="form-control" id="id_phone" 
+                               pattern="[0-9]{9}" maxlength="9" required
+                               placeholder="612345678">
+                    </div>
+                    <div class="form-text">{% trans 'Format: 9 chiffres sans le 0 initial' %}</div>
+                    <div class="invalid-feedback">
+                        {% trans 'Veuillez entrer un numéro de téléphone valide.' %}
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_password1" class="form-label">{% trans 'Mot de passe' %} *</label>
+                        <div class="input-group">
+                            <input type="password" name="password1" class="form-control" id="id_password1" 
+                                   minlength="8" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" data-target="id_password1">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="form-text">
+                            {% trans 'Minimum 8 caractères' %}
+                        </div>
+                        <div class="invalid-feedback" id="password1-feedback">
+                            {% trans 'Le mot de passe doit contenir au moins 8 caractères.' %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="id_password2" class="form-label">{% trans 'Confirmer le mot de passe' %} *</label>
+                        <div class="input-group">
+                            <input type="password" name="password2" class="form-control" id="id_password2" 
+                                   minlength="8" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" data-target="id_password2">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="invalid-feedback" id="password2-feedback">
+                            {% trans 'Les mots de passe ne correspondent pas.' %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="cgu_acceptees" name="cgu_acceptees" required>
+                        <label class="form-check-label" for="cgu_acceptees">
+                            {% trans 'J\'accepte les CGU et la politique de confidentialité' %} *
+                        </label>
+                        <div class="invalid-feedback">
+                            {% trans 'Vous devez accepter les CGU pour continuer.' %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-arrow-right me-2"></i>
+                    {% trans "Créer mon compte" %}
+                </button>
+            </div>
+            
+            <div class="text-center mt-4">
+                <p class="mb-0 text-muted">
+                    {% trans 'Déjà inscrit ?' %}
+                    <a href="{% url 'immobilier:login' %}" class="text-primary">
+                        {% trans 'Connectez-vous' %}
+                    </a>
+                </p>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+(function() {
+    'use strict';
+    
+    // Toggle password visibility
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const passwordField = document.getElementById(targetId);
+            if (passwordField) {
+                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordField.setAttribute('type', type);
+                this.querySelector('i').classList.toggle('fa-eye');
+                this.querySelector('i').classList.toggle('fa-eye-slash');
+            }
+        });
+    });
+
+    // Password confirmation validation
+    const password1 = document.getElementById('id_password1');
+    const password2 = document.getElementById('id_password2');
+    const password1Feedback = document.getElementById('password1-feedback');
+    const password2Feedback = document.getElementById('password2-feedback');
+
+    function validatePassword() {
+        // Reset validation states
+        if (password1) password1.classList.remove('is-invalid', 'is-valid');
+        if (password2) password2.classList.remove('is-invalid', 'is-valid');
+        
+        let isValid = true;
+        
+        // Validate password1 length
+        if (password1 && password1.value.length < 8) {
+            password1.classList.add('is-invalid');
+            if (password1Feedback) {
+                password1Feedback.textContent = 'Le mot de passe doit contenir au moins 8 caractères.';
+            }
+            isValid = false;
+        } else if (password1) {
+            password1.classList.add('is-valid');
+        }
+        
+        // Validate password match
+        if (password1 && password2 && password1.value !== password2.value) {
+            password2.classList.add('is-invalid');
+            if (password2Feedback) {
+                password2Feedback.textContent = 'Les mots de passe ne correspondent pas.';
+            }
+            isValid = false;
+        } else if (password2 && password2.value.length > 0) {
+            password2.classList.add('is-valid');
+        }
+        
+        return isValid;
+    }
+
+    // Add event listeners
+    if (password1 && password2) {
+        password1.addEventListener('input', validatePassword);
+        password2.addEventListener('input', validatePassword);
+    }
+
+    // Formatage du numéro de téléphone
+    const phoneInput = document.getElementById('id_phone');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '').substring(0, 9);
+            e.target.value = value;
+        });
+    }
+
+    // Génération automatique du nom d'utilisateur
+    const firstNameInput = document.getElementById('id_first_name');
+    const lastNameInput = document.getElementById('id_last_name');
+
+    function generateUsername() {
+        if (firstNameInput && lastNameInput) {
+            const firstName = firstNameInput.value.trim().toLowerCase();
+            const lastName = lastNameInput.value.trim().toLowerCase();
+            const usernameField = document.getElementById('username');
+            
+            if (firstName && lastName && usernameField) {
+                // Créer un nom d'utilisateur en combinant prénom.nom
+                let username = `${firstName}.${lastName}`
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Supprimer les accents
+                    .replace(/[^a-z0-9.]/g, '') // Supprimer les caractères spéciaux
+                    .toLowerCase();
+                
+                // Mettre à jour le champ caché username
+                usernameField.value = username;
+            }
+        }
+    }
+
+
+    // Écouter les changements sur les champs prénom et nom
+    if (firstNameInput && lastNameInput) {
+        firstNameInput.addEventListener('input', generateUsername);
+        lastNameInput.addEventListener('input', generateUsername);
+    }
+
+    // Validation du formulaire
+    const form = document.querySelector('.needs-validation');
+    if (form) {
+        form.addEventListener('submit', function(event) {
+            validatePassword();
+            
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            
+            form.classList.add('was-validated');
+        }, false);
+    }
+})();
+</script>
+{% endblock %}
+{% endblock %}

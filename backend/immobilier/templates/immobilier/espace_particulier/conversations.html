@@ -1,0 +1,74 @@
+{% extends 'immobilier/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Mes conversations" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">{% trans "Mes conversations" %}</h1>
+            
+            {% if conversations %}
+                <div class="list-group">
+                    {% for conversation in conversations %}
+                        <a href="{% url 'immobilier:conversation_detail' conversation.id %}" 
+                           class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">
+                                    {{ conversation.projet.get_type_projet_display }} - {{ conversation.projet.get_type_bien_display }}
+                                    {% if conversation.projet.professionnel_selectionne == conversation.professionnel %}
+                                        <span class="badge bg-success">{% trans "Sélectionné" %}</span>
+                                    {% endif %}
+                                </h5>
+                                <small>{{ conversation.date_modification|date:"d/m/Y H:i" }}</small>
+                            </div>
+                            <p class="mb-1">
+                                {% trans "Avec" %} 
+                                {% if conversation.professionnel.get_full_name %}
+                                    {{ conversation.professionnel.get_full_name }}
+                                {% else %}
+                                    {{ conversation.professionnel.username }}
+                                {% endif %}
+                                {% if conversation.professionnel.profil_pro %}
+                                    ({{ conversation.professionnel.profil_pro.nom_entreprise }})
+                                {% endif %}
+                            </p>
+                            {% with last_message=conversation.messages.last %}
+                                {% if last_message %}
+                                    <small class="text-muted">
+                                        {% if last_message.expediteur == request.user %}
+                                            {% trans "Vous" %}: 
+                                        {% else %}
+                                            {{ last_message.expediteur.first_name|default:last_message.expediteur.username }}: 
+                                        {% endif %}
+                                        {{ last_message.contenu|truncatechars:50 }}
+                                    </small>
+                                {% endif %}
+                            {% endwith %}
+                            
+                            {% with unread_count=conversation.messages.filter(lu=False).exclude(expediteur=request.user).count %}
+                                {% if unread_count > 0 %}
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        {{ unread_count }}
+                                    </span>
+                                {% endif %}
+                            {% endwith %}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    {% trans "Vous n'avez pas encore de conversations. Les professionnels que vous contactez apparaîtront ici." %}
+                </div>
+            {% endif %}
+            
+            <div class="mt-4">
+                <a href="{% url 'immobilier:espace_particulier' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> {% trans "Retour à mes projets" %}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

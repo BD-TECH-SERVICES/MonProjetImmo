@@ -1,0 +1,16 @@
+{# Template partiel pour afficher les étapes du projet sous forme de menu déroulant #}
+
+<div class="mb-4">
+    <label for="id_etape_actuelle" class="form-label">{{ field.label }}</label>
+    <select name="etape_actuelle" class="form-select" id="id_etape_actuelle" required>
+        <option value="" selected disabled>--- Sélectionnez une étape ---</option>
+        {% for etape in etapes %}
+            <option value="{{ etape.id }}" {% if forloop.first %}selected{% endif %}>
+                {{ etape.titre }}
+            </option>
+        {% endfor %}
+    </select>
+    {% if field.help_text %}
+        <small class="form-text text-muted">{{ field.help_text }}</small>
+    {% endif %}
+</div>

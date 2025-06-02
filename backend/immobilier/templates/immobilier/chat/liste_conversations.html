@@ -1,0 +1,151 @@
+{% extends 'immobilier/base.html' %}
+{% load static humanize %}
+
+{% block title %}Mes conversations{% endblock %}
+
+{% block extra_css %}
+<style>
+    .conversation-card {
+        transition: all 0.2s ease;
+        border-left: 4px solid transparent;
+    }
+    .conversation-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .unread {
+        border-left-color: #0d6efd;
+        background-color: #f8f9fa;
+    }
+    .message-preview {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'immobilier:accueil' %}">Accueil</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Mes messages</li>
+                </ol>
+            </nav>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-comments me-2"></i>
+                    Mes conversations
+                </h1>
+                {% if not is_professionnel %}
+                <a href="{% url 'immobilier:espace_particulier' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-1"></i> Retour à mes projets
+                </a>
+                {% else %}
+                <a href="{% url 'immobilier:espace_professionnel' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-1"></i> Retour à mon espace
+                </a>
+                {% endif %}
+            </div>
+
+            {% if not conversations %}
+            <div class="card shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-comment-slash fa-3x text-muted mb-3"></i>
+                    <h3 class="h5">Aucune conversation</h3>
+                    <p class="text-muted">
+                        {% if is_professionnel %}
+                        Vous n'avez pas encore de conversation avec des clients.
+                        {% else %}
+                        Vous n'avez pas encore de conversation avec des professionnels.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            {% else %}
+            <div class="card shadow-sm">
+                <div class="list-group list-group-flush">
+                    {% for conversation in conversations %}
+                    {% with last_message=conversation.messages.last %}
+                    <a href="{% url 'immobilier:conversation_detail' conversation.id %}" 
+                       class="list-group-item list-group-item-action py-3 {% if last_message and not last_message.lu and last_message.expediteur != request.user %}unread{% endif %}">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0 me-3">
+                                {% if is_professionnel %}
+                                <img src="{{ conversation.projet.utilisateur.profile.image.url|default:'/static/images/avatar-default.png' }}" 
+                                     alt="{{ conversation.projet.utilisateur.get_full_name }}" 
+                                     class="avatar">
+                                {% else %}
+                                <img src="{{ conversation.professionnel.profile.image.url|default:'/static/images/avatar-pro.png' }}" 
+                                     alt="{{ conversation.professionnel.get_full_name }}" 
+                                     class="avatar">
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-1">
+                                        {% if is_professionnel %}
+                                        {{ conversation.projet.utilisateur.get_full_name|default:conversation.projet.utilisateur.username }}
+                                        {% else %}
+                                        {{ conversation.professionnel.get_full_name|default:conversation.professionnel.username }}
+                                        {% endif %}
+                                        {% if last_message and not last_message.lu and last_message.expediteur != request.user %}
+                                        <span class="badge bg-primary ms-2">Nouveau</span>
+                                        {% endif %}
+                                    </h5>
+                                    <small class="text-muted">
+                                        {{ last_message.date_creation|naturaltime|default:'' }}
+                                    </small>
+                                </div>
+                                <p class="mb-1 fw-bold">
+                                    {% if is_professionnel %}
+                                    Projet : {{ conversation.projet.get_type_projet_display }} - {{ conversation.projet.get_type_bien_display }}
+                                    {% else %}
+                                    {{ conversation.professionnel.get_full_name|default:conversation.professionnel.username }}
+                                    {% endif %}
+                                </p>
+                                {% if last_message %}
+                                <p class="mb-0 text-muted message-preview">
+                                    {% if last_message.expediteur == request.user %}
+                                    <strong>Vous :</strong> 
+                                    {% endif %}
+                                    {{ last_message.contenu|truncatechars:120 }}
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </a>
+                    {% endwith %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Mise à jour périodique des conversations
+function updateConversations() {
+    // Implémenter la mise à jour via AJAX si nécessaire
+    console.log('Mise à jour des conversations...');
+}
+
+// Mettre à jour toutes les 30 secondes
+setInterval(updateConversations, 30000);
+</script>
+{% endblock %}

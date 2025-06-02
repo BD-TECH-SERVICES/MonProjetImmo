@@ -1,0 +1,196 @@
+{% extends 'immobilier/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Modifier le projet - {{ projet.get_type_projet_display }} {{ projet.get_type_bien_display }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'immobilier:accueil' %}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'immobilier:espace_particulier' %}">Mon espace</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Modifier le projet</li>
+                </ol>
+            </nav>
+            
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5 mb-0">
+                        <i class="fas fa-edit me-2"></i>Modifier le projet
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.type_projet.id_for_label }}" class="form-label">
+                                    {{ form.type_projet.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.type_projet|add_class:"form-select" }}
+                                {% if form.type_projet.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.type_projet.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.type_bien.id_for_label }}" class="form-label">
+                                    {{ form.type_bien.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.type_bien|add_class:"form-select" }}
+                                {% if form.type_bien.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.type_bien.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.budget_min.id_for_label }}" class="form-label">
+                                    {{ form.budget_min.label }} <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    {{ form.budget_min|add_class:"form-control" }}
+                                    <span class="input-group-text">€</span>
+                                </div>
+                                {% if form.budget_min.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.budget_min.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.budget_max.id_for_label }}" class="form-label">
+                                    {{ form.budget_max.label }} <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    {{ form.budget_max|add_class:"form-control" }}
+                                    <span class="input-group-text">€</span>
+                                </div>
+                                {% if form.budget_max.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.budget_max.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.surface_min.id_for_label }}" class="form-label">
+                                    Surface minimale <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    {{ form.surface_min|add_class:"form-control" }}
+                                    <span class="input-group-text">m²</span>
+                                </div>
+                                {% if form.surface_min.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.surface_min.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.surface_max.id_for_label }}" class="form-label">
+                                    Surface maximale <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    {{ form.surface_max|add_class:"form-control" }}
+                                    <span class="input-group-text">m²</span>
+                                </div>
+                                {% if form.surface_max.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.surface_max.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.secteur_geographique.id_for_label }}" class="form-label">
+                                {{ form.secteur_geographique.label }} <span class="text-danger">*</span>
+                            </label>
+                            {{ form.secteur_geographique|add_class:"form-control" }}
+                            {% if form.secteur_geographique.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.secteur_geographique.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Ville, quartier ou code postal souhaité(e).
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">
+                                Description détaillée
+                            </label>
+                            {{ form.description|add_class:"form-control" }}
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.description.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Décrivez votre projet en détail : critères importants, préférences, éventuelles contraintes, etc.
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                            <a href="{% url 'immobilier:espace_particulier' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Retour
+                            </a>
+                            <div>
+                                <a href="{% url 'immobilier:detail_projet' projet.id %}" class="btn btn-outline-primary me-2">
+                                    <i class="fas fa-times me-1"></i> Annuler
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i> Enregistrer les modifications
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Activer la validation des champs du formulaire
+(function () {
+    'use strict'
+    
+    // Récupérer tous les formulaires auxquels nous voulons appliquer le style de validation Bootstrap
+    var forms = document.querySelectorAll('.needs-validation')
+    
+    // Boucle sur les champs pour empêcher la soumission
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+</script>
+{% endblock %}

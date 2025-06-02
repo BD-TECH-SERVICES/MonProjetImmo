@@ -1,0 +1,103 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Environnements virtuels
+venv/
+env/
+ENV/
+.env
+.venv
+env.bak/
+venv.bak/
+
+# Fichiers de configuration IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+.project
+.pydevproject
+.settings/
+
+# Fichiers de migration Django (optionnel, décommenter si nécessaire)
+# */migrations/*.py
+# !*/migrations/__init__.py
+
+# Fichiers de configuration sensibles
+*.env
+*.pem
+*.key
+secrets.json
+credentials.json
+
+# Fichiers de cache
+.cache/
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Fichiers temporaires
+*.bak
+*.tmp
+*.temp
+.~lock.*
+
+# Fichiers spécifiques au projet
+node_modules/
+bower_components/
+.sass-cache/
+*.css.map
+*.js.map
+
+# Fichiers de base de données
+*.sqlite
+*.db
+
+# Fichiers de logs
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Fichiers de déploiement
+.elasticbeanstalk/
+.ebextensions/
+.serverless/
+
+# Fichiers de documentation générés
+docs/_build/
+docs/api/
+
+# Fichiers de sauvegarde
+backups/

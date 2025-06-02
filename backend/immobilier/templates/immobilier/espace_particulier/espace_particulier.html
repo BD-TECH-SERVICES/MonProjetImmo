@@ -1,0 +1,251 @@
+{% extends 'immobilier/base.html' %}
+{% load static %}
+
+{% block title %}Mon espace particulier{% endblock %}
+
+{% block content %}
+<div class="container my-5">    
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-home me-2"></i>Mon espace particulier
+                </h1>
+                <a href="{% url 'immobilier:creer_projet' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i> Nouveau projet
+                </a>
+            </div>
+            <hr>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'immobilier:accueil' %}">Accueil</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Mon espace</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-4 col-lg-3 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <div class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-user fa-2x text-white"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title mb-1">{{ user.get_full_name|default:user.username }}</h5>
+                    <p class="text-muted small mb-3">{{ user.email }}</p>
+                    <a href="{% url 'immobilier:profile' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-user-edit me-1"></i> Modifier mon profil
+                    </a>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'immobilier:espace_particulier' %}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-home me-2"></i> Mes projets
+                    </a>
+                    <a href="{% url 'immobilier:liste_conversations' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-comments me-2"></i> Mes conversations
+                        {% if total_messages_non_lus > 0 %}
+                            <span class="badge bg-danger rounded-pill float-end">{{ total_messages_non_lus }}</span>
+                        {% endif %}
+                    </a>
+                    <a href="{% url 'immobilier:profile' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user-circle me-2"></i> Mon profil
+                    </a>
+                    <a href="{% url 'immobilier:change_password' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-key me-2"></i> Changer mot de passe
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8 col-lg-9">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-bottom-0 pt-3">
+                    <h2 class="h5 mb-0">
+                        <i class="fas fa-list-check me-2 text-primary"></i>Mes projets immobiliers
+                    </h2>
+                </div>
+                
+                <div class="card-body">
+                    {% if projets %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Bien recherché</th>
+                                        <th>Budget</th>
+                                        <th>Surface</th>
+                                        <th>Secteur géographique</th>
+                                        <th>Professionnel associé</th>
+                                        <th>Date</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for projet in projets %}
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-primary">
+                                                {{ projet.get_type_projet_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ projet.get_type_bien_display }}</td>
+                                        <td>{{ projet.budget_min|default:0 }} - {{ projet.budget_max|default:0 }} €</td>
+                                        <td>{{ projet.surface_min|default:0 }} - {{ projet.surface_max|default:0 }} m²</td>
+                                        <td>{{ projet.secteur_geographique|default:"Non spécifié"|truncatechars:20 }}</td>
+                                        <td>
+                                            {% if projet.professionnel_selectionne %}
+                                                {{ projet.professionnel_selectionne.get_full_name|default:projet.professionnel_selectionne.username }}
+                                                {% if projet.professionnel_selectionne.profil_pro %}
+                                                    <br><small class="text-muted">{{ projet.professionnel_selectionne.profil_pro.nom_entreprise }}</small>
+                                                {% endif %}
+                                            {% else %}
+                                                <span class="text-muted">Aucun</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ projet.date_creation|date:"d/m/Y" }}</td>
+                                        <td class="text-end">
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url 'immobilier:detail_projet' projet.id %}" 
+                                                   class="btn btn-sm btn-outline-primary" 
+                                                   title="Voir les détails">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{% url 'immobilier:modifier_projet' projet.id %}" 
+                                                   class="btn btn-sm btn-outline-secondary"
+                                                   title="Modifier">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-outline-danger"
+                                                        title="Supprimer"
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#deleteModal{{ projet.id }}">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                            
+                                            <!-- Modal de confirmation de suppression -->
+                                            <div class="modal fade" id="deleteModal{{ projet.id }}" tabindex="-1" 
+                                                 aria-labelledby="deleteModalLabel{{ projet.id }}" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="deleteModalLabel{{ projet.id }}">
+                                                                Confirmer la suppression
+                                                            </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>Êtes-vous sûr de vouloir supprimer ce projet ? Cette action est irréversible.</p>
+                                                            <p class="mb-0"><strong>Type :</strong> {{ projet.get_type_projet_display }} - {{ projet.get_type_bien_display }}</p>
+                                                            <p class="mb-0"><strong>Budget :</strong> {{ projet.budget_min|default:0 }} - {{ projet.budget_max|default:0 }} €</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                                            <form method="post" action="{% url 'immobilier:supprimer_projet' projet.id %}" style="display: inline;">
+                                                                {% csrf_token %}
+                                                                <button type="submit" class="btn btn-danger">
+                                                                    <i class="fas fa-trash me-1"></i> Supprimer
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="mb-4">
+                                <i class="fas fa-home fa-4x text-muted mb-3"></i>
+                                <h3>Vous n'avez aucun projet</h3>
+                                <p class="text-muted">Commencez par créer votre premier projet immobilier pour trouver le bien de vos rêves.</p>
+                            </div>
+                            <a href="{% url 'immobilier:creer_projet' %}" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i> Créer un projet
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                {% if projets.has_other_pages %}
+                <div class="card-footer bg-white">
+                    <nav aria-label="Navigation des projets">
+                        <ul class="pagination justify-content-center mb-0">
+                            {% if projets.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ projets.previous_page_number }}" aria-label="Précédent">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&laquo;</span>
+                                </li>
+                            {% endif %}
+                            
+                            {% for i in projets.paginator.page_range %}
+                                {% if projets.number == i %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ i }} <span class="visually-hidden">(actuel)</span></span>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if projets.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ projets.next_page_number }}" aria-label="Suivant">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&raquo;</span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- La section des conversations récentes a été supprimée -->
+            
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-white">
+                    <h3 class="h5 mb-0">
+                        <i class="fas fa-bell me-2 text-warning"></i>Alertes récentes
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center py-4">
+                        <i class="fas fa-bell-slash fa-2x text-muted mb-3"></i>
+                        <p class="text-muted mb-0">Vous n'avez pas encore d'alertes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,454 @@
+{% extends 'immobilier/base.html' %}
+{% load widget_tweaks static %}
+
+{% block title %}Inscription - Agence Immobilière{% endblock %}
+
+{% block extra_css %}
+<style>
+    .register-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 2rem 0;
+    }
+    .register-card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    .register-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+    }
+    .register-header h2 {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    .register-header p {
+        opacity: 0.8;
+        margin-bottom: 0;
+    }
+    .register-body {
+        padding: 2rem;
+        background: white;
+    }
+    .form-control {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        border: 1px solid #e1e5ee;
+    }
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    .account-type-card {
+        border: 2px solid #e1e5ee;
+        border-radius: 10px;
+        padding: 1.5rem;
+        height: 100%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .account-type-card:hover {
+        border-color: #667eea;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+    }
+    .account-type-card.active {
+        border-color: #667eea;
+        background-color: rgba(102, 126, 234, 0.05);
+    }
+    .account-type-card i {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: #667eea;
+    }
+    .btn-register {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 0.75rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    .form-section-title {
+        color: #495057;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+    .password-strength {
+        height: 5px;
+        background-color: #e9ecef;
+        border-radius: 3px;
+        margin-top: 0.5rem;
+        overflow: hidden;
+    }
+    .password-strength-bar {
+        height: 100%;
+        width: 0;
+        background-color: #dc3545;
+        transition: width 0.3s ease, background-color 0.3s ease;
+    }
+    .password-requirements {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+    }
+    .requirement {
+        margin-bottom: 0.25rem;
+    }
+    .requirement.valid {
+        color: #28a745;
+    }
+    .requirement.valid::before {
+        content: "✓ ";
+    }
+    .requirement.invalid {
+        color: #6c757d;
+    }
+    .requirement.invalid::before {
+        content: "✗ ";
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-container d-flex align-items-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="register-card">
+                    <div class="register-header">
+                        <h2>Créez votre compte</h2>
+                        <p>Rejoignez notre communauté dès maintenant</p>
+                    </div>
+                    
+                    <div class="register-body">
+                        <form method="post" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            
+                            <!-- Type de compte -->
+                            <div class="form-section">
+                                <h5 class="form-section-title">
+                                    <i class="fas fa-user-tag me-2"></i>Type de compte
+                                </h5>
+                                <div class="row g-4">
+                                    {% for choice in form.user_type %}
+                                    <div class="col-md-6">
+                                        <div class="account-type-card text-center {% if choice.data.selected %}active{% endif %}" 
+                                             onclick="document.getElementById('{{ choice.id_for_label }}').click()">
+                                            <i class="fas {% if choice.data.value == 'particulier' %}fa-user-tie{% else %}fa-building{% endif %}"></i>
+                                            <h5>{{ choice.choice_label }}</h5>
+                                            <p class="text-muted small mb-0">
+                                                {% if choice.data.value == 'particulier' %}
+                                                Je cherche un bien immobilier
+                                                {% else %}
+                                                Je propose des biens immobiliers
+                                                {% endif %}
+                                            </p>
+                                            {{ choice.tag }}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% if form.user_type.errors %}
+                                    <div class="invalid-feedback d-block mt-2">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {{ form.user_type.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Informations personnelles -->
+                            <div class="form-section">
+                                <h5 class="form-section-title">
+                                    <i class="fas fa-user me-2"></i>Informations personnelles
+                                </h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="id_first_name" class="form-label">Prénom</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-white">
+                                                <i class="fas fa-user text-muted"></i>
+                                            </span>
+                                            {{ form.first_name|add_class:"form-control"|attr:"placeholder:Votre prénom" }}
+                                        </div>
+                                        {% if form.first_name.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {{ form.first_name.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="id_last_name" class="form-label">Nom</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-white">
+                                                <i class="fas fa-user text-muted"></i>
+                                            </span>
+                                            {{ form.last_name|add_class:"form-control"|attr:"placeholder:Votre nom" }}
+                                        </div>
+                                        {% if form.last_name.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {{ form.last_name.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="id_phone" class="form-label">Téléphone</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-white">
+                                                <i class="fas fa-phone text-muted"></i>
+                                            </span>
+                                            {{ form.phone|add_class:"form-control"|attr:"placeholder:Votre numéro de téléphone" }}
+                                        </div>
+                                        {% if form.phone.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {{ form.phone.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Identifiants de connexion -->
+                            <div class="form-section">
+                                <h5 class="form-section-title">
+                                    <i class="fas fa-key me-2"></i>Identifiants de connexion
+                                </h5>
+                                <div class="mb-3">
+                                    <label for="id_username" class="form-label">Nom d'utilisateur</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white">
+                                            <i class="fas fa-at text-muted"></i>
+                                        </span>
+                                        {{ form.username|add_class:"form-control"|attr:"placeholder:Choisissez un nom d'utilisateur" }}
+                                    </div>
+                                    {% if form.username.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="fas fa-exclamation-circle me-1"></i>
+                                            {{ form.username.errors.0 }}
+                                        </div>
+                                    {% else %}
+                                        <div class="form-text small">{{ form.username.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="id_email" class="form-label">Adresse email</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white">
+                                            <i class="fas fa-envelope text-muted"></i>
+                                        </span>
+                                        {{ form.email|add_class:"form-control"|attr:"placeholder:votre@email.com" }}
+                                    </div>
+                                    {% if form.email.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="fas fa-exclamation-circle me-1"></i>
+                                            {{ form.email.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="id_password1" class="form-label">Mot de passe</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white">
+                                            <i class="fas fa-lock text-muted"></i>
+                                        </span>
+                                        {{ form.password1|add_class:"form-control"|attr:"placeholder:Créez un mot de passe"|attr:"oninput":"checkPasswordStrength(this.value)" }}
+                                        <button class="btn btn-outline-secondary toggle-password" type="button">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="password-strength mt-2">
+                                        <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                                    </div>
+                                    <div class="password-requirements">
+                                        <div class="requirement invalid" id="reqLength">Au moins 8 caractères</div>
+                                        <div class="requirement invalid" id="reqUppercase">Au moins une majuscule</div>
+                                        <div class="requirement invalid" id="reqNumber">Au moins un chiffre</div>
+                                        <div class="requirement invalid" id="reqSpecial">Au moins un caractère spécial</div>
+                                    </div>
+                                    {% if form.password1.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="fas fa-exclamation-circle me-1"></i>
+                                            {{ form.password1.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="id_password2" class="form-label">Confirmez le mot de passe</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white">
+                                            <i class="fas fa-lock text-muted"></i>
+                                        </span>
+                                        {{ form.password2|add_class:"form-control"|attr:"placeholder:Retapez votre mot de passe" }}
+                                        <button class="btn btn-outline-secondary toggle-password" type="button">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div id="passwordMatch" class="mt-2 small"></div>
+                                    {% if form.password2.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="fas fa-exclamation-circle me-1"></i>
+                                            {{ form.password2.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-primary btn-register py-3">
+                                    <i class="fas fa-user-plus me-2"></i>Créer mon compte
+                                </button>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <p class="mb-0 text-muted">
+                                    En vous inscrivant, vous acceptez nos 
+                                    <a href="#" class="text-primary">Conditions d'utilisation</a> et notre 
+                                    <a href="#" class="text-primary">Politique de confidentialité</a>.
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="register-footer text-center py-3 bg-light">
+                        <p class="mb-0">
+                            Déjà inscrit ? 
+                            <a href="/connection/" class="text-primary fw-medium">Connectez-vous ici</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Activation de la validation des formulaires Bootstrap
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+})()
+
+// Afficher/masquer le mot de passe
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleButtons = document.querySelectorAll('.toggle-password');
+    
+    toggleButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const input = this.previousElementSibling;
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+            this.querySelector('i').classList.toggle('fa-eye');
+            this.querySelector('i').classList.toggle('fa-eye-slash');
+        });
+    });
+    
+    // Vérification de la correspondance des mots de passe
+    const password1 = document.getElementById('id_password1');
+    const password2 = document.getElementById('id_password2');
+    const passwordMatch = document.getElementById('passwordMatch');
+    
+    if (password1 && password2 && passwordMatch) {
+        [password1, password2].forEach(input => {
+            input.addEventListener('input', function() {
+                if (password1.value && password2.value) {
+                    if (password1.value === password2.value) {
+                        passwordMatch.innerHTML = '<i class="fas fa-check-circle text-success me-1"></i> Les mots de passe correspondent';
+                    } else {
+                        passwordMatch.innerHTML = '<i class="fas fa-times-circle text-danger me-1"></i> Les mots de passe ne correspondent pas';
+                    }
+                } else {
+                    passwordMatch.innerHTML = '';
+                }
+            });
+        });
+    }
+});
+
+// Vérification de la force du mot de passe
+function checkPasswordStrength(password) {
+    const strengthBar = document.getElementById('passwordStrengthBar');
+    const requirements = {
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        number: /[0-9]/.test(password),
+        special: /[^A-Za-z0-9]/.test(password)
+    };
+    
+    // Mettre à jour les indicateurs de force
+    document.getElementById('reqLength').className = requirements.length ? 'requirement valid' : 'requirement invalid';
+    document.getElementById('reqUppercase').className = requirements.uppercase ? 'requirement valid' : 'requirement invalid';
+    document.getElementById('reqNumber').className = requirements.number ? 'requirement valid' : 'requirement invalid';
+    document.getElementById('reqSpecial').className = requirements.special ? 'requirement valid' : 'requirement invalid';
+    
+    // Calculer le score de force
+    const score = Object.values(requirements).filter(Boolean).length;
+    const total = Object.keys(requirements).length;
+    const percentage = (score / total) * 100;
+    
+    // Mettre à jour la barre de progression
+    strengthBar.style.width = percentage + '%';
+    
+    // Changer la couleur en fonction de la force
+    if (percentage < 25) {
+        strengthBar.style.backgroundColor = '#dc3545'; // Rouge
+    } else if (percentage < 50) {
+        strengthBar.style.backgroundColor = '#fd7e14'; // Orange
+    } else if (percentage < 75) {
+        strengthBar.style.backgroundColor = '#ffc107'; // Jaune
+    } else {
+        strengthBar.style.backgroundColor = '#28a745'; // Vert
+    }
+}
+
+// Sélection du type de compte
+document.addEventListener('DOMContentLoaded', function() {
+    const accountTypeCards = document.querySelectorAll('.account-type-card');
+    
+    accountTypeCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // Retirer la classe active de toutes les cartes
+            accountTypeCards.forEach(c => c.classList.remove('active'));
+            // Ajouter la classe active à la carte cliquée
+            this.classList.add('active');
+        });
+    });
+});
+</script>
+{% endblock %}
