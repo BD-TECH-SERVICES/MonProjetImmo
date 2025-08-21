@@ -154,14 +154,21 @@ def conversation(request):
         messages.error(request, "L'utilisateur cible n'existe pas.")
         return redirect("dashboard")
 
-    # Récupérer les messages envoyés par l'utilisateur actuel
-    messages_list = Message.objects.filter(sender=request.user).order_by('timestamp')
+    conversation_id = get_conversation_id(request.user, receiver)
+
+    # Récupérer les messages échangés avec ce destinataire
+    messages_list = Message.objects.filter(conversation_id=conversation_id).order_by('timestamp')
 
     # Gestion de l'envoi de message
     if request.method == "POST":
         content = request.POST.get("content")
         if content:
-            Message.objects.create(sender=request.user, content=content)
+            Message.objects.create(
+                conversation_id=conversation_id,
+                sender=request.user,
+                receiver=receiver,
+                content=content,
+            )
             return redirect('conversation')  # Recharge la page après l'envoi
 
     return render(request, 'blog/conversation.html', {'messages': messages_list, 'receiver': receiver})
@@ -171,17 +178,16 @@ def start_or_continue_conversation(request, user_id):
     """ Vérifie si une conversation existe déjà, sinon la crée et redirige vers la discussion """
     receiver = get_object_or_404(User, id=user_id)  # Récupère l'utilisateur cible
 
+    conversation_id = get_conversation_id(request.user, receiver)
+
     # Vérifier si des messages existent déjà entre les deux utilisateurs
-    existing_messages = Message.objects.filter(
-        sender=request.user, receiver=receiver  # 🚨 ERREUR : Django ne trouve pas "receiver"
-    ) | Message.objects.filter(
-        sender=receiver, receiver=request.user
-    )
+    existing_messages = Message.objects.filter(conversation_id=conversation_id)
 
 
     if not existing_messages.exists():
         # Si aucun message n'existe encore, créer une conversation avec un premier message
         Message.objects.create(
+            conversation_id=conversation_id,
             sender=request.user,
             receiver=receiver,
             content="Bonjour, je suis intéressé par votre projet !"
